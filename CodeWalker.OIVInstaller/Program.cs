@@ -50,6 +50,8 @@ namespace CodeWalker.OIVInstaller
                 string packageName = null;
                 string gameFolder = OivAppConfig.Load().LastGameFolder; // Use default if set
                 bool useVanilla = false;
+                bool force = false;
+                bool skipBackup = false;
 
                 for (int i = 0; i < args.Length; i++)
                 {
@@ -117,6 +119,16 @@ namespace CodeWalker.OIVInstaller
                             useVanilla = true;
                             break;
 
+                        case "--force":
+                        case "--ignore_gameversion":
+                            force = true;
+                            break;
+
+                        case "--skip_backup":
+                        case "--skip-backup":
+                            skipBackup = true;
+                            break;
+
                         default:
                             // Unknown argument - might be a path for install?
                             if (!arg.StartsWith("-") && File.Exists(args[i]) && 
@@ -139,7 +151,7 @@ namespace CodeWalker.OIVInstaller
                 switch (command)
                 {
                     case "install":
-                        return CliHandler.RunInstall(oivPath, gameFolder);
+                        return CliHandler.RunInstall(oivPath, gameFolder, force, skipBackup);
 
                     case "uninstall":
                         return CliHandler.RunUninstall(packageName, gameFolder, useVanilla);

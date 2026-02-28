@@ -24,6 +24,7 @@ namespace CodeWalker.OIVInstaller
         private bool _keysInitialized = false;
         private BackupManager _backupManager;
         private BackupSession _backupSession;
+        private bool _skipBackup = false;
 
         public OivInstaller(string gameFolder, OivPackage package, Action<string> logAction = null)
         {
@@ -44,8 +45,12 @@ namespace CodeWalker.OIVInstaller
             );
         }
 
-        public void Install(IProgress<InstallProgress> progress = null, List<BackupLog> packagesToUninstall = null, UninstallMode uninstallMode = UninstallMode.Backup)
+        /// <summary>
+        /// Installs the package specified in the constructor
+        /// </summary>
+        public void Install(IProgress<InstallProgress> progress = null, List<BackupLog> packagesToUninstall = null, UninstallMode uninstallMode = UninstallMode.Backup, bool skipBackup = false)
         {
+            _skipBackup = skipBackup;
             InitializeLog();
 
             int totalOps = CountOperations(Package.Operations);
@@ -91,7 +96,7 @@ namespace CodeWalker.OIVInstaller
                 }
 
                 // Save backup log
-                _backupSession.Save();
+                if (!_skipBackup) _backupSession.Save();
                 Log("Backup created and installation completed successfully!");
                 progress?.Report(new InstallProgress(100, "Installation complete"));
             }
@@ -258,7 +263,7 @@ namespace CodeWalker.OIVInstaller
                 {
                     // It's a replacement - backup original with RSC7 header preserved
                     byte[] oldData = RpfFileHelper.ExtractFileRaw(existingFile as RpfFileEntry);
-                    _backupSession.BackupRpfFile(rpf.Path, destPath, oldData); // destPath is internal RPF path
+                    if (!_skipBackup) _backupSession.BackupRpfFile(rpf.Path, destPath, oldData); // destPath is internal RPF path
                 }
                 else
                 {
@@ -268,12 +273,10 @@ namespace CodeWalker.OIVInstaller
                     // Current BackupManager.BackupRpfFile assumes we have data.
                     // Let's overload or extend BackupSession for "RpfAdded".
                     // Use a trick: pass null data to signify "Added"? Or update BackupManager.
-                    // For now, let's just log it if we can, or skip RPF additions tracking (harder to revert if we don't know it's new).
-                    
-                    // Actually, let's just assume we only backup what we replace. 
+                    // For now, let's just assume we only backup what we replace. 
                     // To support uninstalling added files in RPF, we need to track them.
                     // Let's add 'BackupRpfAdded' method to session.
-                    _backupSession.TrackRpfAdded(rpf.Path, destPath);
+                    if (!_skipBackup) _backupSession.TrackRpfAdded(rpf.Path, destPath);
                 }
                 // ---------------------------
 
@@ -324,7 +327,7 @@ namespace CodeWalker.OIVInstaller
                 {
                     // Backup before delete! (preserve RSC7 header for resource files)
                     byte[] originalData = RpfFileHelper.ExtractFileRaw(file as RpfFileEntry);
-                    _backupSession.BackupRpfDeletedFile(rpf.Path, targetPath, originalData);
+                    if (!_skipBackup) _backupSession.BackupRpfDeletedFile(rpf.Path, targetPath, originalData);
                     
                     RpfFile.DeleteEntry(file);
                     Log($"  Deleted {fileName} from RPF");
@@ -346,7 +349,7 @@ namespace CodeWalker.OIVInstaller
                     {
                         // Backup before delete!
                         string relPath = targetPath.Substring(GameFolder.Length).TrimStart(Path.DirectorySeparatorChar);
-                        _backupSession.BackupDeletedFile(relPath);
+                        if (!_skipBackup) _backupSession.BackupDeletedFile(relPath);
 
                         File.Delete(targetPath);
                         Log($"  Deleted {op.Target}");
@@ -415,7 +418,7 @@ namespace CodeWalker.OIVInstaller
                 
                 string relativeDestPath = fullDestPath.Substring(GameFolder.Length).TrimStart(Path.DirectorySeparatorChar);
                 Log($"  Backing up: {relativeDestPath}");
-                _backupSession.BackupFile(relativeDestPath);
+                if (!_skipBackup) _backupSession.BackupFile(relativeDestPath);
                 // --------------------
 
                 // Write to game folder
@@ -525,7 +528,7 @@ namespace CodeWalker.OIVInstaller
                 // Write modified content back to RPF
                 
                 // --- BACKUP LOGIC (Text) ---
-                if (fileEntry != null)
+                if (fileEntry != null && !_skipBackup)
                 {
                      byte[] originalBytes = RpfFileHelper.ExtractFileRaw(fileEntry);
                      _backupSession.BackupRpfFile(rpf.Path, filePath, originalBytes, textOps: textOps);
@@ -707,10 +710,34 @@ namespace CodeWalker.OIVInstaller
 
                 // Read and parse XML
                 byte[] data = fileEntry.File.ExtractFile(fileEntry);
-                string xmlContent = Encoding.UTF8.GetString(data);
+                string xmlContent = "";
+                string virtualXmlName = fileName;
+                string ext = Path.GetExtension(fileName).ToLowerInvariant();
+                bool isBinary = false;
+
+                try
+                {
+                    string genXml = MetaXml.GetXml(fileEntry, data, out string outVirtualName, "");
+                    if (!string.IsNullOrEmpty(genXml))
+                    {
+                        xmlContent = genXml;
+                        virtualXmlName = outVirtualName;
+                        isBinary = true;
+                        Log($"  Decompiled binary {ext} to XML for editing.");
+                    }
+                    else
+                    {
+                        xmlContent = Encoding.UTF8.GetString(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log($"  WARNING: Failed to decompile binary {ext}, falling back to raw text. ({ex.Message})");
+                    xmlContent = Encoding.UTF8.GetString(data);
+                }
                 
                 var xmlDoc = new XmlDocument();
-                xmlDoc.PreserveWhitespace = true;
+                xmlDoc.PreserveWhitespace = !isBinary;
                 xmlDoc.LoadXml(xmlContent);
                 
                 // Track operations for smart reversal
@@ -733,22 +760,47 @@ namespace CodeWalker.OIVInstaller
                 }
 
                 // Write modified content back to RPF
-                using (var sw = new StringWriterWithEncoding(Encoding.UTF8))
+                byte[] newData = null;
+                try
                 {
-                    xmlDoc.Save(sw);
-                    byte[] newData = Encoding.UTF8.GetBytes(sw.ToString());
-                    
-                    // --- BACKUP LOGIC (XML) ---
-                    if (fileEntry != null)
+                    if (isBinary)
                     {
-                        byte[] originalBytes = RpfFileHelper.ExtractFileRaw(fileEntry);
-                        _backupSession.BackupRpfFile(rpf.Path, filePath, originalBytes, xmlOps: xmlOps);
+                        int trimLen = 0;
+                        MetaFormat format = XmlMeta.GetXMLFormat(virtualXmlName, out trimLen);
+                        newData = XmlMeta.GetData(xmlDoc, format, virtualXmlName);
+                        Log($"  Recompiled XML back to binary {ext}.");
                     }
-                    // --------------------------
-
-                    RpfFile.CreateFile(targetDir, fileName, newData, overwrite: true);
-                    Log($"  Modified {fileName} ({newData.Length} bytes)");
+                    else
+                    {
+                        using (var sw = new StringWriterWithEncoding(Encoding.UTF8))
+                        {
+                            xmlDoc.Save(sw);
+                            newData = Encoding.UTF8.GetBytes(sw.ToString());
+                        }
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Log($"  ERROR: Failed to recompile XML back to binary: {ex.Message}");
+                    return;
+                }
+
+                if (newData == null || newData.Length == 0)
+                {
+                    Log($"  ERROR: Recompiled data is empty.");
+                    return;
+                }
+                
+                // --- BACKUP LOGIC (XML) ---
+                if (fileEntry != null && !_skipBackup)
+                {
+                    byte[] originalBytes = RpfFileHelper.ExtractFileRaw(fileEntry);
+                    _backupSession.BackupRpfFile(rpf.Path, filePath, originalBytes, xmlOps: xmlOps);
+                }
+                // --------------------------
+
+                RpfFile.CreateFile(targetDir, fileName, newData, overwrite: true);
+                Log($"  Modified {fileName} ({newData.Length} bytes)");
             }
             catch (Exception ex)
             {
@@ -1013,8 +1065,7 @@ namespace CodeWalker.OIVInstaller
             // Copy from vanilla if not in mods
             if (!File.Exists(modsPath))
             {
-                // Track this as a new file in mods folder so uninstall can remove it
-                _backupSession.BackupFile(relativePath); // Checks existence on disk. Since it doesn't exist, it tracks as Added.
+                if (!_skipBackup) _backupSession.BackupFile(relativePath); // Checks existence on disk. Since it doesn't exist, it tracks as Added.
 
                 if (!File.Exists(vanillaPath))
                 {
@@ -1116,7 +1167,7 @@ namespace CodeWalker.OIVInstaller
                     var newRpf = RpfFile.CreateNew(targetDir, rpfName, RpfEncryption.OPEN);
                     
                     // Track as added to parent RPF
-                    _backupSession.TrackRpfAdded(parentRpf.Path, nestedPath);
+                    if (!_skipBackup) _backupSession.TrackRpfAdded(parentRpf.Path, nestedPath);
                     
                     Log($"Successfully created nested RPF: {nestedPath}");
                     return newRpf;
@@ -1245,7 +1296,7 @@ namespace CodeWalker.OIVInstaller
                 }
 
                 string relativeDestPath = fullPath.Substring(GameFolder.Length).TrimStart(Path.DirectorySeparatorChar);
-                _backupSession.BackupFile(relativeDestPath);
+                if (!_skipBackup) _backupSession.BackupFile(relativeDestPath);
                 
                 try
                 {

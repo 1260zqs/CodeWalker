@@ -111,6 +111,74 @@ namespace CodeWalker.OIVInstaller
         }
 
         /// <summary>
+        /// Prompts user to select FiveM Application Data folder if not found
+        /// </summary>
+        public static string PromptForFiveMFolder()
+        {
+            Console.WriteLine();
+            Console.WriteLine("FiveM Application Data folder not found automatically.");
+            Console.WriteLine("Opening folder picker...");
+            
+            var folder = BrowseForGameFolder("Select FiveM Application Data Folder (contains FiveM.app or FiveM.exe)");
+            
+            if (string.IsNullOrEmpty(folder))
+            {
+                Console.WriteLine("No folder selected.");
+                return null;
+            }
+            
+            // Validate
+            bool isValid = File.Exists(Path.Combine(folder, "FiveM.exe")) ||
+                           Directory.Exists(Path.Combine(folder, "FiveM.app")) ||
+                           Path.GetFileName(folder).Equals("mods", StringComparison.OrdinalIgnoreCase);
+                           
+            if (!isValid)
+            {
+                Console.WriteLine("Warning: This doesn't look like a FiveM Application Data folder.");
+                Console.WriteLine("Expected to find FiveM.exe, FiveM.app directory, or be a 'mods' folder.");
+            }
+            
+            // Resolve the actual mods folder path
+            string modsFolder = folder;
+            if (Directory.Exists(Path.Combine(folder, "FiveM.app")))
+            {
+                modsFolder = Path.Combine(folder, "FiveM.app", "mods");
+            }
+            else if (File.Exists(Path.Combine(folder, "FiveM.exe")) && !Path.GetFileName(folder).Equals("FiveM.app", StringComparison.OrdinalIgnoreCase))
+            {
+                 if (Directory.Exists(Path.Combine(folder, "FiveM.app")))
+                 {
+                     modsFolder = Path.Combine(folder, "FiveM.app", "mods");
+                 }
+                 else
+                 {
+                     modsFolder = Path.Combine(folder, "mods");
+                 }
+            }
+            else if (!Path.GetFileName(folder).Equals("mods", StringComparison.OrdinalIgnoreCase))
+            {
+                 modsFolder = Path.Combine(folder, "mods");
+            }
+
+            if (!Directory.Exists(modsFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(modsFolder);
+                    Console.WriteLine($"Created FiveM mods folder: {modsFolder}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Could not create mods folder. {ex.Message}");
+                }
+            }
+            
+            Console.WriteLine($"FiveM mods folder set to: {modsFolder}");
+            
+            return modsFolder;
+        }
+
+        /// <summary>
         /// Displays help text
         /// </summary>
         public static int ShowHelp()
@@ -131,6 +199,9 @@ namespace CodeWalker.OIVInstaller
             Console.WriteLine("  --list                    List installed mods");
             Console.WriteLine("  --game <path>             Override game folder for this command");
             Console.WriteLine("  --vanilla                 Use vanilla reset mode for uninstall");
+            Console.WriteLine("  --force                   Ignore GameVersion warnings");
+            Console.WriteLine("  --ignore_gameversion      Same as --force");
+            Console.WriteLine("  --skip_backup             Do not back up original files (saves space)");
             Console.WriteLine();
             Console.WriteLine("Examples:");
             Console.WriteLine("  --set-game \"C:\\Games\\GTA5\"");
@@ -267,8 +338,10 @@ namespace CodeWalker.OIVInstaller
         /// Validates game folder against package version and prompts user if needed.
         /// Returns true if valid/updated, false if cancelled.
         /// </summary>
-        private static bool EnsureCorrectGameFolder(OivMetadata metadata, ref string gameFolder)
+        private static bool EnsureCorrectGameFolder(OivMetadata metadata, ref string gameFolder, bool force = false)
         {
+            if (force) return true;
+
             // Check Game Version Compatibility
             bool isGen9 = File.Exists(Path.Combine(gameFolder, "eboot.bin")) ||
                          File.Exists(Path.Combine(gameFolder, "GTA5_Enhanced.exe"));
@@ -393,7 +466,7 @@ namespace CodeWalker.OIVInstaller
         /// <summary>
         /// Installs an OIV package
         /// </summary>
-        public static int RunInstall(string oivPath, string gameFolder)
+        public static int RunInstall(string oivPath, string gameFolder, bool force = false, bool skipBackup = false)
         {
             if (ProcessHelper.IsGameRunning(out string processName))
             {
@@ -471,8 +544,11 @@ namespace CodeWalker.OIVInstaller
                         }
                         else
                         {
-                            Console.WriteLine("Error: FiveM application not found.");
-                            return 4;
+                            fiveMMods = PromptForFiveMFolder();
+                            if (string.IsNullOrEmpty(fiveMMods))
+                            {
+                                return 4;
+                            }
                         }
                     }
 
@@ -520,7 +596,7 @@ namespace CodeWalker.OIVInstaller
                 Console.WriteLine();
 
                 // Validate Game Version
-                if (!EnsureCorrectGameFolder(package.Metadata, ref gameFolder))
+                if (!EnsureCorrectGameFolder(package.Metadata, ref gameFolder, force))
                 {
                     return 5;
                 }
@@ -543,7 +619,7 @@ namespace CodeWalker.OIVInstaller
                 });
 
                 Console.WriteLine("Installing...");
-                installer.Install(progress);
+                installer.Install(progress, skipBackup: skipBackup);
                 
                 Console.WriteLine();
                 Console.WriteLine("Installation complete!");
@@ -704,8 +780,17 @@ namespace CodeWalker.OIVInstaller
                     }
                     else
                     {
-                        Console.WriteLine("Error: FiveM mods folder not found.");
-                        return 4;
+                        fiveMMods = PromptForFiveMFolder();
+                        if (!string.IsNullOrEmpty(fiveMMods) && Directory.Exists(fiveMMods))
+                        {
+                            gameFolder = fiveMMods;
+                            Console.WriteLine($"Target: {gameFolder}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: FiveM mods folder not found.");
+                            return 4;
+                        }
                     }
                 }
                 else

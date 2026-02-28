@@ -37,6 +37,40 @@ namespace CodeWalker.OIVInstaller
             LoadConfig();
             tmrMarquee.Start();
         }
+
+        private void MainForm_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0 && 
+                   (files[0].EndsWith(".oiv", StringComparison.OrdinalIgnoreCase) || 
+                    files[0].EndsWith(".rpf", StringComparison.OrdinalIgnoreCase)))
+                {
+                    e.Effect = DragDropEffects.Copy;
+                    return;
+                }
+            }
+            e.Effect = DragDropEffects.None;
+        }
+
+        private void MainForm_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Length > 0)
+                {
+                    string file = files[0];
+                    if (file.EndsWith(".oiv", StringComparison.OrdinalIgnoreCase) || 
+                        file.EndsWith(".rpf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        txtOivPath.Text = file;
+                        LoadOivPackage(file);
+                    }
+                }
+            }
+        }
         
         private void btnBrowseOiv_Click(object sender, EventArgs e)
         {
@@ -58,13 +92,43 @@ namespace CodeWalker.OIVInstaller
             using (var dlg = new FolderBrowserDialog())
             {
                 dlg.Description = "Select GTA V Game Folder";
+                if (_package != null && _package.IsFiveM)
+                {
+                    dlg.Description = "Select FiveM Application Data Folder (contains FiveM.app or FiveM.exe)";
+                }
                 dlg.ShowNewFolderButton = false;
                 
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    txtGameFolder.Text = dlg.SelectedPath;
-                    _gameFolder = dlg.SelectedPath;
-                    _spGameFolder = dlg.SelectedPath; // User explicitly selected this
+                    string selected = dlg.SelectedPath;
+                    if (_package != null && _package.IsFiveM)
+                    {
+                        string modsFolder = selected;
+                        if (Directory.Exists(Path.Combine(selected, "FiveM.app")))
+                        {
+                            modsFolder = Path.Combine(selected, "FiveM.app", "mods");
+                        }
+                        else if (File.Exists(Path.Combine(selected, "FiveM.exe")) && !Path.GetFileName(selected).Equals("FiveM.app", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (Directory.Exists(Path.Combine(selected, "FiveM.app")))
+                            {
+                                modsFolder = Path.Combine(selected, "FiveM.app", "mods");
+                            }
+                            else
+                            {
+                                modsFolder = Path.Combine(selected, "mods");
+                            }
+                        }
+                        else if (!Path.GetFileName(selected).Equals("mods", StringComparison.OrdinalIgnoreCase))
+                        {
+                            modsFolder = Path.Combine(selected, "mods");
+                        }
+                        selected = modsFolder;
+                    }
+
+                    txtGameFolder.Text = selected;
+                    _gameFolder = selected;
+                    _spGameFolder = selected; // User explicitly selected this
 
                     // Update specific version slot if we know context
                     if (_package != null && _package.Metadata.GameVersion == GameVersion.Enhanced)
