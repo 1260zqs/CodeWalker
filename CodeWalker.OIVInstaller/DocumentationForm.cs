@@ -86,9 +86,9 @@ namespace CodeWalker.OIVInstaller
 1. Installation
    - Drag and drop an .OIV file onto the window, or use the 'Browse OIV' button.
    - Select your GTA V game folder request.
-     (If no folder is configured, a Windows Folder Picker dialog will appear automatically).
    - Click 'Install'.
    - FiveM Support: Drag and drop a .RPF file to automatically install it to your FiveM mods folder.
+     (Automatically detects path via Registry or %LocalAppData%).
 
 2. Uninstalling & Conflicts
    - If you try to install a package that is already installed, the installer will detect the conflict.
@@ -127,6 +127,8 @@ namespace CodeWalker.OIVInstaller
      --set-game <path>      Set default game folder
      --get-game             Get default game folder
      --browse               Open folder picker to set game folder
+     --force                Ignore GameVersion warnings
+     --skip_backup          Do not back up original files (saves space)
      --help                 Show all options
 
    - Automation:
@@ -256,7 +258,7 @@ The following table details how each OIV 2.2 feature is handled during installat
 8. FIVEM SUPPORT
 ----------------
 - .RPF Installation
-  Install: Direct copy to %localappdata%\FiveM\FiveM.app\mods.
+  Install: Direct copy to registry-detected path or %localappdata%\FiveM\FiveM.app\mods. (Creates mods folder if needed).
   Uninstall: Deletes the .rpf file. (Shows 'Remove Mod' confirmation).
 - Metadata
   Reads assembly.xml from inside the RPF to display mod info.
