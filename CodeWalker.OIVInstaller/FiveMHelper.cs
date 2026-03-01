@@ -1,28 +1,63 @@
 using System;
 using System.IO;
+using Microsoft.Win32;
 
 namespace CodeWalker.OIVInstaller
 {
     public static class FiveMHelper
     {
-        public static string GetFiveMModsFolder()
+        private static string GetFiveMAppFolder()
         {
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string fiveMAppPath = Path.Combine(localAppData, "FiveM", "FiveM.app");
-
-            if (Directory.Exists(fiveMAppPath))
+            try
             {
-                return Path.Combine(fiveMAppPath, "mods");
+                // First attempt: Check Windows Registry Uninstall path
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\CitizenFX_FiveM"))
+                {
+                    if (key != null)
+                    {
+                        object installLoc = key.GetValue("InstallLocation");
+                        if (installLoc != null)
+                        {
+                            string regPath = installLoc.ToString();
+                            string appPath = Path.Combine(regPath, "FiveM.app");
+                            if (Directory.Exists(appPath))
+                            {
+                                return appPath;
+                            }
+                        }
+                    }
+                }
+            }
+            catch 
+            {
+                // Ignore registry errors and proceed to fallback
+            }
+
+            // Fallback: Default %LocalAppData% path
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string defaultPath = Path.Combine(localAppData, "FiveM", "FiveM.app");
+            
+            if (Directory.Exists(defaultPath))
+            {
+                return defaultPath;
             }
 
             return null;
         }
 
+        public static string GetFiveMModsFolder()
+        {
+            string appFolder = GetFiveMAppFolder();
+            if (!string.IsNullOrEmpty(appFolder))
+            {
+                return Path.Combine(appFolder, "mods");
+            }
+            return null;
+        }
+
         public static bool IsFiveMInstalled()
         {
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string fiveMPath = Path.Combine(localAppData, "FiveM", "FiveM.app");
-            return Directory.Exists(fiveMPath);
+            return !string.IsNullOrEmpty(GetFiveMAppFolder());
         }
     }
 }
