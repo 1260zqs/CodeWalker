@@ -497,7 +497,7 @@ namespace CodeWalker.OIVInstaller
                 if (fileEntry != null)
                 {
                     byte[] data = fileEntry.File.ExtractFile(fileEntry);
-                    content = Encoding.UTF8.GetString(data);
+                    content = TrimBom(Encoding.UTF8.GetString(data));
                 }
 
                 // Apply all insert operations
@@ -727,13 +727,13 @@ namespace CodeWalker.OIVInstaller
                     }
                     else
                     {
-                        xmlContent = Encoding.UTF8.GetString(data);
+                        xmlContent = TrimBom(Encoding.UTF8.GetString(data));
                     }
                 }
                 catch (Exception ex)
                 {
                     Log($"  WARNING: Failed to decompile binary {ext}, falling back to raw text. ({ex.Message})");
-                    xmlContent = Encoding.UTF8.GetString(data);
+                    xmlContent = TrimBom(Encoding.UTF8.GetString(data));
                 }
                 
                 var xmlDoc = new XmlDocument();
@@ -1348,7 +1348,7 @@ namespace CodeWalker.OIVInstaller
                 }
                 else if (ext == ".xml")
                 {
-                    xmlContent = Encoding.UTF8.GetString(fileData);
+                    xmlContent = TrimBom(Encoding.UTF8.GetString(fileData));
                     virtualXmlName = fileName;
                 }
                 else
@@ -1482,6 +1482,17 @@ namespace CodeWalker.OIVInstaller
         {
             _logAction?.Invoke(message);
             try { _logWriter?.WriteLine($"[{DateTime.Now:HH:mm:ss}] {message}"); } catch { }
+        }
+
+        /// <summary>
+        /// Strips a leading UTF-8 BOM character from a string if present.
+        /// Some .meta/.xml files ship with a BOM that XmlDocument.LoadXml() cannot handle.
+        /// </summary>
+        private static string TrimBom(string s)
+        {
+            if (s != null && s.Length > 0 && s[0] == '\uFEFF')
+                return s.Substring(1);
+            return s;
         }
 
         private void InitializeLog()
