@@ -544,6 +544,9 @@ namespace CodeWalker.OIVInstaller
                     {
                         int argb = Convert.ToInt32(colorStr, 16);
                         Color headerColor = Color.FromArgb(argb);
+                        // WinForms doesn't support true alpha transparency on panels.
+                        // Force fully opaque to avoid mismatched child control backgrounds.
+                        headerColor = Color.FromArgb(255, headerColor.R, headerColor.G, headerColor.B);
                         panelHeader.BackColor = headerColor;
                         
                         Color textColor = meta.UseBlackTextColor ? Color.Black : Color.White;

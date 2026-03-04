@@ -135,6 +135,7 @@ namespace CodeWalker.OIVInstaller
             // lblWarning
             // 
             this.lblWarning.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblWarning.BackColor = System.Drawing.Color.Transparent;
             this.lblWarning.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.lblWarning.ForeColor = System.Drawing.Color.White;
             this.lblWarning.Location = new System.Drawing.Point(450, 55);
@@ -161,6 +162,7 @@ namespace CodeWalker.OIVInstaller
             // pnlTitleClipping
             // 
             this.pnlTitleClipping.Controls.Add(this.lblPackageName);
+            this.pnlTitleClipping.BackColor = System.Drawing.Color.Transparent;
             this.pnlTitleClipping.Location = new System.Drawing.Point(93, 15);
             this.pnlTitleClipping.Name = "pnlTitleClipping";
             this.pnlTitleClipping.Size = new System.Drawing.Size(235, 35);
