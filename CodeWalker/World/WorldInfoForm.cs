@@ -388,12 +388,21 @@ namespace CodeWalker.World
                 SelTextureNameTextBox.Text = tex.Name;
                 SelTextureDictionaryTextBox.Text = (ytd != null) ? ytd.Name : (ydr != null) ? ydr.Name : (ydd != null) ? ydd.Name : (yft != null) ? yft.Name : string.Empty;
                 SaveTextureButton.Enabled = true;
+                if (owner is GameFile gameFile)
+                {
+                    pathTextBox.Text = gameFile.RpfFileEntry?.Path;
+                }
+                else
+                {
+                    pathTextBox.Text = string.Empty;
+                }
             }
             else
             {
                 SelDrawableTexturePictureBox.Image = null;
                 SelTextureNameTextBox.Text = errstr;
                 SelTextureDictionaryTextBox.Text = string.Empty;
+                pathTextBox.Text = string.Empty;
                 SelTextureMipTrackBar.Value = 0;
                 SelTextureMipTrackBar.Maximum = 0;
                 SelTextureDimensionsLabel.Text = "-";

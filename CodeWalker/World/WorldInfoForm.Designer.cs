@@ -46,10 +46,11 @@ namespace CodeWalker.World
             this.SelDrawableModelPropertyGrid = new CodeWalker.WinForms.PropertyGridFix();
             this.SelectionTexturesTabPage = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.SaveAllTexturesButton = new System.Windows.Forms.Button();
+            this.SaveTextureButton = new System.Windows.Forms.Button();
             this.SelDrawableTexturesTreeView = new CodeWalker.WinForms.TreeViewFix();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.SaveTextureButton = new System.Windows.Forms.Button();
             this.SelTextureDimensionsLabel = new System.Windows.Forms.Label();
             this.SelTextureMipTrackBar = new System.Windows.Forms.TrackBar();
             this.SelTextureMipLabel = new System.Windows.Forms.Label();
@@ -70,8 +71,9 @@ namespace CodeWalker.World
             this.label25 = new System.Windows.Forms.Label();
             this.SelectionModeComboBox = new System.Windows.Forms.ComboBox();
             this.SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.SaveAllTexturesButton = new System.Windows.Forms.Button();
             this.FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.label4 = new System.Windows.Forms.Label();
+            this.pathTextBox = new System.Windows.Forms.TextBox();
             this.SelectionTabControl.SuspendLayout();
             this.SelectionEntityTabPage.SuspendLayout();
             this.SelectionArchetypeTabPage.SuspendLayout();
@@ -111,10 +113,10 @@ namespace CodeWalker.World
             this.SelectionTabControl.Controls.Add(this.SelectionModelsTabPage);
             this.SelectionTabControl.Controls.Add(this.SelectionTexturesTabPage);
             this.SelectionTabControl.Controls.Add(this.SelectionHierarchyTabPage);
-            this.SelectionTabControl.Location = new System.Drawing.Point(10, 48);
+            this.SelectionTabControl.Location = new System.Drawing.Point(10, 44);
             this.SelectionTabControl.Name = "SelectionTabControl";
             this.SelectionTabControl.SelectedIndex = 0;
-            this.SelectionTabControl.Size = new System.Drawing.Size(735, 480);
+            this.SelectionTabControl.Size = new System.Drawing.Size(825, 495);
             this.SelectionTabControl.TabIndex = 28;
             // 
             // SelectionEntityTabPage
@@ -123,7 +125,7 @@ namespace CodeWalker.World
             this.SelectionEntityTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionEntityTabPage.Name = "SelectionEntityTabPage";
             this.SelectionEntityTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SelectionEntityTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionEntityTabPage.Size = new System.Drawing.Size(864, 417);
             this.SelectionEntityTabPage.TabIndex = 0;
             this.SelectionEntityTabPage.Text = "Entity";
             this.SelectionEntityTabPage.UseVisualStyleBackColor = true;
@@ -136,7 +138,7 @@ namespace CodeWalker.World
             this.SelEntityPropertyGrid.HelpVisible = false;
             this.SelEntityPropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelEntityPropertyGrid.Name = "SelEntityPropertyGrid";
-            this.SelEntityPropertyGrid.Size = new System.Drawing.Size(727, 454);
+            this.SelEntityPropertyGrid.Size = new System.Drawing.Size(727, 419);
             this.SelEntityPropertyGrid.TabIndex = 25;
             this.SelEntityPropertyGrid.ToolbarVisible = false;
             // 
@@ -146,7 +148,7 @@ namespace CodeWalker.World
             this.SelectionArchetypeTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionArchetypeTabPage.Name = "SelectionArchetypeTabPage";
             this.SelectionArchetypeTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SelectionArchetypeTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionArchetypeTabPage.Size = new System.Drawing.Size(727, 417);
             this.SelectionArchetypeTabPage.TabIndex = 1;
             this.SelectionArchetypeTabPage.Text = "Archetype";
             this.SelectionArchetypeTabPage.UseVisualStyleBackColor = true;
@@ -159,7 +161,7 @@ namespace CodeWalker.World
             this.SelArchetypePropertyGrid.HelpVisible = false;
             this.SelArchetypePropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelArchetypePropertyGrid.Name = "SelArchetypePropertyGrid";
-            this.SelArchetypePropertyGrid.Size = new System.Drawing.Size(727, 454);
+            this.SelArchetypePropertyGrid.Size = new System.Drawing.Size(727, 419);
             this.SelArchetypePropertyGrid.TabIndex = 26;
             this.SelArchetypePropertyGrid.ToolbarVisible = false;
             // 
@@ -168,7 +170,7 @@ namespace CodeWalker.World
             this.SelectionDrawableTabPage.Controls.Add(this.SelDrawablePropertyGrid);
             this.SelectionDrawableTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionDrawableTabPage.Name = "SelectionDrawableTabPage";
-            this.SelectionDrawableTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionDrawableTabPage.Size = new System.Drawing.Size(727, 417);
             this.SelectionDrawableTabPage.TabIndex = 2;
             this.SelectionDrawableTabPage.Text = "Drawable";
             this.SelectionDrawableTabPage.UseVisualStyleBackColor = true;
@@ -181,7 +183,7 @@ namespace CodeWalker.World
             this.SelDrawablePropertyGrid.HelpVisible = false;
             this.SelDrawablePropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelDrawablePropertyGrid.Name = "SelDrawablePropertyGrid";
-            this.SelDrawablePropertyGrid.Size = new System.Drawing.Size(727, 454);
+            this.SelDrawablePropertyGrid.Size = new System.Drawing.Size(727, 419);
             this.SelDrawablePropertyGrid.TabIndex = 28;
             this.SelDrawablePropertyGrid.ToolbarVisible = false;
             // 
@@ -190,7 +192,7 @@ namespace CodeWalker.World
             this.SelectionExtensionTabPage.Controls.Add(this.SelExtensionPropertyGrid);
             this.SelectionExtensionTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionExtensionTabPage.Name = "SelectionExtensionTabPage";
-            this.SelectionExtensionTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionExtensionTabPage.Size = new System.Drawing.Size(727, 417);
             this.SelectionExtensionTabPage.TabIndex = 5;
             this.SelectionExtensionTabPage.Text = "Extension";
             this.SelectionExtensionTabPage.UseVisualStyleBackColor = true;
@@ -203,7 +205,7 @@ namespace CodeWalker.World
             this.SelExtensionPropertyGrid.HelpVisible = false;
             this.SelExtensionPropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelExtensionPropertyGrid.Name = "SelExtensionPropertyGrid";
-            this.SelExtensionPropertyGrid.Size = new System.Drawing.Size(727, 454);
+            this.SelExtensionPropertyGrid.Size = new System.Drawing.Size(727, 419);
             this.SelExtensionPropertyGrid.TabIndex = 29;
             this.SelExtensionPropertyGrid.ToolbarVisible = false;
             // 
@@ -212,7 +214,7 @@ namespace CodeWalker.World
             this.SelectionModelsTabPage.Controls.Add(this.splitContainer1);
             this.SelectionModelsTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionModelsTabPage.Name = "SelectionModelsTabPage";
-            this.SelectionModelsTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionModelsTabPage.Size = new System.Drawing.Size(727, 417);
             this.SelectionModelsTabPage.TabIndex = 3;
             this.SelectionModelsTabPage.Text = "Models";
             this.SelectionModelsTabPage.UseVisualStyleBackColor = true;
@@ -232,7 +234,7 @@ namespace CodeWalker.World
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.SelDrawableModelPropertyGrid);
-            this.splitContainer1.Size = new System.Drawing.Size(727, 454);
+            this.splitContainer1.Size = new System.Drawing.Size(727, 419);
             this.splitContainer1.SplitterDistance = 303;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -244,7 +246,7 @@ namespace CodeWalker.World
             this.SelDrawableModelsTreeView.CheckBoxes = true;
             this.SelDrawableModelsTreeView.Location = new System.Drawing.Point(0, 0);
             this.SelDrawableModelsTreeView.Name = "SelDrawableModelsTreeView";
-            this.SelDrawableModelsTreeView.Size = new System.Drawing.Size(300, 454);
+            this.SelDrawableModelsTreeView.Size = new System.Drawing.Size(300, 419);
             this.SelDrawableModelsTreeView.TabIndex = 0;
             this.SelDrawableModelsTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.SelDrawableModelsTreeView_AfterCheck);
             this.SelDrawableModelsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelDrawableModelsTreeView_AfterSelect);
@@ -257,7 +259,7 @@ namespace CodeWalker.World
             this.SelDrawableModelPropertyGrid.HelpVisible = false;
             this.SelDrawableModelPropertyGrid.Location = new System.Drawing.Point(3, 0);
             this.SelDrawableModelPropertyGrid.Name = "SelDrawableModelPropertyGrid";
-            this.SelDrawableModelPropertyGrid.Size = new System.Drawing.Size(414, 454);
+            this.SelDrawableModelPropertyGrid.Size = new System.Drawing.Size(414, 419);
             this.SelDrawableModelPropertyGrid.TabIndex = 27;
             this.SelDrawableModelPropertyGrid.ToolbarVisible = false;
             // 
@@ -266,7 +268,7 @@ namespace CodeWalker.World
             this.SelectionTexturesTabPage.Controls.Add(this.splitContainer2);
             this.SelectionTexturesTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionTexturesTabPage.Name = "SelectionTexturesTabPage";
-            this.SelectionTexturesTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionTexturesTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionTexturesTabPage.TabIndex = 4;
             this.SelectionTexturesTabPage.Text = "Textures";
             this.SelectionTexturesTabPage.UseVisualStyleBackColor = true;
@@ -288,9 +290,32 @@ namespace CodeWalker.World
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tabControl1);
-            this.splitContainer2.Size = new System.Drawing.Size(727, 454);
-            this.splitContainer2.SplitterDistance = 303;
+            this.splitContainer2.Size = new System.Drawing.Size(817, 471);
+            this.splitContainer2.SplitterDistance = 343;
             this.splitContainer2.TabIndex = 1;
+            // 
+            // SaveAllTexturesButton
+            // 
+            this.SaveAllTexturesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SaveAllTexturesButton.Location = new System.Drawing.Point(3, 440);
+            this.SaveAllTexturesButton.Name = "SaveAllTexturesButton";
+            this.SaveAllTexturesButton.Size = new System.Drawing.Size(100, 21);
+            this.SaveAllTexturesButton.TabIndex = 3;
+            this.SaveAllTexturesButton.Text = "Save All...";
+            this.SaveAllTexturesButton.UseVisualStyleBackColor = true;
+            this.SaveAllTexturesButton.Click += new System.EventHandler(this.SaveAllTexturesButton_Click);
+            // 
+            // SaveTextureButton
+            // 
+            this.SaveTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SaveTextureButton.Enabled = false;
+            this.SaveTextureButton.Location = new System.Drawing.Point(114, 440);
+            this.SaveTextureButton.Name = "SaveTextureButton";
+            this.SaveTextureButton.Size = new System.Drawing.Size(100, 21);
+            this.SaveTextureButton.TabIndex = 4;
+            this.SaveTextureButton.Text = "Save Selected...";
+            this.SaveTextureButton.UseVisualStyleBackColor = true;
+            this.SaveTextureButton.Click += new System.EventHandler(this.SaveTextureButton_Click);
             // 
             // SelDrawableTexturesTreeView
             // 
@@ -300,7 +325,7 @@ namespace CodeWalker.World
             this.SelDrawableTexturesTreeView.HideSelection = false;
             this.SelDrawableTexturesTreeView.Location = new System.Drawing.Point(0, 0);
             this.SelDrawableTexturesTreeView.Name = "SelDrawableTexturesTreeView";
-            this.SelDrawableTexturesTreeView.Size = new System.Drawing.Size(300, 412);
+            this.SelDrawableTexturesTreeView.Size = new System.Drawing.Size(346, 433);
             this.SelDrawableTexturesTreeView.TabIndex = 2;
             this.SelDrawableTexturesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SelDrawableTexturesTreeView_AfterSelect);
             // 
@@ -314,11 +339,13 @@ namespace CodeWalker.World
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(414, 451);
+            this.tabControl1.Size = new System.Drawing.Size(471, 468);
             this.tabControl1.TabIndex = 31;
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.pathTextBox);
+            this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.SelTextureDimensionsLabel);
             this.tabPage3.Controls.Add(this.SelTextureMipTrackBar);
             this.tabPage3.Controls.Add(this.SelTextureMipLabel);
@@ -330,30 +357,18 @@ namespace CodeWalker.World
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(406, 425);
+            this.tabPage3.Size = new System.Drawing.Size(463, 442);
             this.tabPage3.TabIndex = 0;
             this.tabPage3.Text = "Texture";
             this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // SaveTextureButton
-            // 
-            this.SaveTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveTextureButton.Enabled = false;
-            this.SaveTextureButton.Location = new System.Drawing.Point(124, 419);
-            this.SaveTextureButton.Name = "SaveTextureButton";
-            this.SaveTextureButton.Size = new System.Drawing.Size(100, 23);
-            this.SaveTextureButton.TabIndex = 4;
-            this.SaveTextureButton.Text = "Save Selected...";
-            this.SaveTextureButton.UseVisualStyleBackColor = true;
-            this.SaveTextureButton.Click += new System.EventHandler(this.SaveTextureButton_Click);
             // 
             // SelTextureDimensionsLabel
             // 
             this.SelTextureDimensionsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SelTextureDimensionsLabel.AutoSize = true;
-            this.SelTextureDimensionsLabel.Location = new System.Drawing.Point(262, 400);
+            this.SelTextureDimensionsLabel.Location = new System.Drawing.Point(262, 421);
             this.SelTextureDimensionsLabel.Name = "SelTextureDimensionsLabel";
-            this.SelTextureDimensionsLabel.Size = new System.Drawing.Size(10, 13);
+            this.SelTextureDimensionsLabel.Size = new System.Drawing.Size(11, 12);
             this.SelTextureDimensionsLabel.TabIndex = 37;
             this.SelTextureDimensionsLabel.Text = "-";
             // 
@@ -363,10 +378,10 @@ namespace CodeWalker.World
             this.SelTextureMipTrackBar.AutoSize = false;
             this.SelTextureMipTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.SelTextureMipTrackBar.LargeChange = 1;
-            this.SelTextureMipTrackBar.Location = new System.Drawing.Point(59, 394);
+            this.SelTextureMipTrackBar.Location = new System.Drawing.Point(59, 416);
             this.SelTextureMipTrackBar.Maximum = 0;
             this.SelTextureMipTrackBar.Name = "SelTextureMipTrackBar";
-            this.SelTextureMipTrackBar.Size = new System.Drawing.Size(187, 31);
+            this.SelTextureMipTrackBar.Size = new System.Drawing.Size(187, 29);
             this.SelTextureMipTrackBar.TabIndex = 36;
             this.SelTextureMipTrackBar.Scroll += new System.EventHandler(this.SelTextureMipTrackBar_Scroll);
             // 
@@ -374,9 +389,9 @@ namespace CodeWalker.World
             // 
             this.SelTextureMipLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SelTextureMipLabel.AutoSize = true;
-            this.SelTextureMipLabel.Location = new System.Drawing.Point(40, 400);
+            this.SelTextureMipLabel.Location = new System.Drawing.Point(40, 421);
             this.SelTextureMipLabel.Name = "SelTextureMipLabel";
-            this.SelTextureMipLabel.Size = new System.Drawing.Size(13, 13);
+            this.SelTextureMipLabel.Size = new System.Drawing.Size(11, 12);
             this.SelTextureMipLabel.TabIndex = 35;
             this.SelTextureMipLabel.Text = "0";
             // 
@@ -384,33 +399,35 @@ namespace CodeWalker.World
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 400);
+            this.label3.Location = new System.Drawing.Point(7, 421);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.Size = new System.Drawing.Size(29, 12);
             this.label3.TabIndex = 34;
             this.label3.Text = "Mip:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(207, 9);
+            this.label2.Location = new System.Drawing.Point(207, 8);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(57, 13);
+            this.label2.Size = new System.Drawing.Size(71, 12);
             this.label2.TabIndex = 33;
             this.label2.Text = "Dictionary:";
             // 
             // SelTextureDictionaryTextBox
             // 
-            this.SelTextureDictionaryTextBox.Location = new System.Drawing.Point(270, 6);
+            this.SelTextureDictionaryTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SelTextureDictionaryTextBox.Location = new System.Drawing.Point(284, 6);
             this.SelTextureDictionaryTextBox.Name = "SelTextureDictionaryTextBox";
-            this.SelTextureDictionaryTextBox.Size = new System.Drawing.Size(130, 20);
+            this.SelTextureDictionaryTextBox.Size = new System.Drawing.Size(173, 21);
             this.SelTextureDictionaryTextBox.TabIndex = 32;
             // 
             // SelTextureNameTextBox
             // 
             this.SelTextureNameTextBox.Location = new System.Drawing.Point(6, 6);
             this.SelTextureNameTextBox.Name = "SelTextureNameTextBox";
-            this.SelTextureNameTextBox.Size = new System.Drawing.Size(192, 20);
+            this.SelTextureNameTextBox.Size = new System.Drawing.Size(192, 21);
             this.SelTextureNameTextBox.TabIndex = 31;
             // 
             // SelDrawableTexturePictureBox
@@ -420,9 +437,9 @@ namespace CodeWalker.World
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SelDrawableTexturePictureBox.BackColor = System.Drawing.Color.DarkGray;
             this.SelDrawableTexturePictureBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.SelDrawableTexturePictureBox.Location = new System.Drawing.Point(0, 36);
+            this.SelDrawableTexturePictureBox.Location = new System.Drawing.Point(0, 61);
             this.SelDrawableTexturePictureBox.Name = "SelDrawableTexturePictureBox";
-            this.SelDrawableTexturePictureBox.Size = new System.Drawing.Size(406, 351);
+            this.SelDrawableTexturePictureBox.Size = new System.Drawing.Size(459, 348);
             this.SelDrawableTexturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.SelDrawableTexturePictureBox.TabIndex = 29;
             this.SelDrawableTexturePictureBox.TabStop = false;
@@ -433,7 +450,7 @@ namespace CodeWalker.World
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(406, 425);
+            this.tabPage4.Size = new System.Drawing.Size(482, 390);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Info";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -447,7 +464,7 @@ namespace CodeWalker.World
             this.SelDrawableTexturePropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
             this.SelDrawableTexturePropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelDrawableTexturePropertyGrid.Name = "SelDrawableTexturePropertyGrid";
-            this.SelDrawableTexturePropertyGrid.Size = new System.Drawing.Size(406, 425);
+            this.SelDrawableTexturePropertyGrid.Size = new System.Drawing.Size(406, 392);
             this.SelDrawableTexturePropertyGrid.TabIndex = 28;
             this.SelDrawableTexturePropertyGrid.ToolbarVisible = false;
             // 
@@ -456,7 +473,7 @@ namespace CodeWalker.World
             this.SelectionHierarchyTabPage.Controls.Add(this.splitContainer3);
             this.SelectionHierarchyTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionHierarchyTabPage.Name = "SelectionHierarchyTabPage";
-            this.SelectionHierarchyTabPage.Size = new System.Drawing.Size(727, 454);
+            this.SelectionHierarchyTabPage.Size = new System.Drawing.Size(727, 417);
             this.SelectionHierarchyTabPage.TabIndex = 6;
             this.SelectionHierarchyTabPage.Text = "Hierarchy";
             this.SelectionHierarchyTabPage.UseVisualStyleBackColor = true;
@@ -474,7 +491,7 @@ namespace CodeWalker.World
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.HierarchyPropertyGrid);
-            this.splitContainer3.Size = new System.Drawing.Size(727, 454);
+            this.splitContainer3.Size = new System.Drawing.Size(727, 417);
             this.splitContainer3.SplitterDistance = 291;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -487,7 +504,7 @@ namespace CodeWalker.World
             this.HierarchyTreeView.HideSelection = false;
             this.HierarchyTreeView.Location = new System.Drawing.Point(3, 3);
             this.HierarchyTreeView.Name = "HierarchyTreeView";
-            this.HierarchyTreeView.Size = new System.Drawing.Size(285, 448);
+            this.HierarchyTreeView.Size = new System.Drawing.Size(285, 412);
             this.HierarchyTreeView.TabIndex = 0;
             this.HierarchyTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.HierarchyTreeView_AfterSelect);
             // 
@@ -499,7 +516,7 @@ namespace CodeWalker.World
             this.HierarchyPropertyGrid.HelpVisible = false;
             this.HierarchyPropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.HierarchyPropertyGrid.Name = "HierarchyPropertyGrid";
-            this.HierarchyPropertyGrid.Size = new System.Drawing.Size(426, 448);
+            this.HierarchyPropertyGrid.Size = new System.Drawing.Size(426, 412);
             this.HierarchyPropertyGrid.TabIndex = 26;
             this.HierarchyPropertyGrid.ToolbarVisible = false;
             // 
@@ -507,9 +524,9 @@ namespace CodeWalker.World
             // 
             this.MouseSelectCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.MouseSelectCheckBox.AutoSize = true;
-            this.MouseSelectCheckBox.Location = new System.Drawing.Point(598, 14);
+            this.MouseSelectCheckBox.Location = new System.Drawing.Point(670, 13);
             this.MouseSelectCheckBox.Name = "MouseSelectCheckBox";
-            this.MouseSelectCheckBox.Size = new System.Drawing.Size(143, 17);
+            this.MouseSelectCheckBox.Size = new System.Drawing.Size(180, 16);
             this.MouseSelectCheckBox.TabIndex = 26;
             this.MouseSelectCheckBox.Text = "Mouse select (right click)";
             this.MouseSelectCheckBox.UseVisualStyleBackColor = true;
@@ -519,17 +536,17 @@ namespace CodeWalker.World
             // 
             this.SelectionNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelectionNameTextBox.Location = new System.Drawing.Point(56, 12);
+            this.SelectionNameTextBox.Location = new System.Drawing.Point(56, 11);
             this.SelectionNameTextBox.Name = "SelectionNameTextBox";
-            this.SelectionNameTextBox.Size = new System.Drawing.Size(317, 20);
+            this.SelectionNameTextBox.Size = new System.Drawing.Size(407, 21);
             this.SelectionNameTextBox.TabIndex = 29;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 15);
+            this.label1.Location = new System.Drawing.Point(12, 14);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.Size = new System.Drawing.Size(35, 12);
             this.label1.TabIndex = 30;
             this.label1.Text = "Name:";
             // 
@@ -537,9 +554,9 @@ namespace CodeWalker.World
             // 
             this.label25.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(408, 15);
+            this.label25.Location = new System.Drawing.Point(498, 14);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(37, 13);
+            this.label25.Size = new System.Drawing.Size(35, 12);
             this.label25.TabIndex = 32;
             this.label25.Text = "Mode:";
             // 
@@ -565,28 +582,35 @@ namespace CodeWalker.World
             "Scenario",
             "Audio",
             "Occlusion"});
-            this.SelectionModeComboBox.Location = new System.Drawing.Point(453, 12);
+            this.SelectionModeComboBox.Location = new System.Drawing.Point(543, 11);
             this.SelectionModeComboBox.Name = "SelectionModeComboBox";
-            this.SelectionModeComboBox.Size = new System.Drawing.Size(121, 21);
+            this.SelectionModeComboBox.Size = new System.Drawing.Size(121, 20);
             this.SelectionModeComboBox.TabIndex = 31;
             this.SelectionModeComboBox.SelectedIndexChanged += new System.EventHandler(this.SelectionModeComboBox_SelectedIndexChanged);
             // 
-            // SaveAllTexturesButton
+            // label4
             // 
-            this.SaveAllTexturesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SaveAllTexturesButton.Location = new System.Drawing.Point(3, 419);
-            this.SaveAllTexturesButton.Name = "SaveAllTexturesButton";
-            this.SaveAllTexturesButton.Size = new System.Drawing.Size(100, 23);
-            this.SaveAllTexturesButton.TabIndex = 3;
-            this.SaveAllTexturesButton.Text = "Save All...";
-            this.SaveAllTexturesButton.UseVisualStyleBackColor = true;
-            this.SaveAllTexturesButton.Click += new System.EventHandler(this.SaveAllTexturesButton_Click);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 38);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 12);
+            this.label4.TabIndex = 38;
+            this.label4.Text = "Path:";
+            // 
+            // pathTextBox
+            // 
+            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pathTextBox.Location = new System.Drawing.Point(48, 34);
+            this.pathTextBox.Name = "pathTextBox";
+            this.pathTextBox.Size = new System.Drawing.Size(409, 21);
+            this.pathTextBox.TabIndex = 39;
             // 
             // WorldInfoForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(757, 540);
+            this.ClientSize = new System.Drawing.Size(847, 550);
             this.Controls.Add(this.label25);
             this.Controls.Add(this.SelectionModeComboBox);
             this.Controls.Add(this.label1);
@@ -672,5 +696,7 @@ namespace CodeWalker.World
         private System.Windows.Forms.SaveFileDialog SaveFileDialog;
         private System.Windows.Forms.Button SaveAllTexturesButton;
         private System.Windows.Forms.FolderBrowserDialog FolderBrowserDialog;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox pathTextBox;
     }
 }

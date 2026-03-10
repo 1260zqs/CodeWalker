@@ -95,7 +95,7 @@
             this.ViewMenu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(845, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(845, 25);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -107,7 +107,7 @@
             this.FileSaveTextureAsMenu,
             this.FileSaveAllTexturesMenu});
             this.FileMenu.Name = "FileMenu";
-            this.FileMenu.Size = new System.Drawing.Size(37, 20);
+            this.FileMenu.Size = new System.Drawing.Size(39, 21);
             this.FileMenu.Text = "File";
             // 
             // FileSaveMenu
@@ -115,21 +115,21 @@
             this.FileSaveMenu.Image = ((System.Drawing.Image)(resources.GetObject("FileSaveMenu.Image")));
             this.FileSaveMenu.Name = "FileSaveMenu";
             this.FileSaveMenu.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.FileSaveMenu.Size = new System.Drawing.Size(242, 22);
+            this.FileSaveMenu.Size = new System.Drawing.Size(261, 22);
             this.FileSaveMenu.Text = "Save YTD";
             this.FileSaveMenu.Click += new System.EventHandler(this.FileSaveMenu_Click);
             // 
             // FileSaveAsMenu
             // 
             this.FileSaveAsMenu.Name = "FileSaveAsMenu";
-            this.FileSaveAsMenu.Size = new System.Drawing.Size(242, 22);
+            this.FileSaveAsMenu.Size = new System.Drawing.Size(261, 22);
             this.FileSaveAsMenu.Text = "Save YTD As...";
             this.FileSaveAsMenu.Click += new System.EventHandler(this.FileSaveAsMenu_Click);
             // 
             // FileSaveTextureAsMenu
             // 
             this.FileSaveTextureAsMenu.Name = "FileSaveTextureAsMenu";
-            this.FileSaveTextureAsMenu.Size = new System.Drawing.Size(242, 22);
+            this.FileSaveTextureAsMenu.Size = new System.Drawing.Size(261, 22);
             this.FileSaveTextureAsMenu.Text = "Save Texture As...";
             this.FileSaveTextureAsMenu.Click += new System.EventHandler(this.FileSaveTextureAsMenu_Click);
             // 
@@ -139,7 +139,7 @@
             this.FileSaveAllTexturesMenu.Name = "FileSaveAllTexturesMenu";
             this.FileSaveAllTexturesMenu.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.FileSaveAllTexturesMenu.Size = new System.Drawing.Size(242, 22);
+            this.FileSaveAllTexturesMenu.Size = new System.Drawing.Size(261, 22);
             this.FileSaveAllTexturesMenu.Text = "Save All Textures...";
             this.FileSaveAllTexturesMenu.Click += new System.EventHandler(this.FileSaveAllTexturesMenu_Click);
             // 
@@ -147,14 +147,14 @@
             // 
             this.EditMenu.Enabled = false;
             this.EditMenu.Name = "EditMenu";
-            this.EditMenu.Size = new System.Drawing.Size(39, 20);
+            this.EditMenu.Size = new System.Drawing.Size(42, 21);
             this.EditMenu.Text = "Edit";
             // 
             // ViewMenu
             // 
             this.ViewMenu.Enabled = false;
             this.ViewMenu.Name = "ViewMenu";
-            this.ViewMenu.Size = new System.Drawing.Size(44, 20);
+            this.ViewMenu.Size = new System.Drawing.Size(47, 21);
             this.ViewMenu.Text = "View";
             // 
             // toolStrip1
@@ -163,7 +163,7 @@
             this.NewButton,
             this.OpenButton,
             this.SaveButton});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 25);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(845, 25);
             this.toolStrip1.TabIndex = 1;
@@ -208,21 +208,21 @@
             // 
             this.ToolbarSaveMenu.Image = ((System.Drawing.Image)(resources.GetObject("ToolbarSaveMenu.Image")));
             this.ToolbarSaveMenu.Name = "ToolbarSaveMenu";
-            this.ToolbarSaveMenu.Size = new System.Drawing.Size(170, 22);
+            this.ToolbarSaveMenu.Size = new System.Drawing.Size(183, 22);
             this.ToolbarSaveMenu.Text = "Save YTD";
             this.ToolbarSaveMenu.Click += new System.EventHandler(this.ToolbarSaveMenu_Click);
             // 
             // ToolbarSaveAsMenu
             // 
             this.ToolbarSaveAsMenu.Name = "ToolbarSaveAsMenu";
-            this.ToolbarSaveAsMenu.Size = new System.Drawing.Size(170, 22);
+            this.ToolbarSaveAsMenu.Size = new System.Drawing.Size(183, 22);
             this.ToolbarSaveAsMenu.Text = "Save YTD As...";
             this.ToolbarSaveAsMenu.Click += new System.EventHandler(this.ToolbarSaveAsMenu_Click);
             // 
             // ToolbarSaveTextureAsMenu
             // 
             this.ToolbarSaveTextureAsMenu.Name = "ToolbarSaveTextureAsMenu";
-            this.ToolbarSaveTextureAsMenu.Size = new System.Drawing.Size(170, 22);
+            this.ToolbarSaveTextureAsMenu.Size = new System.Drawing.Size(183, 22);
             this.ToolbarSaveTextureAsMenu.Text = "Save Texture As...";
             this.ToolbarSaveTextureAsMenu.Click += new System.EventHandler(this.ToolbarSaveTextureAsMenu_Click);
             // 
@@ -230,7 +230,7 @@
             // 
             this.ToolbarSaveAllTexturesMenu.Image = ((System.Drawing.Image)(resources.GetObject("ToolbarSaveAllTexturesMenu.Image")));
             this.ToolbarSaveAllTexturesMenu.Name = "ToolbarSaveAllTexturesMenu";
-            this.ToolbarSaveAllTexturesMenu.Size = new System.Drawing.Size(170, 22);
+            this.ToolbarSaveAllTexturesMenu.Size = new System.Drawing.Size(183, 22);
             this.ToolbarSaveAllTexturesMenu.Text = "Save All Textures...";
             this.ToolbarSaveAllTexturesMenu.Click += new System.EventHandler(this.ToolbarSaveAllTexturesMenu_Click);
             // 
@@ -238,7 +238,7 @@
             // 
             this.MainToolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel});
-            this.MainToolbar.Location = new System.Drawing.Point(0, 538);
+            this.MainToolbar.Location = new System.Drawing.Point(0, 495);
             this.MainToolbar.Name = "MainToolbar";
             this.MainToolbar.Size = new System.Drawing.Size(845, 22);
             this.MainToolbar.TabIndex = 2;
@@ -254,7 +254,7 @@
             // MainSplitContainer
             // 
             this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainSplitContainer.Location = new System.Drawing.Point(0, 49);
+            this.MainSplitContainer.Location = new System.Drawing.Point(0, 50);
             this.MainSplitContainer.Name = "MainSplitContainer";
             // 
             // MainSplitContainer.Panel1
@@ -269,7 +269,7 @@
             this.MainSplitContainer.Panel2.Controls.Add(this.label5);
             this.MainSplitContainer.Panel2.Controls.Add(this.SelTextureNameTextBox);
             this.MainSplitContainer.Panel2.Controls.Add(this.TextureTabControl);
-            this.MainSplitContainer.Size = new System.Drawing.Size(845, 489);
+            this.MainSplitContainer.Size = new System.Drawing.Size(845, 445);
             this.MainSplitContainer.SplitterDistance = 257;
             this.MainSplitContainer.TabIndex = 3;
             // 
@@ -277,9 +277,9 @@
             // 
             this.ReplaceTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ReplaceTextureButton.Enabled = false;
-            this.ReplaceTextureButton.Location = new System.Drawing.Point(170, 462);
+            this.ReplaceTextureButton.Location = new System.Drawing.Point(170, 420);
             this.ReplaceTextureButton.Name = "ReplaceTextureButton";
-            this.ReplaceTextureButton.Size = new System.Drawing.Size(75, 23);
+            this.ReplaceTextureButton.Size = new System.Drawing.Size(75, 21);
             this.ReplaceTextureButton.TabIndex = 3;
             this.ReplaceTextureButton.Text = "Replace...";
             this.ReplaceTextureButton.UseVisualStyleBackColor = true;
@@ -289,9 +289,9 @@
             // 
             this.RemoveTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.RemoveTextureButton.Enabled = false;
-            this.RemoveTextureButton.Location = new System.Drawing.Point(89, 462);
+            this.RemoveTextureButton.Location = new System.Drawing.Point(89, 420);
             this.RemoveTextureButton.Name = "RemoveTextureButton";
-            this.RemoveTextureButton.Size = new System.Drawing.Size(75, 23);
+            this.RemoveTextureButton.Size = new System.Drawing.Size(75, 21);
             this.RemoveTextureButton.TabIndex = 2;
             this.RemoveTextureButton.Text = "Remove";
             this.RemoveTextureButton.UseVisualStyleBackColor = true;
@@ -300,9 +300,9 @@
             // AddTextureButton
             // 
             this.AddTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.AddTextureButton.Location = new System.Drawing.Point(8, 462);
+            this.AddTextureButton.Location = new System.Drawing.Point(8, 420);
             this.AddTextureButton.Name = "AddTextureButton";
-            this.AddTextureButton.Size = new System.Drawing.Size(75, 23);
+            this.AddTextureButton.Size = new System.Drawing.Size(75, 21);
             this.AddTextureButton.TabIndex = 1;
             this.AddTextureButton.Text = "Add...";
             this.AddTextureButton.UseVisualStyleBackColor = true;
@@ -322,7 +322,7 @@
             this.TexturesListView.Location = new System.Drawing.Point(3, 3);
             this.TexturesListView.Name = "TexturesListView";
             this.TexturesListView.ShowItemToolTips = true;
-            this.TexturesListView.Size = new System.Drawing.Size(251, 453);
+            this.TexturesListView.Size = new System.Drawing.Size(251, 412);
             this.TexturesListView.TabIndex = 0;
             this.TexturesListView.UseCompatibleStateImageBehavior = false;
             this.TexturesListView.View = System.Windows.Forms.View.Details;
@@ -346,7 +346,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(262, 6);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 13);
+            this.label5.Size = new System.Drawing.Size(35, 12);
             this.label5.TabIndex = 50;
             this.label5.Text = "Name:";
             // 
@@ -355,7 +355,7 @@
             this.SelTextureNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SelTextureNameTextBox.Location = new System.Drawing.Point(306, 3);
             this.SelTextureNameTextBox.Name = "SelTextureNameTextBox";
-            this.SelTextureNameTextBox.Size = new System.Drawing.Size(271, 20);
+            this.SelTextureNameTextBox.Size = new System.Drawing.Size(271, 21);
             this.SelTextureNameTextBox.TabIndex = 46;
             this.SelTextureNameTextBox.TextChanged += new System.EventHandler(this.SelTextureNameTextBox_TextChanged);
             // 
@@ -369,7 +369,7 @@
             this.TextureTabControl.Location = new System.Drawing.Point(3, 3);
             this.TextureTabControl.Name = "TextureTabControl";
             this.TextureTabControl.SelectedIndex = 0;
-            this.TextureTabControl.Size = new System.Drawing.Size(578, 483);
+            this.TextureTabControl.Size = new System.Drawing.Size(578, 440);
             this.TextureTabControl.TabIndex = 0;
             // 
             // TextureTabPage
@@ -384,7 +384,7 @@
             this.TextureTabPage.Location = new System.Drawing.Point(4, 22);
             this.TextureTabPage.Name = "TextureTabPage";
             this.TextureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.TextureTabPage.Size = new System.Drawing.Size(570, 457);
+            this.TextureTabPage.Size = new System.Drawing.Size(570, 414);
             this.TextureTabPage.TabIndex = 0;
             this.TextureTabPage.Text = "Texture";
             this.TextureTabPage.UseVisualStyleBackColor = true;
@@ -393,9 +393,9 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(452, 426);
+            this.label1.Location = new System.Drawing.Point(452, 387);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 13);
+            this.label1.Size = new System.Drawing.Size(35, 12);
             this.label1.TabIndex = 54;
             this.label1.Text = "Zoom:";
             // 
@@ -407,9 +407,9 @@
             "Fill",
             "100%",
             "200%"});
-            this.SelTextureZoomCombo.Location = new System.Drawing.Point(495, 423);
+            this.SelTextureZoomCombo.Location = new System.Drawing.Point(495, 384);
             this.SelTextureZoomCombo.Name = "SelTextureZoomCombo";
-            this.SelTextureZoomCombo.Size = new System.Drawing.Size(69, 21);
+            this.SelTextureZoomCombo.Size = new System.Drawing.Size(69, 20);
             this.SelTextureZoomCombo.TabIndex = 53;
             this.SelTextureZoomCombo.Text = "Fill";
             this.SelTextureZoomCombo.TextChanged += new System.EventHandler(this.SelTextureZoomCombo_TextChanged);
@@ -427,7 +427,7 @@
             this.SelTexturePanel.Controls.Add(this.SelTexturePictureBox);
             this.SelTexturePanel.Location = new System.Drawing.Point(6, 6);
             this.SelTexturePanel.Name = "SelTexturePanel";
-            this.SelTexturePanel.Size = new System.Drawing.Size(559, 408);
+            this.SelTexturePanel.Size = new System.Drawing.Size(559, 371);
             this.SelTexturePanel.TabIndex = 52;
             // 
             // SelTexturePictureBox
@@ -444,9 +444,9 @@
             // 
             this.SelTextureMipLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SelTextureMipLabel.AutoSize = true;
-            this.SelTextureMipLabel.Location = new System.Drawing.Point(44, 426);
+            this.SelTextureMipLabel.Location = new System.Drawing.Point(44, 387);
             this.SelTextureMipLabel.Name = "SelTextureMipLabel";
-            this.SelTextureMipLabel.Size = new System.Drawing.Size(13, 13);
+            this.SelTextureMipLabel.Size = new System.Drawing.Size(11, 12);
             this.SelTextureMipLabel.TabIndex = 51;
             this.SelTextureMipLabel.Text = "0";
             // 
@@ -454,9 +454,9 @@
             // 
             this.SelTextureDimensionsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SelTextureDimensionsLabel.AutoSize = true;
-            this.SelTextureDimensionsLabel.Location = new System.Drawing.Point(304, 426);
+            this.SelTextureDimensionsLabel.Location = new System.Drawing.Point(304, 387);
             this.SelTextureDimensionsLabel.Name = "SelTextureDimensionsLabel";
-            this.SelTextureDimensionsLabel.Size = new System.Drawing.Size(10, 13);
+            this.SelTextureDimensionsLabel.Size = new System.Drawing.Size(11, 12);
             this.SelTextureDimensionsLabel.TabIndex = 49;
             this.SelTextureDimensionsLabel.Text = "-";
             // 
@@ -467,10 +467,10 @@
             this.SelTextureMipTrackBar.AutoSize = false;
             this.SelTextureMipTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.SelTextureMipTrackBar.LargeChange = 1;
-            this.SelTextureMipTrackBar.Location = new System.Drawing.Point(63, 420);
+            this.SelTextureMipTrackBar.Location = new System.Drawing.Point(63, 382);
             this.SelTextureMipTrackBar.Maximum = 0;
             this.SelTextureMipTrackBar.Name = "SelTextureMipTrackBar";
-            this.SelTextureMipTrackBar.Size = new System.Drawing.Size(234, 31);
+            this.SelTextureMipTrackBar.Size = new System.Drawing.Size(234, 29);
             this.SelTextureMipTrackBar.TabIndex = 48;
             this.SelTextureMipTrackBar.Scroll += new System.EventHandler(this.SelTextureMipTrackBar_Scroll);
             // 
@@ -478,9 +478,9 @@
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(13, 426);
+            this.label4.Location = new System.Drawing.Point(13, 387);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(27, 13);
+            this.label4.Size = new System.Drawing.Size(29, 12);
             this.label4.TabIndex = 47;
             this.label4.Text = "Mip:";
             // 
@@ -490,7 +490,7 @@
             this.DetailsTabPage.Location = new System.Drawing.Point(4, 22);
             this.DetailsTabPage.Name = "DetailsTabPage";
             this.DetailsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.DetailsTabPage.Size = new System.Drawing.Size(570, 457);
+            this.DetailsTabPage.Size = new System.Drawing.Size(570, 414);
             this.DetailsTabPage.TabIndex = 1;
             this.DetailsTabPage.Text = "Details";
             this.DetailsTabPage.UseVisualStyleBackColor = true;
@@ -503,7 +503,7 @@
             this.DetailsPropertyGrid.HelpVisible = false;
             this.DetailsPropertyGrid.Location = new System.Drawing.Point(6, 6);
             this.DetailsPropertyGrid.Name = "DetailsPropertyGrid";
-            this.DetailsPropertyGrid.Size = new System.Drawing.Size(558, 445);
+            this.DetailsPropertyGrid.Size = new System.Drawing.Size(558, 405);
             this.DetailsPropertyGrid.TabIndex = 0;
             // 
             // SaveDDSFileDialog
@@ -521,9 +521,9 @@
             // 
             // YtdForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(845, 560);
+            this.ClientSize = new System.Drawing.Size(845, 517);
             this.Controls.Add(this.MainSplitContainer);
             this.Controls.Add(this.MainToolbar);
             this.Controls.Add(this.toolStrip1);

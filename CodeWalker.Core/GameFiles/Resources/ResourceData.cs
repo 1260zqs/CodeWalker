@@ -106,7 +106,7 @@ namespace CodeWalker.GameFiles
             //}
 
             this.systemStream = new MemoryStream(data, 0, systemSize);
-            this.graphicsStream = new MemoryStream(data, systemSize, graphicsSize);
+            this.graphicsStream = new MemoryStream(data, systemSize, Math.Min(graphicsSize, data.Length));
             Position = 0x50000000;
         }
 

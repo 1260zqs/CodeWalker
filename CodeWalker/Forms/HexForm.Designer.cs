@@ -46,18 +46,18 @@
             "16",
             "32",
             "Text"});
-            this.LineSizeDropDown.Location = new System.Drawing.Point(79, 7);
+            this.LineSizeDropDown.Location = new System.Drawing.Point(93, 5);
             this.LineSizeDropDown.Name = "LineSizeDropDown";
-            this.LineSizeDropDown.Size = new System.Drawing.Size(49, 21);
+            this.LineSizeDropDown.Size = new System.Drawing.Size(49, 20);
             this.LineSizeDropDown.TabIndex = 102;
             this.LineSizeDropDown.SelectedIndexChanged += new System.EventHandler(this.LineSizeDropDown_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(22, 10);
+            this.label1.Location = new System.Drawing.Point(22, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(51, 13);
+            this.label1.Size = new System.Drawing.Size(65, 12);
             this.label1.TabIndex = 103;
             this.label1.Text = "Line size:";
             // 
@@ -65,7 +65,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.StatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 488);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 449);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(748, 22);
             this.statusStrip1.TabIndex = 104;
@@ -85,19 +85,19 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.HexTextBox.Font = new System.Drawing.Font("Courier New", 8.25F);
             this.HexTextBox.HideSelection = false;
-            this.HexTextBox.Location = new System.Drawing.Point(0, 34);
+            this.HexTextBox.Location = new System.Drawing.Point(0, 31);
             this.HexTextBox.Multiline = true;
             this.HexTextBox.Name = "HexTextBox";
             this.HexTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.HexTextBox.Size = new System.Drawing.Size(748, 451);
+            this.HexTextBox.Size = new System.Drawing.Size(748, 417);
             this.HexTextBox.TabIndex = 105;
             this.HexTextBox.WordWrap = false;
             // 
             // HexForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(748, 510);
+            this.ClientSize = new System.Drawing.Size(748, 471);
             this.Controls.Add(this.HexTextBox);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label1);
