@@ -286,6 +286,7 @@ namespace CodeWalker
             LocatorMarker = new MapMarker();
             LocatorMarker.Icon = LocatorIcon;
             LocatorMarker.IsMovable = true;
+            ToolsPanelHideButton.Focus();
             //AddDefaultMarkers(); //some POI to start with
 
             ShaderParamNames[] texsamplers = RenderableGeometry.GetTextureSamplerList();

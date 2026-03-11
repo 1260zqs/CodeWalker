@@ -460,7 +460,6 @@ namespace CodeWalker
             this.ToolsPanel.Name = "ToolsPanel";
             this.ToolsPanel.Size = new System.Drawing.Size(244, 614);
             this.ToolsPanel.TabIndex = 2;
-            this.ToolsPanel.Visible = false;
             // 
             // ToolsDragPanel
             // 
@@ -844,11 +843,11 @@ namespace CodeWalker
             this.YmapsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.YmapsTextBox.Location = new System.Drawing.Point(0, 66);
+            this.YmapsTextBox.Location = new System.Drawing.Point(0, 73);
             this.YmapsTextBox.Multiline = true;
             this.YmapsTextBox.Name = "YmapsTextBox";
             this.YmapsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.YmapsTextBox.Size = new System.Drawing.Size(220, 377);
+            this.YmapsTextBox.Size = new System.Drawing.Size(220, 370);
             this.YmapsTextBox.TabIndex = 36;
             this.YmapsTextBox.Text = resources.GetString("YmapsTextBox.Text");
             this.YmapsTextBox.TextChanged += new System.EventHandler(this.YmapsTextBox_TextChanged);
