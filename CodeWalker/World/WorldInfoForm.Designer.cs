@@ -51,6 +51,8 @@ namespace CodeWalker.World
             this.SelDrawableTexturesTreeView = new CodeWalker.WinForms.TreeViewFix();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.pathTextBox = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.SelTextureDimensionsLabel = new System.Windows.Forms.Label();
             this.SelTextureMipTrackBar = new System.Windows.Forms.TrackBar();
             this.SelTextureMipLabel = new System.Windows.Forms.Label();
@@ -72,8 +74,6 @@ namespace CodeWalker.World
             this.SelectionModeComboBox = new System.Windows.Forms.ComboBox();
             this.SaveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.label4 = new System.Windows.Forms.Label();
-            this.pathTextBox = new System.Windows.Forms.TextBox();
             this.SelectionTabControl.SuspendLayout();
             this.SelectionEntityTabPage.SuspendLayout();
             this.SelectionArchetypeTabPage.SuspendLayout();
@@ -125,7 +125,7 @@ namespace CodeWalker.World
             this.SelectionEntityTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionEntityTabPage.Name = "SelectionEntityTabPage";
             this.SelectionEntityTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SelectionEntityTabPage.Size = new System.Drawing.Size(864, 417);
+            this.SelectionEntityTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionEntityTabPage.TabIndex = 0;
             this.SelectionEntityTabPage.Text = "Entity";
             this.SelectionEntityTabPage.UseVisualStyleBackColor = true;
@@ -148,7 +148,7 @@ namespace CodeWalker.World
             this.SelectionArchetypeTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionArchetypeTabPage.Name = "SelectionArchetypeTabPage";
             this.SelectionArchetypeTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.SelectionArchetypeTabPage.Size = new System.Drawing.Size(727, 417);
+            this.SelectionArchetypeTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionArchetypeTabPage.TabIndex = 1;
             this.SelectionArchetypeTabPage.Text = "Archetype";
             this.SelectionArchetypeTabPage.UseVisualStyleBackColor = true;
@@ -170,7 +170,7 @@ namespace CodeWalker.World
             this.SelectionDrawableTabPage.Controls.Add(this.SelDrawablePropertyGrid);
             this.SelectionDrawableTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionDrawableTabPage.Name = "SelectionDrawableTabPage";
-            this.SelectionDrawableTabPage.Size = new System.Drawing.Size(727, 417);
+            this.SelectionDrawableTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionDrawableTabPage.TabIndex = 2;
             this.SelectionDrawableTabPage.Text = "Drawable";
             this.SelectionDrawableTabPage.UseVisualStyleBackColor = true;
@@ -192,7 +192,7 @@ namespace CodeWalker.World
             this.SelectionExtensionTabPage.Controls.Add(this.SelExtensionPropertyGrid);
             this.SelectionExtensionTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionExtensionTabPage.Name = "SelectionExtensionTabPage";
-            this.SelectionExtensionTabPage.Size = new System.Drawing.Size(727, 417);
+            this.SelectionExtensionTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionExtensionTabPage.TabIndex = 5;
             this.SelectionExtensionTabPage.Text = "Extension";
             this.SelectionExtensionTabPage.UseVisualStyleBackColor = true;
@@ -214,7 +214,7 @@ namespace CodeWalker.World
             this.SelectionModelsTabPage.Controls.Add(this.splitContainer1);
             this.SelectionModelsTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionModelsTabPage.Name = "SelectionModelsTabPage";
-            this.SelectionModelsTabPage.Size = new System.Drawing.Size(727, 417);
+            this.SelectionModelsTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionModelsTabPage.TabIndex = 3;
             this.SelectionModelsTabPage.Text = "Models";
             this.SelectionModelsTabPage.UseVisualStyleBackColor = true;
@@ -362,6 +362,24 @@ namespace CodeWalker.World
             this.tabPage3.Text = "Texture";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // pathTextBox
+            // 
+            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pathTextBox.Location = new System.Drawing.Point(48, 34);
+            this.pathTextBox.Name = "pathTextBox";
+            this.pathTextBox.Size = new System.Drawing.Size(409, 21);
+            this.pathTextBox.TabIndex = 39;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 38);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 12);
+            this.label4.TabIndex = 38;
+            this.label4.Text = "Path:";
+            // 
             // SelTextureDimensionsLabel
             // 
             this.SelTextureDimensionsLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -443,6 +461,11 @@ namespace CodeWalker.World
             this.SelDrawableTexturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.SelDrawableTexturePictureBox.TabIndex = 29;
             this.SelDrawableTexturePictureBox.TabStop = false;
+            this.SelDrawableTexturePictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.SelDrawableTexturePictureBox_Paint);
+            this.SelDrawableTexturePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SelDrawableTexturePictureBox_MouseDown);
+            this.SelDrawableTexturePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SelDrawableTexturePictureBox_MouseMove);
+            this.SelDrawableTexturePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SelDrawableTexturePictureBox_MouseUp);
+            this.SelDrawableTexturePictureBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.SelDrawableTexturePictureBox_MouseWheel);
             // 
             // tabPage4
             // 
@@ -450,7 +473,7 @@ namespace CodeWalker.World
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(482, 390);
+            this.tabPage4.Size = new System.Drawing.Size(463, 442);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Info";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -464,7 +487,7 @@ namespace CodeWalker.World
             this.SelDrawableTexturePropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
             this.SelDrawableTexturePropertyGrid.Location = new System.Drawing.Point(0, 0);
             this.SelDrawableTexturePropertyGrid.Name = "SelDrawableTexturePropertyGrid";
-            this.SelDrawableTexturePropertyGrid.Size = new System.Drawing.Size(406, 392);
+            this.SelDrawableTexturePropertyGrid.Size = new System.Drawing.Size(387, 444);
             this.SelDrawableTexturePropertyGrid.TabIndex = 28;
             this.SelDrawableTexturePropertyGrid.ToolbarVisible = false;
             // 
@@ -473,7 +496,7 @@ namespace CodeWalker.World
             this.SelectionHierarchyTabPage.Controls.Add(this.splitContainer3);
             this.SelectionHierarchyTabPage.Location = new System.Drawing.Point(4, 22);
             this.SelectionHierarchyTabPage.Name = "SelectionHierarchyTabPage";
-            this.SelectionHierarchyTabPage.Size = new System.Drawing.Size(727, 417);
+            this.SelectionHierarchyTabPage.Size = new System.Drawing.Size(817, 469);
             this.SelectionHierarchyTabPage.TabIndex = 6;
             this.SelectionHierarchyTabPage.Text = "Hierarchy";
             this.SelectionHierarchyTabPage.UseVisualStyleBackColor = true;
@@ -491,8 +514,8 @@ namespace CodeWalker.World
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.HierarchyPropertyGrid);
-            this.splitContainer3.Size = new System.Drawing.Size(727, 417);
-            this.splitContainer3.SplitterDistance = 291;
+            this.splitContainer3.Size = new System.Drawing.Size(817, 469);
+            this.splitContainer3.SplitterDistance = 327;
             this.splitContainer3.TabIndex = 0;
             // 
             // HierarchyTreeView
@@ -504,7 +527,7 @@ namespace CodeWalker.World
             this.HierarchyTreeView.HideSelection = false;
             this.HierarchyTreeView.Location = new System.Drawing.Point(3, 3);
             this.HierarchyTreeView.Name = "HierarchyTreeView";
-            this.HierarchyTreeView.Size = new System.Drawing.Size(285, 412);
+            this.HierarchyTreeView.Size = new System.Drawing.Size(321, 464);
             this.HierarchyTreeView.TabIndex = 0;
             this.HierarchyTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.HierarchyTreeView_AfterSelect);
             // 
@@ -516,7 +539,7 @@ namespace CodeWalker.World
             this.HierarchyPropertyGrid.HelpVisible = false;
             this.HierarchyPropertyGrid.Location = new System.Drawing.Point(3, 3);
             this.HierarchyPropertyGrid.Name = "HierarchyPropertyGrid";
-            this.HierarchyPropertyGrid.Size = new System.Drawing.Size(426, 412);
+            this.HierarchyPropertyGrid.Size = new System.Drawing.Size(480, 464);
             this.HierarchyPropertyGrid.TabIndex = 26;
             this.HierarchyPropertyGrid.ToolbarVisible = false;
             // 
@@ -587,24 +610,6 @@ namespace CodeWalker.World
             this.SelectionModeComboBox.Size = new System.Drawing.Size(121, 20);
             this.SelectionModeComboBox.TabIndex = 31;
             this.SelectionModeComboBox.SelectedIndexChanged += new System.EventHandler(this.SelectionModeComboBox_SelectedIndexChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 38);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(35, 12);
-            this.label4.TabIndex = 38;
-            this.label4.Text = "Path:";
-            // 
-            // pathTextBox
-            // 
-            this.pathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pathTextBox.Location = new System.Drawing.Point(48, 34);
-            this.pathTextBox.Name = "pathTextBox";
-            this.pathTextBox.Size = new System.Drawing.Size(409, 21);
-            this.pathTextBox.TabIndex = 39;
             // 
             // WorldInfoForm
             // 

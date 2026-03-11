@@ -200,6 +200,12 @@ namespace CodeWalker.Rendering
         {
             return renderables.Get(drawable);
         }
+
+        public RenderableTexture FindRenderableTexture(Func<RenderableTexture, bool> predicate)
+        {
+            return textures.Find(predicate);
+        }
+        
         public RenderableTexture GetRenderableTexture(Texture texture)
         {
             return textures.Get(texture);
@@ -408,6 +414,18 @@ namespace CodeWalker.Rendering
                 Interlocked.Add(ref CacheUse, -item.DataSize);
             }
 
+        }
+
+        public TVal Find(Func<TVal, bool> predicate)
+        {
+            foreach (var cacheItem in cacheitems.Values)
+            {
+                if (predicate(cacheItem))
+                {
+                    return cacheItem;
+                }
+            }
+            return null;
         }
 
         public TVal Get(TKey key)

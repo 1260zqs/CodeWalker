@@ -12,7 +12,7 @@ namespace CodeWalker.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.12.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -889,34 +889,6 @@ namespace CodeWalker.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-  <string>Move Forwards: W</string>
-  <string>Move Backwards: S</string>
-  <string>Move Left: A</string>
-  <string>Move Right: D</string>
-  <string>Move Up: R</string>
-  <string>Move Down: F</string>
-  <string>Move Slower / Zoom In: Z</string>
-  <string>Move Faster / Zoom Out: X</string>
-  <string>Toggle Mouse Select: C</string>
-  <string>Toggle Toolbar: T</string>
-  <string>Exit Edit Mode: Q</string>
-  <string>Edit Position: W</string>
-  <string>Edit Rotation: E</string>
-  <string>Edit Scale: R</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection KeyBindings {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["KeyBindings"]));
-            }
-            set {
-                this["KeyBindings"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ColourPickerCustomColours {
             get {
@@ -984,6 +956,53 @@ namespace CodeWalker.Properties {
             }
             set {
                 this["GTAGen9"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("MinMagMipPoint")]
+        public global::SharpDX.Direct3D11.Filter TextureFilter {
+            get {
+                return ((global::SharpDX.Direct3D11.Filter)(this["TextureFilter"]));
+            }
+            set {
+                this["TextureFilter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection KeyBindings {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["KeyBindings"]));
+            }
+            set {
+                this["KeyBindings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("LODTYPES_DEPTH_ORPHANHD")]
+        public global::CodeWalker.GameFiles.rage__eLodType MaxLod {
+            get {
+                return ((global::CodeWalker.GameFiles.rage__eLodType)(this["MaxLod"]));
+            }
+            set {
+                this["MaxLod"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowToolbar {
+            get {
+                return ((bool)(this["ShowToolbar"]));
+            }
+            set {
+                this["ShowToolbar"] = value;
             }
         }
     }

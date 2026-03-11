@@ -16,6 +16,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Color = System.Drawing.Color;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace CodeWalker.World
 {
@@ -104,7 +107,7 @@ namespace CodeWalker.World
                 SelectionEntityTabPage.Text = "Car Generator";
                 SelEntityPropertyGrid.SelectedObject = item.CarGenerator;
             }
-            else if (item.LodLight!= null)
+            else if (item.LodLight != null)
             {
                 SelectionEntityTabPage.Text = "LOD Light";
                 SelEntityPropertyGrid.SelectedObject = item.LodLight;
@@ -180,7 +183,6 @@ namespace CodeWalker.World
                 SelEntityPropertyGrid.SelectedObject = item.EntityDef;
             }
 
-
             if (item.EntityExtension != null)
             {
                 SelectionExtensionTabPage.Text = "Entity Extension";
@@ -211,16 +213,16 @@ namespace CodeWalker.World
                 SelectionExtensionTabPage.Text = "Extension";
                 SelExtensionPropertyGrid.SelectedObject = null;
             }
-
         }
+
         private void AddSelectionDrawableModelsTreeNodes(DrawableModel[] models, string prefix, bool check)
         {
             if (models == null) return;
 
-            for (int mi = 0; mi < models.Length; mi++)
+            for (var mi = 0; mi < models.Length; mi++)
             {
                 var model = models[mi];
-                string mprefix = prefix + " " + (mi + 1).ToString();
+                var mprefix = prefix + " " + (mi + 1).ToString();
                 var mnode = SelDrawableModelsTreeView.Nodes.Add(mprefix + " " + model.ToString());
                 mnode.Tag = model;
                 mnode.Checked = check;
@@ -235,7 +237,7 @@ namespace CodeWalker.World
                     var gname = geom.ToString();
                     var gnode = mnode.Nodes.Add(gname);
                     gnode.Tag = geom;
-                    gnode.Checked = true;// check;
+                    gnode.Checked = true; // check;
 
                     var tgnode = tmnode.Nodes.Add(gname);
                     tgnode.Tag = geom;
@@ -245,7 +247,7 @@ namespace CodeWalker.World
                         var pl = geom.Shader.ParametersList;
                         var h = pl.Hashes;
                         var p = pl.Parameters;
-                        for (int ip = 0; ip < h.Length; ip++)
+                        for (var ip = 0; ip < h.Length; ip++)
                         {
                             var hash = pl.Hashes[ip];
                             var parm = pl.Parameters[ip];
@@ -264,7 +266,6 @@ namespace CodeWalker.World
                         }
                         tgnode.Expand();
                     }
-
                 }
 
                 mnode.Expand();
@@ -316,45 +317,44 @@ namespace CodeWalker.World
             {
                 HierarchyTreeView.SelectedNode = seltn;
             }
-
         }
-
 
         private void DisplayTexture(Texture tex, int mip)
         {
             try
             {
-                int cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
-                byte[] pixels = DDSIO.GetPixels(tex, cmip);
-                int w = tex.Width >> cmip;
-                int h = tex.Height >> cmip;
-                Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                var cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
+                var pixels = DDSIO.GetPixels(tex, cmip);
+                var w = tex.Width >> cmip;
+                var h = tex.Height >> cmip;
+                var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
                 if (pixels != null)
                 {
                     var BoundsRect = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmpData = bmp.LockBits(BoundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
-                    IntPtr ptr = bmpData.Scan0;
-                    int bytes = bmpData.Stride * bmp.Height;
+                    var bmpData = bmp.LockBits(BoundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
+                    var ptr = bmpData.Scan0;
+                    var bytes = bmpData.Stride * bmp.Height;
                     Marshal.Copy(pixels, 0, ptr, bytes);
                     bmp.UnlockBits(bmpData);
                 }
 
+                ResetPictureBox();
                 SelDrawableTexturePictureBox.Image = bmp;
-                SelTextureDimensionsLabel.Text = w.ToString() + " x " + h.ToString();
+                SelTextureDimensionsLabel.Text = $"{w} x {h}";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error reading texture mip:\n" + ex.ToString());
+                MessageBox.Show($"Error reading texture mip:\n{ex}");
                 SelDrawableTexturePictureBox.Image = null;
             }
         }
 
         private void SelectTexture(TextureBase texbase, bool mipchange)
         {
-            Texture tex = texbase as Texture;
+            var tex = texbase as Texture;
             YtdFile ytd = null;
-            string errstr = string.Empty;
+            var errstr = string.Empty;
             if ((tex == null) && (texbase != null))
             {
                 tex = TryGetTexture(texbase, out ytd, ref errstr);
@@ -362,7 +362,7 @@ namespace CodeWalker.World
             if (tex != null)
             {
                 currentTex = tex;
-                int mip = 0;
+                var mip = 0;
                 if (mipchange)
                 {
                     mip = SelTextureMipTrackBar.Value;
@@ -374,16 +374,15 @@ namespace CodeWalker.World
                 }
                 DisplayTexture(tex, mip);
 
-
                 //try get owner drawable to get the name for the dictionary textbox...
                 object owner = null;
                 if (Selection.Drawable != null)
                 {
                     owner = Selection.Drawable.Owner;
                 }
-                YdrFile ydr = owner as YdrFile;
-                YddFile ydd = owner as YddFile;
-                YftFile yft = owner as YftFile;
+                var ydr = owner as YdrFile;
+                var ydd = owner as YddFile;
+                var yft = owner as YftFile;
 
                 SelTextureNameTextBox.Text = tex.Name;
                 SelTextureDictionaryTextBox.Text = (ytd != null) ? ytd.Name : (ydr != null) ? ydr.Name : (ydd != null) ? ydd.Name : (yft != null) ? yft.Name : string.Empty;
@@ -415,12 +414,13 @@ namespace CodeWalker.World
         {
             //need to load from txd.
             var arch = Selection.Archetype;
-            uint texhash = texbase.NameHash;
-            uint txdHash = (arch != null) ? arch.TextureDict.Hash : 0;
+            var texhash = texbase.NameHash;
+            var txdHash = (arch != null) ? arch.TextureDict.Hash : 0;
             var tex = TryGetTextureFromYtd(texhash, txdHash, out ytd);
             if (tex == null)
-            { //search parent ytds...
-                uint ptxdhash = WorldForm.GameFileCache.TryGetParentYtdHash(txdHash);
+            {
+                //search parent ytds...
+                var ptxdhash = WorldForm.GameFileCache.TryGetParentYtdHash(txdHash);
                 while ((ptxdhash != 0) && (tex == null))
                 {
                     tex = TryGetTextureFromYtd(texhash, ptxdhash, out ytd);
@@ -429,14 +429,15 @@ namespace CodeWalker.World
                         ptxdhash = WorldForm.GameFileCache.TryGetParentYtdHash(ptxdhash);
                     }
                     else
-                    { }
+                    {
+                    }
                 }
                 if (tex == null)
                 {
                     ytd = WorldForm.GameFileCache.TryGetTextureDictForTexture(texhash);
                     if (ytd != null)
                     {
-                        int tries = 0;
+                        var tries = 0;
                         while (!ytd.Loaded && (tries < 500)) //wait upto ~5 sec
                         {
                             System.Threading.Thread.Sleep(10);
@@ -464,7 +465,7 @@ namespace CodeWalker.World
                 ytd = WorldForm.GameFileCache.GetYtd(txdHash);
                 if (ytd != null)
                 {
-                    int tries = 0;
+                    var tries = 0;
                     while (!ytd.Loaded && (tries < 500)) //wait upto ~5 sec
                     {
                         System.Threading.Thread.Sleep(10);
@@ -479,7 +480,6 @@ namespace CodeWalker.World
             ytd = null;
             return null;
         }
-
 
         private void WorldInfoForm_Load(object sender, EventArgs e)
         {
@@ -530,7 +530,7 @@ namespace CodeWalker.World
         {
             SelDrawableTexturePropertyGrid.SelectedObject = e.Node?.Tag;
 
-            TextureBase texbase = e.Node?.Tag as TextureBase;
+            var texbase = e.Node?.Tag as TextureBase;
 
             SelTextureMipTrackBar.Value = 0;
             SelTextureMipLabel.Text = "0";
@@ -542,7 +542,7 @@ namespace CodeWalker.World
         {
             var node = SelDrawableTexturesTreeView.SelectedNode;
 
-            TextureBase texbase = node?.Tag as TextureBase;
+            var texbase = node?.Tag as TextureBase;
 
             SelTextureMipLabel.Text = SelTextureMipTrackBar.Value.ToString();
 
@@ -558,7 +558,7 @@ namespace CodeWalker.World
         private void SaveAllTexturesButton_Click(object sender, EventArgs e)
         {
             if (FolderBrowserDialog.ShowDialogNew() != DialogResult.OK) return;
-            string folderpath = FolderBrowserDialog.SelectedPath;
+            var folderpath = FolderBrowserDialog.SelectedPath;
             if (!folderpath.EndsWith("\\")) folderpath += "\\";
 
             var texs = new List<Texture>();
@@ -570,7 +570,7 @@ namespace CodeWalker.World
                     {
                         var texbase = texnode.Tag as TextureBase;
                         var tex = texbase as Texture;
-                        string errstr = "";
+                        var errstr = "";
                         if ((tex == null) && (texbase != null))
                         {
                             tex = TryGetTexture(texbase, out _, ref errstr);
@@ -588,22 +588,194 @@ namespace CodeWalker.World
 
             foreach (var tex in texs)
             {
-                string fpath = folderpath + tex.Name + ".dds";
-                byte[] dds = DDSIO.GetDDSFile(tex);
+                var fpath = folderpath + tex.Name + ".dds";
+                var dds = DDSIO.GetDDSFile(tex);
                 File.WriteAllBytes(fpath, dds);
             }
-
         }
 
         private void SaveTextureButton_Click(object sender, EventArgs e)
         {
             if (currentTex == null) return;
-            string fname = currentTex.Name + ".dds";
+            var fname = currentTex.Name + ".dds";
             SaveFileDialog.FileName = fname;
             if (SaveFileDialog.ShowDialog() != DialogResult.OK) return;
-            string fpath = SaveFileDialog.FileName;
-            byte[] dds = DDSIO.GetDDSFile(currentTex);
+            var fpath = SaveFileDialog.FileName;
+            var dds = DDSIO.GetDDSFile(currentTex);
             File.WriteAllBytes(fpath, dds);
+        }
+
+        float _zoom = 1.0f;
+        PointF _pan = new PointF(0, 0);
+        Color _rectColor = Color.FromArgb(127, 255, 0, 0);
+
+        bool _panning;
+        PointF _panStart;
+        PointF _panOrigin;
+
+        bool _drawing;
+        bool _isFill;
+        Rectangle _rect;
+        Point _start;
+
+        private void ResetPictureBox()
+        {
+            _zoom = 1f;
+            _pan = new PointF();
+            _rect = new Rectangle();
+        }
+
+        private void SelDrawableTexturePictureBox_MouseWheel(object sender, MouseEventArgs e)
+        {
+            var oldZoom = _zoom;
+
+            if (e.Delta > 0)
+                _zoom *= 1.1f;
+            else
+                _zoom /= 1.1f;
+
+            if (_zoom < 0.1f) _zoom = 0.1f;
+            if (_zoom > 20f) _zoom = 20f;
+
+            float mx = e.X;
+            float my = e.Y;
+
+            _pan.X = mx - (mx - _pan.X) * (_zoom / oldZoom);
+            _pan.Y = my - (my - _pan.Y) * (_zoom / oldZoom);
+
+            SelDrawableTexturePictureBox.Invalidate();
+        }
+
+        private void SelDrawableTexturePictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (currentTex == null) return;
+            if (e.Button == MouseButtons.Middle)
+            {
+                _panning = true;
+                _panStart = e.Location;
+                _panOrigin = _pan;
+            }
+            else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+            {
+                _drawing = true;
+                _isFill = e.Button == MouseButtons.Right;
+                _start = ScreenToImage(e.Location);
+                _rect = new Rectangle(_start, Size.Empty);
+            }
+        }
+
+        Point ScreenToImage(Point p)
+        {
+            return new Point((int)((p.X - _pan.X) / _zoom), (int)((p.Y - _pan.Y) / _zoom));
+        }
+
+        private void SelDrawableTexturePictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                _panning = false;
+            }
+            else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
+            {
+                _drawing = false;
+                if (currentTex != null && _rect.Width > 0 && _rect.Height > 0)
+                {
+                    var texture = WorldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+                    {
+                        return x.Key.NameHash == currentTex.NameHash;
+                    });
+                    if (texture != null)
+                    {
+                        var width = currentTex.Width;
+                        var height = currentTex.Height;
+                        var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                        using (var g = Graphics.FromImage(bitmap))
+                        {
+                            g.Clear(Color.Transparent);
+                            g.DrawImageUnscaled(SelDrawableTexturePictureBox.Image, 0, 0);
+                            if (_isFill)
+                            {
+                                using (var brush = new SolidBrush(_rectColor))
+                                {
+                                    g.FillRectangle(brush, _rect);
+                                }
+                            }
+                            else
+                            {
+                                using (var pen = new Pen(_rectColor, 1))
+                                {
+                                    g.DrawRectangle(pen, _rect);
+                                }
+                            }
+                        }
+                        texture.Load(WorldForm.Renderer.Device, bitmap);
+                        bitmap.Dispose();
+                    }
+                }
+            }
+        }
+
+        private void SelDrawableTexturePictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (currentTex == null) return;
+            if (_panning)
+            {
+                _pan.X = _panOrigin.X + (e.X - _panStart.X);
+                _pan.Y = _panOrigin.Y + (e.Y - _panStart.Y);
+
+                SelDrawableTexturePictureBox.Invalidate();
+            }
+            if (_drawing)
+            {
+                var cur = ScreenToImage(e.Location);
+
+                var x = Math.Min(_start.X, cur.X);
+                var y = Math.Min(_start.Y, cur.Y);
+                var w = Math.Abs(_start.X - cur.X);
+                var h = Math.Abs(_start.Y - cur.Y);
+
+                _rect = new Rectangle(x, y, w, h);
+                SelDrawableTexturePictureBox.Invalidate();
+            }
+        }
+
+        private void SelDrawableTexturePictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.Clear(SelDrawableTexturePictureBox.BackColor);
+
+            using (var font = new Font("Consolas", 12f))
+            using (var brush = new SolidBrush(Color.Lime))
+            {
+                e.Graphics.DrawString($"zoom: {_zoom * 100:F2}%", font, brush, 10, 4);
+                e.Graphics.DrawString($"pan: {_pan}", font, brush, 10, 20);
+            }
+
+            e.Graphics.TranslateTransform(_pan.X, _pan.Y);
+            e.Graphics.ScaleTransform(_zoom, _zoom);
+
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+
+            if (SelDrawableTexturePictureBox.Image != null)
+                e.Graphics.DrawImage(SelDrawableTexturePictureBox.Image, 0, 0);
+
+            if (_rect.Width > 0 && _rect.Height > 0)
+            {
+                if (_isFill)
+                {
+                    using (var brush = new SolidBrush(_rectColor))
+                    {
+                        e.Graphics.FillRectangle(brush, _rect);
+                    }
+                }
+                else
+                {
+                    using (var pen = new Pen(_rectColor, 1 / _zoom))
+                    {
+                        e.Graphics.DrawRectangle(pen, _rect);
+                    }
+                }
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using CodeWalker.World;
 using SharpDX.Direct3D;
 using SharpDX;
+using SharpDX.DXGI;
 
 namespace CodeWalker.Rendering
 {
@@ -1331,6 +1332,37 @@ namespace CodeWalker.Rendering
             IsLoaded = true;
         }
 
+        public void Load(Device device, System.Drawing.Bitmap bitmap)
+        {
+            UnloadRes();
+            var desc = new Texture2DDescription()
+            {
+                ArraySize = 1,
+                BindFlags = BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
+                Height = bitmap.Height,
+                MipLevels = 1,//Texture.Levels,
+                OptionFlags = ResourceOptionFlags.None,
+                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                Width = bitmap.Width
+            };
+            
+            Texture2D = new Texture2D(device, desc);
+            var rect = new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            var bmpData = bitmap.LockBits(rect,
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb
+            );
+            device.ImmediateContext.UpdateSubresource(
+                new DataBox(bmpData.Scan0, bmpData.Stride, 0),
+                Texture2D
+            );
+            bitmap.UnlockBits(bmpData);
+            ShaderResourceView = new ShaderResourceView(device, Texture2D);
+        }
+
         public void SetVSResource(DeviceContext context, int slot)
         {
             context.VertexShader.SetShaderResource(slot, ShaderResourceView);
@@ -1345,6 +1377,12 @@ namespace CodeWalker.Rendering
         public override void Unload()
         {
             IsLoaded = false;
+            UnloadRes();
+            LoadQueued = false;
+        }
+
+        private void UnloadRes()
+        {
             if (ShaderResourceView != null)
             {
                 ShaderResourceView.Dispose();
@@ -1355,7 +1393,6 @@ namespace CodeWalker.Rendering
                 Texture2D.Dispose();
                 Texture2D = null;
             }
-            LoadQueued = false;
         }
 
         public override string ToString()

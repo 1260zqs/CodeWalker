@@ -304,7 +304,7 @@ namespace CodeWalker.Rendering
                 AddressW = TextureAddressMode.Wrap,
                 BorderColor = Color.Black,
                 ComparisonFunction = Comparison.Always,
-                Filter = Filter.MinMagMipLinear,
+                Filter = CodeWalker.Properties.Settings.Default.TextureFilter,
                 MaximumAnisotropy = 1,
                 MaximumLod = float.MaxValue,
                 MinimumLod = 0,
@@ -492,7 +492,13 @@ namespace CodeWalker.Rendering
             context.VertexShader.Set(vs);
         }
 
-
+        public void SetTexSamplerFilter(Device device, Filter filter)
+        {
+            var desc = texsampler.Description;
+            desc.Filter = filter;
+            texsampler = new SamplerState(device, desc);
+        }
+        
         public override void SetShader(DeviceContext context)
         {
             context.PixelShader.Set(Deferred ? basicpsdef : basicps);

@@ -17,7 +17,7 @@ namespace CodeWalker.Rendering
         private DXForm Form;
         private GameFileCache gameFileCache;
         private RenderableCache renderableCache;
-        public RenderableCache RenderableCache { get { return renderableCache; } }
+        public RenderableCache RenderableCache => renderableCache;
 
         private DXManager dxman = new DXManager();
         public DXManager DXMan { get { return dxman; } }
@@ -173,6 +173,7 @@ namespace CodeWalker.Rendering
         {
             Form = form;
             gameFileCache = cache;
+            renderworldMaxLOD = Settings.Default.MaxLod;
             if (gameFileCache == null)
             {
                 gameFileCache = GameFileCacheFactory.Create();
