@@ -1344,7 +1344,7 @@ namespace CodeWalker.Rendering
                 Height = bitmap.Height,
                 MipLevels = 1,//Texture.Levels,
                 OptionFlags = ResourceOptionFlags.None,
-                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                SampleDescription = new SampleDescription(1, 0),
                 Usage = ResourceUsage.Default,
                 Width = bitmap.Width
             };

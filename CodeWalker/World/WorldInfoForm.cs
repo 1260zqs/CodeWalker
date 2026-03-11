@@ -339,7 +339,6 @@ namespace CodeWalker.World
                     bmp.UnlockBits(bmpData);
                 }
 
-                ResetPictureBox();
                 SelDrawableTexturePictureBox.Image = bmp;
                 SelTextureDimensionsLabel.Text = $"{w} x {h}";
             }
@@ -372,6 +371,7 @@ namespace CodeWalker.World
                 {
                     SelTextureMipTrackBar.Maximum = tex.Levels - 1;
                 }
+                ResetPictureBox();
                 DisplayTexture(tex, mip);
 
                 //try get owner drawable to get the name for the dictionary textbox...
@@ -398,6 +398,7 @@ namespace CodeWalker.World
             }
             else
             {
+                ResetPictureBox();
                 SelDrawableTexturePictureBox.Image = null;
                 SelTextureNameTextBox.Text = errstr;
                 SelTextureDictionaryTextBox.Text = string.Empty;
@@ -678,41 +679,42 @@ namespace CodeWalker.World
             else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
                 _drawing = false;
-                if (currentTex != null && _rect.Width > 0 && _rect.Height > 0)
+                ApplyPaintDrawing();
+            }
+        }
+
+        private void ApplyPaintDrawing()
+        {
+            if (currentTex == null || _rect.Width <= 0 || _rect.Height <= 0) return;
+
+            var texture = WorldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+                x.Key.NameHash == currentTex.NameHash);
+            if (texture == null) return;
+
+            var width = currentTex.Width;
+            var height = currentTex.Height;
+            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                g.Clear(Color.Transparent);
+                g.DrawImageUnscaled(SelDrawableTexturePictureBox.Image, 0, 0);
+                if (_isFill)
                 {
-                    var texture = WorldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+                    using (var brush = new SolidBrush(_rectColor))
                     {
-                        return x.Key.NameHash == currentTex.NameHash;
-                    });
-                    if (texture != null)
+                        g.FillRectangle(brush, _rect);
+                    }
+                }
+                else
+                {
+                    using (var pen = new Pen(_rectColor, 1))
                     {
-                        var width = currentTex.Width;
-                        var height = currentTex.Height;
-                        var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                        using (var g = Graphics.FromImage(bitmap))
-                        {
-                            g.Clear(Color.Transparent);
-                            g.DrawImageUnscaled(SelDrawableTexturePictureBox.Image, 0, 0);
-                            if (_isFill)
-                            {
-                                using (var brush = new SolidBrush(_rectColor))
-                                {
-                                    g.FillRectangle(brush, _rect);
-                                }
-                            }
-                            else
-                            {
-                                using (var pen = new Pen(_rectColor, 1))
-                                {
-                                    g.DrawRectangle(pen, _rect);
-                                }
-                            }
-                        }
-                        texture.Load(WorldForm.Renderer.Device, bitmap);
-                        bitmap.Dispose();
+                        g.DrawRectangle(pen, _rect);
                     }
                 }
             }
+            texture.Load(WorldForm.Renderer.Device, bitmap);
+            bitmap.Dispose();
         }
 
         private void SelDrawableTexturePictureBox_MouseMove(object sender, MouseEventArgs e)
@@ -741,6 +743,7 @@ namespace CodeWalker.World
 
         private void SelDrawableTexturePictureBox_Paint(object sender, PaintEventArgs e)
         {
+            if (currentTex == null) return;
             e.Graphics.Clear(SelDrawableTexturePictureBox.BackColor);
 
             using (var font = new Font("Consolas", 12f))
@@ -753,8 +756,8 @@ namespace CodeWalker.World
             e.Graphics.TranslateTransform(_pan.X, _pan.Y);
             e.Graphics.ScaleTransform(_zoom, _zoom);
 
-            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Half;
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             if (SelDrawableTexturePictureBox.Image != null)
                 e.Graphics.DrawImage(SelDrawableTexturePictureBox.Image, 0, 0);
