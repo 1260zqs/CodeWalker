@@ -255,8 +255,6 @@ namespace CodeWalker.Rendering
             currentRealTime += elapsed;
             currentElapsedTime = elapsed;
 
-
-
             UpdateTimeOfDay(elapsed);
 
 

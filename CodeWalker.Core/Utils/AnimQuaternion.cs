@@ -34,7 +34,7 @@ public class AnimQuaternion : BaseAnimValue<Quaternion>
     /// </returns>
     protected override Quaternion GetValue()
     {
-        this.m_Value = Quaternion.Slerp(base.start, base.target, base.lerpPosition);
-        return this.m_Value;
+        m_Value = Quaternion.Slerp(start, target, lerpPosition);
+        return m_Value;
     }
 }

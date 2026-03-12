@@ -606,8 +606,9 @@ namespace CodeWalker.World
             File.WriteAllBytes(fpath, dds);
         }
 
-        float _zoom = 1.0f;
-        PointF _pan = new PointF(0, 0);
+        float _zoom = 1f;
+        PointF _pan;
+
         Color _rectColor = Color.FromArgb(127, 255, 0, 0);
 
         bool _panning;
@@ -622,13 +623,18 @@ namespace CodeWalker.World
         private void ResetPictureBox()
         {
             _zoom = 1f;
-            _pan = new PointF();
+            _pan = default;
             _rect = new Rectangle();
 
             rectBoxX.Value = 0;
             rectBoxY.Value = 0;
             rectBoxW.Value = 0;
             rectBoxH.Value = 0;
+        }
+        
+        private void OnZoomUpdate()
+        {
+            SelDrawableTexturePictureBox.Invalidate();
         }
 
         private void SelDrawableTexturePictureBox_MouseWheel(object sender, MouseEventArgs e)
@@ -691,44 +697,47 @@ namespace CodeWalker.World
 
         private void UpdateRectTexBox()
         {
-            rectBoxX.Value = _rect.X;
-            rectBoxY.Value = _rect.Y;
-            rectBoxW.Value = _rect.Width;
-            rectBoxH.Value = _rect.Height;
+            // rectBoxX.Value = _rect.X;
+            // rectBoxY.Value = _rect.Y;
+            // rectBoxW.Value = _rect.Width;
+            // rectBoxH.Value = _rect.Height;
         }
 
         private void ApplyPaintDrawing()
         {
             if (currentTex == null || _rect.Width <= 0 || _rect.Height <= 0) return;
 
-            var texture = WorldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
-                x.Key.NameHash == currentTex.NameHash);
-            if (texture == null) return;
-
-            var width = currentTex.Width;
-            var height = currentTex.Height;
-            var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            using (var g = Graphics.FromImage(bitmap))
+            lock (WorldForm.RenderSyncRoot)
             {
-                g.Clear(Color.Transparent);
-                g.DrawImageUnscaled(SelDrawableTexturePictureBox.Image, 0, 0);
-                if (_isFill)
+                var texture = WorldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+                    x.Key.NameHash == currentTex.NameHash);
+                if (texture == null) return;
+
+                var width = currentTex.Width;
+                var height = currentTex.Height;
+                var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                using (var g = Graphics.FromImage(bitmap))
                 {
-                    using (var brush = new SolidBrush(_rectColor))
+                    g.Clear(Color.Transparent);
+                    g.DrawImageUnscaled(SelDrawableTexturePictureBox.Image, 0, 0);
+                    if (_isFill)
                     {
-                        g.FillRectangle(brush, _rect);
+                        using (var brush = new SolidBrush(_rectColor))
+                        {
+                            g.FillRectangle(brush, _rect);
+                        }
+                    }
+                    else
+                    {
+                        using (var pen = new Pen(_rectColor, 1))
+                        {
+                            g.DrawRectangle(pen, _rect);
+                        }
                     }
                 }
-                else
-                {
-                    using (var pen = new Pen(_rectColor, 1))
-                    {
-                        g.DrawRectangle(pen, _rect);
-                    }
-                }
+                texture.Load(WorldForm.Renderer.Device, bitmap);
+                bitmap.Dispose();
             }
-            texture.Load(WorldForm.Renderer.Device, bitmap);
-            bitmap.Dispose();
         }
 
         private void SelDrawableTexturePictureBox_MouseMove(object sender, MouseEventArgs e)

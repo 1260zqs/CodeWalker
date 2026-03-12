@@ -263,7 +263,7 @@ namespace CodeWalker.Forms
         }
         public void RenderScene(DeviceContext context)
         {
-            float elapsed = (float)frametimer.Elapsed.TotalSeconds;
+            var elapsed = (float)frametimer.Elapsed.TotalSeconds;
             frametimer.Restart();
 
             if (pauserendering) return;
@@ -272,8 +272,6 @@ namespace CodeWalker.Forms
             { return; } //couldn't get a lock, try again next time
 
             UpdateControlInputs(elapsed);
-
-
 
             Renderer.Update(elapsed, MouseLastPoint.X, MouseLastPoint.Y);
 
@@ -2137,49 +2135,46 @@ namespace CodeWalker.Forms
 
         private void ModelForm_MouseMove(object sender, MouseEventArgs e)
         {
-            int dx = e.X - MouseX;
-            int dy = e.Y - MouseY;
+            // int dx = e.X - MouseX;
+            // int dy = e.Y - MouseY;
+            //
+            // if (MouseInvert)
+            // {
+            //     dy = -dy;
+            // }
 
-            if (MouseInvert)
-            {
-                dy = -dy;
-            }
-
-            if (MouseLButtonDown)
-            {
-                if (GrabbedWidget == null)
-                {
-                        camera.MouseRotate(dx, dy);
-                }
-            }
-            if (MouseRButtonDown)
-            {
-                if (Renderer.controllightdir)
-                {
-                    Renderer.lightdirx += (dx * camera.Sensitivity);
-                    Renderer.lightdiry += (dy * camera.Sensitivity);
-                }
-                else if (Renderer.controltimeofday)
-                {
-                    float tod = Renderer.timeofday;
-                    tod += (dx - dy) / 30.0f;
-                    while (tod >= 24.0f) tod -= 24.0f;
-                    while (tod < 0.0f) tod += 24.0f;
-                    timecycle.SetTime(tod);
-                    Renderer.timeofday = tod;
-
-                    float fv = tod * 60.0f;
-                    TimeOfDayTrackBar.Value = (int)fv;
-                    UpdateTimeOfDayLabel();
-                }
-            }
+            // if (MouseLButtonDown)
+            // {
+            //     if (GrabbedWidget == null)
+            //     {
+            //         camera.MouseRotate(dx, dy);
+            //     }
+            // }
+            // if (MouseRButtonDown)
+            // {
+            //     if (Renderer.controllightdir)
+            //     {
+            //         Renderer.lightdirx += (dx * camera.Sensitivity);
+            //         Renderer.lightdiry += (dy * camera.Sensitivity);
+            //     }
+            //     else if (Renderer.controltimeofday)
+            //     {
+            //         float tod = Renderer.timeofday;
+            //         tod += (dx - dy) / 30.0f;
+            //         while (tod >= 24.0f) tod -= 24.0f;
+            //         while (tod < 0.0f) tod += 24.0f;
+            //         timecycle.SetTime(tod);
+            //         Renderer.timeofday = tod;
+            //
+            //         float fv = tod * 60.0f;
+            //         TimeOfDayTrackBar.Value = (int)fv;
+            //         UpdateTimeOfDayLabel();
+            //     }
+            // }
 
             MouseX = e.X;
             MouseY = e.Y;
             MouseLastPoint = e.Location;
-
-
-
         }
 
         private void ModelForm_MouseWheel(object sender, MouseEventArgs e)

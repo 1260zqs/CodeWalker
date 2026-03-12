@@ -2931,7 +2931,7 @@ namespace CodeWalker
             this.ToolbarPanel.BackColor = System.Drawing.SystemColors.Control;
             this.ToolbarPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ToolbarPanel.Controls.Add(this.Toolbar);
-            this.ToolbarPanel.Location = new System.Drawing.Point(12, 11);
+            this.ToolbarPanel.Location = new System.Drawing.Point(7, 6);
             this.ToolbarPanel.Name = "ToolbarPanel";
             this.ToolbarPanel.Size = new System.Drawing.Size(557, 24);
             this.ToolbarPanel.TabIndex = 7;
@@ -2997,49 +2997,49 @@ namespace CodeWalker
             // ToolbarNewProjectButton
             // 
             this.ToolbarNewProjectButton.Name = "ToolbarNewProjectButton";
-            this.ToolbarNewProjectButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewProjectButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewProjectButton.Text = "New Project";
             this.ToolbarNewProjectButton.Click += new System.EventHandler(this.ToolbarNewProjectButton_Click);
             // 
             // ToolbarNewYmapButton
             // 
             this.ToolbarNewYmapButton.Name = "ToolbarNewYmapButton";
-            this.ToolbarNewYmapButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewYmapButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewYmapButton.Text = "New Ymap File";
             this.ToolbarNewYmapButton.Click += new System.EventHandler(this.ToolbarNewYmapButton_Click);
             // 
             // ToolbarNewYtypButton
             // 
             this.ToolbarNewYtypButton.Name = "ToolbarNewYtypButton";
-            this.ToolbarNewYtypButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewYtypButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewYtypButton.Text = "New Ytyp File";
             this.ToolbarNewYtypButton.Click += new System.EventHandler(this.ToolbarNewYtypButton_Click);
             // 
             // ToolbarNewYbnButton
             // 
             this.ToolbarNewYbnButton.Name = "ToolbarNewYbnButton";
-            this.ToolbarNewYbnButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewYbnButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewYbnButton.Text = "New Ybn File";
             this.ToolbarNewYbnButton.Click += new System.EventHandler(this.ToolbarNewYbnButton_Click);
             // 
             // ToolbarNewYndButton
             // 
             this.ToolbarNewYndButton.Name = "ToolbarNewYndButton";
-            this.ToolbarNewYndButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewYndButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewYndButton.Text = "New Ynd File";
             this.ToolbarNewYndButton.Click += new System.EventHandler(this.ToolbarNewYndButton_Click);
             // 
             // ToolbarNewTrainsButton
             // 
             this.ToolbarNewTrainsButton.Name = "ToolbarNewTrainsButton";
-            this.ToolbarNewTrainsButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewTrainsButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewTrainsButton.Text = "New Trains File";
             this.ToolbarNewTrainsButton.Click += new System.EventHandler(this.ToolbarNewTrainsButton_Click);
             // 
             // ToolbarNewScenarioButton
             // 
             this.ToolbarNewScenarioButton.Name = "ToolbarNewScenarioButton";
-            this.ToolbarNewScenarioButton.Size = new System.Drawing.Size(179, 22);
+            this.ToolbarNewScenarioButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarNewScenarioButton.Text = "New Scenario File";
             this.ToolbarNewScenarioButton.Click += new System.EventHandler(this.ToolbarNewScenarioButton_Click);
             // 
@@ -3609,7 +3609,7 @@ namespace CodeWalker
             this.ToolbarCameraPerspectiveButton.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ToolbarCameraPerspectiveButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolbarCameraPerspectiveButton.Image")));
             this.ToolbarCameraPerspectiveButton.Name = "ToolbarCameraPerspectiveButton";
-            this.ToolbarCameraPerspectiveButton.Size = new System.Drawing.Size(154, 22);
+            this.ToolbarCameraPerspectiveButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarCameraPerspectiveButton.Text = "Perspective";
             this.ToolbarCameraPerspectiveButton.Click += new System.EventHandler(this.ToolbarCameraPerspectiveButton_Click);
             // 
@@ -3617,7 +3617,7 @@ namespace CodeWalker
             // 
             this.ToolbarCameraMapViewButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolbarCameraMapViewButton.Image")));
             this.ToolbarCameraMapViewButton.Name = "ToolbarCameraMapViewButton";
-            this.ToolbarCameraMapViewButton.Size = new System.Drawing.Size(154, 22);
+            this.ToolbarCameraMapViewButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarCameraMapViewButton.Text = "Map View";
             this.ToolbarCameraMapViewButton.Click += new System.EventHandler(this.ToolbarCameraMapViewButton_Click);
             // 
@@ -3625,7 +3625,7 @@ namespace CodeWalker
             // 
             this.ToolbarCameraOrthographicButton.Image = ((System.Drawing.Image)(resources.GetObject("ToolbarCameraOrthographicButton.Image")));
             this.ToolbarCameraOrthographicButton.Name = "ToolbarCameraOrthographicButton";
-            this.ToolbarCameraOrthographicButton.Size = new System.Drawing.Size(154, 22);
+            this.ToolbarCameraOrthographicButton.Size = new System.Drawing.Size(180, 22);
             this.ToolbarCameraOrthographicButton.Text = "Orthographic";
             this.ToolbarCameraOrthographicButton.Click += new System.EventHandler(this.ToolbarCameraOrthographicButton_Click);
             // 

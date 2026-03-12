@@ -51,8 +51,8 @@ public class AnimBool : BaseAnimValue<bool>
     {
         get
         {
-            this.GetValue();
-            return this.m_Value;
+            GetValue();
+            return m_Value;
         }
     }
 
@@ -64,10 +64,9 @@ public class AnimBool : BaseAnimValue<bool>
     /// </returns>
     protected override bool GetValue()
     {
-        float num = (base.target ? 0f : 1f);
-        float num2 = 1f - num;
-        this.m_Value = Mathf.Lerp(num, num2, base.lerpPosition);
-        return this.m_Value > 0.5f;
+        var val = target ? 0f : 1f;
+        m_Value = Mathf.Lerp(val, 1f - val, lerpPosition);
+        return m_Value > 0.5f;
     }
 
     /// <summary>
@@ -77,7 +76,6 @@ public class AnimBool : BaseAnimValue<bool>
     /// <param name="to">Value to lerp to.</param>
     public float Fade(float from, float to)
     {
-        return Mathf.Lerp(from, to, this.faded);
+        return Mathf.Lerp(from, to, faded);
     }
-
 }

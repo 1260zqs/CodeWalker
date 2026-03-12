@@ -41,9 +41,9 @@
             // CancelThisButton
             // 
             this.CancelThisButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.CancelThisButton.Location = new System.Drawing.Point(392, 310);
+            this.CancelThisButton.Location = new System.Drawing.Point(392, 286);
             this.CancelThisButton.Name = "CancelThisButton";
-            this.CancelThisButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelThisButton.Size = new System.Drawing.Size(75, 21);
             this.CancelThisButton.TabIndex = 4;
             this.CancelThisButton.Text = "Cancel";
             this.CancelThisButton.UseVisualStyleBackColor = true;
@@ -52,9 +52,9 @@
             // ImportButton
             // 
             this.ImportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ImportButton.Location = new System.Drawing.Point(473, 310);
+            this.ImportButton.Location = new System.Drawing.Point(473, 286);
             this.ImportButton.Name = "ImportButton";
-            this.ImportButton.Size = new System.Drawing.Size(75, 23);
+            this.ImportButton.Size = new System.Drawing.Size(75, 21);
             this.ImportButton.TabIndex = 3;
             this.ImportButton.Text = "Import";
             this.ImportButton.UseVisualStyleBackColor = true;
@@ -62,21 +62,21 @@
             // 
             // FbxFilesListBox
             // 
-            this.FbxFilesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FbxFilesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.FbxFilesListBox.FormattingEnabled = true;
-            this.FbxFilesListBox.Location = new System.Drawing.Point(12, 25);
+            this.FbxFilesListBox.ItemHeight = 12;
+            this.FbxFilesListBox.Location = new System.Drawing.Point(12, 23);
             this.FbxFilesListBox.Name = "FbxFilesListBox";
-            this.FbxFilesListBox.Size = new System.Drawing.Size(246, 121);
+            this.FbxFilesListBox.Size = new System.Drawing.Size(263, 256);
             this.FbxFilesListBox.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(12, 8);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 13);
+            this.label1.Size = new System.Drawing.Size(125, 12);
             this.label1.TabIndex = 6;
             this.label1.Text = "FBX files to import:";
             // 
@@ -87,18 +87,18 @@
             this.OutputTypeCombo.FormattingEnabled = true;
             this.OutputTypeCombo.Items.AddRange(new object[] {
             "YDR"});
-            this.OutputTypeCombo.Location = new System.Drawing.Point(427, 25);
+            this.OutputTypeCombo.Location = new System.Drawing.Point(427, 23);
             this.OutputTypeCombo.Name = "OutputTypeCombo";
-            this.OutputTypeCombo.Size = new System.Drawing.Size(121, 21);
+            this.OutputTypeCombo.Size = new System.Drawing.Size(121, 20);
             this.OutputTypeCombo.TabIndex = 7;
             // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(356, 28);
+            this.label2.Location = new System.Drawing.Point(348, 26);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 13);
+            this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 8;
             this.label2.Text = "Output type:";
             // 
@@ -106,17 +106,17 @@
             // 
             this.StatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.StatusLabel.AutoSize = true;
-            this.StatusLabel.Location = new System.Drawing.Point(12, 315);
+            this.StatusLabel.Location = new System.Drawing.Point(12, 291);
             this.StatusLabel.Name = "StatusLabel";
-            this.StatusLabel.Size = new System.Drawing.Size(81, 13);
+            this.StatusLabel.Size = new System.Drawing.Size(95, 12);
             this.StatusLabel.TabIndex = 9;
             this.StatusLabel.Text = "Ready to import";
             // 
             // ImportFbxForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 345);
+            this.ClientSize = new System.Drawing.Size(560, 318);
             this.Controls.Add(this.StatusLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.OutputTypeCombo);

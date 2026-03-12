@@ -204,35 +204,18 @@ namespace CodeWalker.Project
                 menu.Checked = false;
             }
 
-            Theme = null;
-
-            switch (themestr)
-            {
-                default:
-                case "Blue":
-                    Theme = new VS2015BlueTheme();
-                    ViewThemeBlueMenu.Checked = true;
-                    break;
-                case "Light":
-                    Theme = new VS2015LightTheme();
-                    ViewThemeLightMenu.Checked = true;
-                    break;
-                case "Dark":
-                    Theme = new VS2015DarkTheme();
-                    ViewThemeDarkMenu.Checked = true;
-                    break;
-            }
-
             if (changing)
             {
                 Settings.Default.ProjectWindowTheme = themestr;
                 Settings.Default.Save();
             }
-
-
-            Theme.Extender.FloatWindowFactory = new ProjectFloatWindowFactory();
+            Theme = Settings.Default.GetProjectWindowTheme(themestr);
 
             MainDockPanel.Theme = Theme;
+            ViewThemeBlueMenu.Checked = themestr == "Blue";
+            ViewThemeLightMenu.Checked = themestr == "Light";
+            ViewThemeDarkMenu.Checked = themestr == "Dark";
+            Theme.Extender.FloatWindowFactory = new ProjectFloatWindowFactory();
 
             var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
             VSExtender.SetStyle(MainMenu, version, Theme);

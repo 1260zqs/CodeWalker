@@ -42,7 +42,7 @@ public class AnimVector3 : BaseAnimValue<Vector3>
     /// </returns>
     protected override Vector3 GetValue()
     {
-        this.m_Value = Vector3.Lerp(base.start, base.target, base.lerpPosition);
-        return this.m_Value;
+        m_Value = Vector3.Lerp(start, target, lerpPosition);
+        return m_Value;
     }
 }

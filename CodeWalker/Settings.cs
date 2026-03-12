@@ -1,4 +1,7 @@
-﻿namespace CodeWalker.Properties {
+﻿using WeifenLuo.WinFormsUI.Docking;
+using WeifenLuo.WinFormsUI.ThemeVS2015;
+
+namespace CodeWalker.Properties {
     
     
     // This class allows you to handle specific events on the settings class:
@@ -23,6 +26,25 @@
         
         private void SettingsSavingEventHandler(object sender, System.ComponentModel.CancelEventArgs e) {
             // Add code to handle the SettingsSaving event here.
+        }
+
+        public VS2015ThemeBase GetProjectWindowTheme()
+        {
+            return GetProjectWindowTheme(ProjectWindowTheme);
+        }
+
+        public VS2015ThemeBase GetProjectWindowTheme(string theme)
+        {
+            switch (theme)
+            {
+                default:
+                case "Blue":
+                    return new VS2015BlueTheme();
+                case "Light":
+                    return new VS2015LightTheme();
+                case "Dark":
+                    return new VS2015DarkTheme();
+            }
         }
     }
 }

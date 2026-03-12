@@ -20,8 +20,8 @@ namespace CodeWalker.World
         protected bool GetAxisRayHit(Vector3 ax1, Vector3 ax2, Vector3 camrel, Ray ray, out Vector3 pos)
         {
             //helper method for double sided ray/plane intersection
-            Vector3 pn = Vector3.Cross(ax1, ax2);
-            Plane p = new Plane(camrel, pn);
+            var pn = Vector3.Cross(ax1, ax2);
+            var p = new Plane(camrel, pn);
             if (ray.Intersects(ref p, out pos))
             {
                 return true;
@@ -51,8 +51,8 @@ namespace CodeWalker.World
 
         protected float GetWorldSize(float pxsize, float dist, Camera cam)
         {
-            float sssize = pxsize / cam.Height;
-            float size = sssize * dist;
+            var sssize = pxsize / cam.Height;
+            var size = sssize * dist;
             if (cam.IsMapView || cam.IsOrthographic)
             {
                 size = sssize * cam.OrthographicSize;
@@ -70,7 +70,7 @@ namespace CodeWalker.World
 
         public bool ObjectSpace
         {
-            get { return PositionWidget.ObjectSpace; }
+            get => PositionWidget.ObjectSpace;
             set
             {
                 DefaultWidget.ObjectSpace = value;
@@ -80,12 +80,12 @@ namespace CodeWalker.World
         }
         public float SnapAngleDegrees
         {
-            get { return RotationWidget.SnapAngleDegrees; }
-            set { RotationWidget.SnapAngleDegrees = value; }
+            get => RotationWidget.SnapAngleDegrees;
+            set => RotationWidget.SnapAngleDegrees = value;
         }
         public Vector3 Position
         {
-            get { return PositionWidget.Position; }
+            get => PositionWidget.Position;
             set
             {
                 PositionWidget.Position = value;
@@ -96,7 +96,7 @@ namespace CodeWalker.World
         }
         public Quaternion Rotation
         {
-            get { return RotationWidget.Rotation; }
+            get => RotationWidget.Rotation;
             set
             {
                 PositionWidget.Rotation = value;
@@ -107,8 +107,8 @@ namespace CodeWalker.World
         }
         public Vector3 Scale
         {
-            get { return ScaleWidget.Scale; }
-            set { ScaleWidget.Scale = value; }
+            get => ScaleWidget.Scale;
+            set => ScaleWidget.Scale = value;
         }
         public WidgetMode Mode { get; set; } = WidgetMode.Default;
 
@@ -241,9 +241,9 @@ namespace CodeWalker.World
         {
             if (!Visible) return;
 
-            Vector3 camrel = Position - cam.Position;
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
+            var camrel = Position - cam.Position;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
 
             var ori = ObjectSpace ? Rotation : Quaternion.Identity;
 
@@ -284,11 +284,11 @@ namespace CodeWalker.World
         {
             if (!Visible) return;
 
-            Vector3 camrel = Position - cam.Position;
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
+            var camrel = Position - cam.Position;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
 
-            WidgetAxis ax = IsDragging ? DraggedAxis : MousedAxis;
+            var ax = IsDragging ? DraggedAxis : MousedAxis;
 
             var ori = ObjectSpace ? Rotation : Quaternion.Identity;
 
@@ -302,9 +302,9 @@ namespace CodeWalker.World
 
             var ori = ObjectSpace ? Rotation : Quaternion.Identity;
 
-            Vector3 xdir = Vector3.UnitX;
-            Vector3 ydir = Vector3.UnitY;
-            Vector3 zdir = Vector3.UnitZ;
+            var xdir = Vector3.UnitX;
+            var ydir = Vector3.UnitY;
+            var zdir = Vector3.UnitZ;
             Vector3[] axes = { xdir, ydir, zdir };
             Vector3[] sides1 = { ydir, zdir, xdir };
             Vector3[] sides2 = { zdir, xdir, ydir };
@@ -313,39 +313,39 @@ namespace CodeWalker.World
 
 
 
-            Quaternion iori = Quaternion.Invert(ori);
-            Vector3 camrel = iori.Multiply(Position - cam.Position);
-            Vector3 cdir = Vector3.Normalize(camrel);
-            Ray ray = cam.MouseRay;
+            var iori = Quaternion.Invert(ori);
+            var camrel = iori.Multiply(Position - cam.Position);
+            var cdir = Vector3.Normalize(camrel);
+            var ray = cam.MouseRay;
             ray.Position = iori.Multiply(ray.Position);
             ray.Direction = iori.Multiply(ray.Direction);
 
 
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
-            float linestart = 0.2f * size;
-            float lineend = 1.0f * size;
-            float sideval = 0.4f * size;
-            float arrowstart = 1.0f * size;
-            float arrowend = 1.33f * size;
-            float arrowrad = 0.06f * size;
-            float axhitrad = 0.07f * size;
-            float axhitstart = 0.2f * size;
-            float axhitend = 1.33f * size;
-            float sidehitend = 0.5f * size;
-            float sidehitstart = 0.25f * size;
-            float allhitrad = 0.07f * size;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
+            var linestart = 0.2f * size;
+            var lineend = 1.0f * size;
+            var sideval = 0.4f * size;
+            var arrowstart = 1.0f * size;
+            var arrowend = 1.33f * size;
+            var arrowrad = 0.06f * size;
+            var axhitrad = 0.07f * size;
+            var axhitstart = 0.2f * size;
+            var axhitend = 1.33f * size;
+            var sidehitend = 0.5f * size;
+            var sidehitstart = 0.25f * size;
+            var allhitrad = 0.07f * size;
 
             //test for single and double axes hits
-            BoundingBox bb = new BoundingBox();
-            BoundingBox bb2 = new BoundingBox();
-            float hitd = float.MaxValue;
+            var bb = new BoundingBox();
+            var bb2 = new BoundingBox();
+            var hitd = float.MaxValue;
             float d, d2;
-            WidgetAxis hitax = WidgetAxis.None;
-            for (int i = 0; i < 3; i++)
+            var hitax = WidgetAxis.None;
+            for (var i = 0; i < 3; i++)
             {
-                WidgetAxis ax = (WidgetAxis)(1 << i);
-                Vector3 s = sides1[i] * axhitrad + sides2[i] * axhitrad;
+                var ax = (WidgetAxis)(1 << i);
+                var s = sides1[i] * axhitrad + sides2[i] * axhitrad;
                 bb.Minimum = camrel - s + axes[i] * axhitstart;
                 bb.Maximum = camrel + s + axes[i] * axhitend;
                 if (ray.Intersects(ref bb, out d)) //single axis
@@ -356,10 +356,10 @@ namespace CodeWalker.World
                         hitax = ax;
                     }
                 }
-                for (int n = i + 1; n < 3; n++)
+                for (var n = i + 1; n < 3; n++)
                 {
                     //double axis hit test - don't hit if in the central area (L shape hit area)
-                    WidgetAxis ax2 = (WidgetAxis)(1 << n);
+                    var ax2 = (WidgetAxis)(1 << n);
                     bb.Minimum = camrel;
                     bb.Maximum = camrel + axes[i] * sidehitend + axes[n] * sidehitend;
                     bb2.Minimum = camrel;
@@ -376,7 +376,7 @@ namespace CodeWalker.World
             }
 
             //small box at the center for all axes hit.
-            Vector3 ss = (axes[0] + axes[1] + axes[2]) * allhitrad;
+            var ss = (axes[0] + axes[1] + axes[2]) * allhitrad;
             bb.Minimum = camrel - ss;
             bb.Maximum = camrel + ss;
             if (ray.Intersects(ref bb, out d))
@@ -411,14 +411,14 @@ namespace CodeWalker.World
                     case WidgetAxis.X:
                     case WidgetAxis.Y:
                     case WidgetAxis.Z:
-                        int curax = GetAxisIndex(DraggedAxis);
-                        int minax = 0;
-                        float mindp = float.MaxValue;
-                        for (int i = 0; i < 3; i++)
+                        var curax = GetAxisIndex(DraggedAxis);
+                        var minax = 0;
+                        var mindp = float.MaxValue;
+                        for (var i = 0; i < 3; i++)
                         {
                             if (i != curax)
                             {
-                                float dp = Math.Abs(Vector3.Dot(cdir, axes[i]));
+                                var dp = Math.Abs(Vector3.Dot(cdir, axes[i]));
                                 if (dp < mindp)
                                 {
                                     mindp = dp;
@@ -432,14 +432,14 @@ namespace CodeWalker.World
                 if (DraggedAxis == WidgetAxis.XYZ)
                 {
                     //all axes, move in the screen plane
-                    float ad1 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitY));
-                    float ad2 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitZ));
+                    var ad1 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitY));
+                    var ad2 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitZ));
                     DraggedAxisDir = Vector3.Normalize(Vector3.Cross(cdir, (ad1 > ad2) ? Vector3.UnitY : Vector3.UnitZ));
                     DraggedAxisSideDir = Vector3.Normalize(Vector3.Cross(cdir, DraggedAxisDir));
                 }
 
 
-                bool hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out DragStartVec);
+                var hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out DragStartVec);
                 if ((MousedAxis == WidgetAxis.None) || !hit)
                 {
                     IsDragging = false;
@@ -449,10 +449,10 @@ namespace CodeWalker.World
             {
                 //continue drag.
                 Vector3 newvec;
-                bool hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out newvec);
+                var hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out newvec);
                 if (hit)
                 {
-                    Vector3 diff = newvec - DragStartVec;
+                    var diff = newvec - DragStartVec;
                     switch (DraggedAxis)
                     {
                         case WidgetAxis.X: diff.Y = 0; diff.Z = 0; break;
@@ -467,7 +467,7 @@ namespace CodeWalker.World
 
                     if (diff.Length() < 10000.0f) //limit movement in one go, to avoid losing the widget...
                     {
-                        Vector3 oldpos = Position;
+                        var oldpos = Position;
                         Position = DragStartPosition + diff;
                         if (Position != oldpos)
                         {
@@ -515,11 +515,11 @@ namespace CodeWalker.World
         {
             if (!Visible) return;
 
-            Vector3 camrel = Position - cam.Position;
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
+            var camrel = Position - cam.Position;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
 
-            WidgetAxis ax = IsDragging ? DraggedAxis : MousedAxis;
+            var ax = IsDragging ? DraggedAxis : MousedAxis;
 
             var ori = ObjectSpace ? Rotation : Quaternion.Identity;
 
@@ -531,49 +531,49 @@ namespace CodeWalker.World
             if (!Visible) return;
 
             var ori = ObjectSpace ? Rotation : Quaternion.Identity;
-            Vector3 xdir = ori.Multiply(Vector3.UnitX);
-            Vector3 ydir = ori.Multiply(Vector3.UnitY);
-            Vector3 zdir = ori.Multiply(Vector3.UnitZ);
+            var xdir = ori.Multiply(Vector3.UnitX);
+            var ydir = ori.Multiply(Vector3.UnitY);
+            var zdir = ori.Multiply(Vector3.UnitZ);
             Vector3[] axes = { xdir, ydir, zdir };
             Vector3[] sides1 = { ydir, zdir, xdir };
             Vector3[] sides2 = { zdir, xdir, ydir };
 
-            Ray ray = cam.MouseRay;
-            Vector3 camrel = Position - cam.Position;
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
-            float ocircsize = 1.0f * size; //outer ring radius
-            float icircsize = 0.75f * size; //inner ring radius
-            float icircthick = 0.2f * size; //inner ring hit width
-            float ocircthick = 0.13f * size;//outer ring hit width
-            float icirchiti = icircsize - icircthick;
-            float icirchito = icircsize + icircthick;
-            float ocirchiti = ocircsize - ocircthick;
-            float ocirchito = ocircsize + ocircthick;
+            var ray = cam.MouseRay;
+            var camrel = Position - cam.Position;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
+            var ocircsize = 1.0f * size; //outer ring radius
+            var icircsize = 0.75f * size; //inner ring radius
+            var icircthick = 0.2f * size; //inner ring hit width
+            var ocircthick = 0.13f * size;//outer ring hit width
+            var icirchiti = icircsize - icircthick;
+            var icirchito = icircsize + icircthick;
+            var ocirchiti = ocircsize - ocircthick;
+            var ocirchito = ocircsize + ocircthick;
 
 
             //test for the main axes hits
-            float cullvalue = -0.18f;
-            float hitd = float.MaxValue;
-            Vector3 hitp = camrel;
-            Vector3 hitrel = Vector3.Zero;
-            WidgetAxis hitax = WidgetAxis.None;
-            Vector3 hitaxd = Vector3.UnitX;
-            Vector3 hitax1 = Vector3.UnitY;
-            Vector3 hitax2 = Vector3.UnitZ;
-            for (int i = 0; i < 3; i++)
+            var cullvalue = -0.18f;
+            var hitd = float.MaxValue;
+            var hitp = camrel;
+            var hitrel = Vector3.Zero;
+            var hitax = WidgetAxis.None;
+            var hitaxd = Vector3.UnitX;
+            var hitax1 = Vector3.UnitY;
+            var hitax2 = Vector3.UnitZ;
+            for (var i = 0; i < 3; i++)
             {
-                WidgetAxis ax = (WidgetAxis)(1 << i);
+                var ax = (WidgetAxis)(1 << i);
                 if ((ax & EnableAxes) == 0) continue;
-                Vector3 s1 = sides1[i];
-                Vector3 s2 = sides2[i];
+                var s1 = sides1[i];
+                var s2 = sides2[i];
                 if (GetAxisRayHit(s1, s2, camrel, ray, out hitp))
                 {
-                    float hitdist = hitp.Length();
-                    float hitreld = (camrel.Length() - hitdist) / size;
+                    var hitdist = hitp.Length();
+                    var hitreld = (camrel.Length() - hitdist) / size;
                     if (hitreld < cullvalue) continue; //this hit was at the backside of the widget; ignore
-                    Vector3 thitrel = hitp - camrel;
-                    float hitrad = thitrel.Length();
+                    var thitrel = hitp - camrel;
+                    var hitrad = thitrel.Length();
                     if ((hitrad > icirchiti) && (hitrad < icirchito) && (hitdist < hitd))
                     {
                         hitd = hitdist;
@@ -589,19 +589,19 @@ namespace CodeWalker.World
             //test for the outer ring hit
             if ((hitax == WidgetAxis.None) && (EnableAxes == WidgetAxis.XYZ))
             {
-                Vector3 sdir = Vector3.Normalize(camrel);
+                var sdir = Vector3.Normalize(camrel);
                 //if (cam.IsMapView || cam.IsOrthographic)
                 //{
                 //    sdir = cam.ViewDirection;
                 //}
-                float ad1 = Math.Abs(Vector3.Dot(sdir, Vector3.UnitY));
-                float ad2 = Math.Abs(Vector3.Dot(sdir, Vector3.UnitZ));
-                Vector3 ax1 = Vector3.Normalize(Vector3.Cross(sdir, (ad1 > ad2) ? Vector3.UnitY : Vector3.UnitZ));
-                Vector3 ax2 = Vector3.Normalize(Vector3.Cross(sdir, ax1));
+                var ad1 = Math.Abs(Vector3.Dot(sdir, Vector3.UnitY));
+                var ad2 = Math.Abs(Vector3.Dot(sdir, Vector3.UnitZ));
+                var ax1 = Vector3.Normalize(Vector3.Cross(sdir, (ad1 > ad2) ? Vector3.UnitY : Vector3.UnitZ));
+                var ax2 = Vector3.Normalize(Vector3.Cross(sdir, ax1));
                 if (GetAxisRayHit(ax1, ax2, camrel, ray, out hitp))
                 {
-                    Vector3 thitrel = hitp - camrel;
-                    float hitrad = thitrel.Length();
+                    var thitrel = hitp - camrel;
+                    var hitrad = thitrel.Length();
                     if ((hitrad > ocirchiti) && (hitrad < ocirchito))
                     {
                         hitax = WidgetAxis.XYZ;
@@ -626,7 +626,7 @@ namespace CodeWalker.World
                 DraggedAxisSideDir1 = hitax1;
                 DraggedAxisSideDir2 = hitax2;
 
-                bool hit = GetAxisRayHit(DraggedAxisSideDir1, DraggedAxisSideDir2, camrel, ray, out DragStartVec);
+                var hit = GetAxisRayHit(DraggedAxisSideDir1, DraggedAxisSideDir2, camrel, ray, out DragStartVec);
                 if ((MousedAxis == WidgetAxis.None) || !hit)
                 {
                     IsDragging = false;
@@ -636,19 +636,19 @@ namespace CodeWalker.World
             {
                 //continue drag.
                 Vector3 newvec;
-                bool hit = GetAxisRayHit(DraggedAxisSideDir1, DraggedAxisSideDir2, camrel, ray, out newvec);
+                var hit = GetAxisRayHit(DraggedAxisSideDir1, DraggedAxisSideDir2, camrel, ray, out newvec);
                 if (hit)
                 {
-                    Vector3 diff = newvec - DragStartVec;
+                    var diff = newvec - DragStartVec;
                     if (diff.Length() < 10000.0f) //put some limit to the plane intersection...
                     {
-                        Vector3 nv = Vector3.Normalize(newvec - camrel);
-                        Vector3 ov = Vector3.Normalize(DragStartVec - camrel);
-                        float na = AngleOnAxes(nv, DraggedAxisSideDir1, DraggedAxisSideDir2);
-                        float oa = AngleOnAxes(ov, DraggedAxisSideDir1, DraggedAxisSideDir2);
-                        float a = SnapAngle(na - oa);
-                        Quaternion rot = Quaternion.RotationAxis(DraggedAxisDir, a);
-                        Quaternion oldrot = Rotation;
+                        var nv = Vector3.Normalize(newvec - camrel);
+                        var ov = Vector3.Normalize(DragStartVec - camrel);
+                        var na = AngleOnAxes(nv, DraggedAxisSideDir1, DraggedAxisSideDir2);
+                        var oa = AngleOnAxes(ov, DraggedAxisSideDir1, DraggedAxisSideDir2);
+                        var a = SnapAngle(na - oa);
+                        var rot = Quaternion.RotationAxis(DraggedAxisDir, a);
+                        var oldrot = Rotation;
                         Rotation = Quaternion.Normalize(Quaternion.Multiply(rot, DragStartRotation));
                         if (Rotation != oldrot)
                         {
@@ -664,18 +664,18 @@ namespace CodeWalker.World
 
         private float AngleOnAxes(Vector3 v, Vector3 ax1, Vector3 ax2)
         {
-            float d1 = Vector3.Dot(v, ax1);
-            float d2 = Vector3.Dot(v, ax2);
+            var d1 = Vector3.Dot(v, ax1);
+            var d2 = Vector3.Dot(v, ax2);
             return (float)Math.Atan2(d2, d1);
         }
 
         private float SnapAngle(float a)
         {
             if (SnapAngleDegrees <= 0.0f) return a;
-            float snaprad = SnapAngleDegrees * 0.0174532925f;
-            float ahalf = a + (snaprad * 0.5f);
-            float mod = ahalf % snaprad;
-            float snapped = ahalf - mod;
+            var snaprad = SnapAngleDegrees * 0.0174532925f;
+            var ahalf = a + (snaprad * 0.5f);
+            var mod = ahalf % snaprad;
+            var snapped = ahalf - mod;
             return snapped;
         }
     }
@@ -708,11 +708,11 @@ namespace CodeWalker.World
         {
             if (!Visible) return;
 
-            Vector3 camrel = Position - cam.Position;
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
+            var camrel = Position - cam.Position;
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
 
-            WidgetAxis ax = IsDragging ? DraggedAxis : MousedAxis;
+            var ax = IsDragging ? DraggedAxis : MousedAxis;
 
             var ori = Rotation; //scale is always in object space.
 
@@ -725,9 +725,9 @@ namespace CodeWalker.World
 
             var ori = Rotation;// : Quaternion.Identity;
 
-            Vector3 xdir = Vector3.UnitX;
-            Vector3 ydir = Vector3.UnitY;
-            Vector3 zdir = Vector3.UnitZ;
+            var xdir = Vector3.UnitX;
+            var ydir = Vector3.UnitY;
+            var zdir = Vector3.UnitZ;
             Vector3[] axes = { xdir, ydir, zdir };
             Vector3[] sides1 = { ydir, zdir, xdir };
             Vector3[] sides2 = { zdir, xdir, ydir };
@@ -736,33 +736,33 @@ namespace CodeWalker.World
 
 
 
-            Quaternion iori = Quaternion.Invert(ori);
-            Vector3 camrel = iori.Multiply(Position - cam.Position);
-            Vector3 cdir = Vector3.Normalize(camrel);
-            Ray ray = cam.MouseRay;
+            var iori = Quaternion.Invert(ori);
+            var camrel = iori.Multiply(Position - cam.Position);
+            var cdir = Vector3.Normalize(camrel);
+            var ray = cam.MouseRay;
             ray.Position = iori.Multiply(ray.Position);
             ray.Direction = iori.Multiply(ray.Direction);
 
 
-            float dist = camrel.Length();
-            float size = GetWorldSize(Size, dist, cam);
+            var dist = camrel.Length();
+            var size = GetWorldSize(Size, dist, cam);
 
-            float axhitrad = 0.09f * size;
-            float axhitstart = 0.4f * size;
-            float axhitend = 1.33f * size;
-            float innertri = 0.7f * size;
-            float outertri = 1.0f * size;
+            var axhitrad = 0.09f * size;
+            var axhitstart = 0.4f * size;
+            var axhitend = 1.33f * size;
+            var innertri = 0.7f * size;
+            var outertri = 1.0f * size;
 
             //test for single and double axes hits
-            BoundingBox bb = new BoundingBox();
-            float hitd = float.MaxValue;
+            var bb = new BoundingBox();
+            var hitd = float.MaxValue;
             float d;
             Vector3 hitp;
-            WidgetAxis hitax = WidgetAxis.None;
-            for (int i = 0; i < 3; i++)
+            var hitax = WidgetAxis.None;
+            for (var i = 0; i < 3; i++)
             {
-                WidgetAxis ax = (WidgetAxis)(1 << i);
-                Vector3 s = sides1[i] * axhitrad + sides2[i] * axhitrad;
+                var ax = (WidgetAxis)(1 << i);
+                var s = sides1[i] * axhitrad + sides2[i] * axhitrad;
                 bb.Minimum = camrel - s + axes[i] * axhitstart;
                 bb.Maximum = camrel + s + axes[i] * axhitend;
                 if (ray.Intersects(ref bb, out d)) //single axis
@@ -774,17 +774,17 @@ namespace CodeWalker.World
                     }
                 }
 
-                Vector3 s1 = axes[i];
-                Vector3 s2 = sides1[i];
+                var s1 = axes[i];
+                var s2 = sides1[i];
                 if (GetAxisRayHit(s1, s2, camrel, ray, out hitp))
                 {
                     //test if hitp is within the inner triangle - uniform scale
                     //test if hitp is within the outer triangle - 2 axes scale
-                    float hitpl = hitp.Length();
+                    var hitpl = hitp.Length();
                     if (hitpl > hitd) continue;
-                    Vector3 hitrel = hitp - camrel;
-                    float d1 = Vector3.Dot(hitrel, s1);
-                    float d2 = Vector3.Dot(hitrel, s2);
+                    var hitrel = hitp - camrel;
+                    var d1 = Vector3.Dot(hitrel, s1);
+                    var d2 = Vector3.Dot(hitrel, s2);
 
                     if ((d1 > 0) && (d2 > 0))
                     {
@@ -840,14 +840,14 @@ namespace CodeWalker.World
                     case WidgetAxis.X:
                     case WidgetAxis.Y:
                     case WidgetAxis.Z:
-                        int curax = GetAxisIndex(DraggedAxis);
-                        int minax = 0;
-                        float mindp = float.MaxValue;
-                        for (int i = 0; i < 3; i++)
+                        var curax = GetAxisIndex(DraggedAxis);
+                        var minax = 0;
+                        var mindp = float.MaxValue;
+                        for (var i = 0; i < 3; i++)
                         {
                             if (i != curax)
                             {
-                                float dp = Math.Abs(Vector3.Dot(cdir, axes[i]));
+                                var dp = Math.Abs(Vector3.Dot(cdir, axes[i]));
                                 if (dp < mindp)
                                 {
                                     mindp = dp;
@@ -861,14 +861,14 @@ namespace CodeWalker.World
                 if (DraggedAxis == WidgetAxis.XYZ)
                 {
                     //all axes, move in the screen plane
-                    float ad1 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitY));
-                    float ad2 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitZ));
+                    var ad1 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitY));
+                    var ad2 = Math.Abs(Vector3.Dot(cdir, Vector3.UnitZ));
                     DraggedAxisDir = Vector3.Normalize(Vector3.Cross(cdir, (ad1 > ad2) ? Vector3.UnitY : Vector3.UnitZ));
                     DraggedAxisSideDir = Vector3.Normalize(Vector3.Cross(cdir, DraggedAxisDir));
                 }
 
 
-                bool hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out DragStartVec);
+                var hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out DragStartVec);
                 if ((MousedAxis == WidgetAxis.None) || !hit)
                 {
                     IsDragging = false;
@@ -878,10 +878,10 @@ namespace CodeWalker.World
             {
                 //continue drag.
                 Vector3 newvec;
-                bool hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out newvec);
+                var hit = GetAxisRayHit(DraggedAxisDir, DraggedAxisSideDir, camrel, ray, out newvec);
                 if (hit)
                 {
-                    Vector3 diff = newvec - DragStartVec;
+                    var diff = newvec - DragStartVec;
                     switch (DraggedAxis)
                     {
                         case WidgetAxis.X: diff.Y = 0; diff.Z = 0; break;
@@ -890,15 +890,15 @@ namespace CodeWalker.World
                     }
 
                     //diff = ori.Multiply(diff);
-                    Vector3 ods = DragStartVec - camrel;// ori.Multiply(DragStartVec);
-                    float odl = Math.Max(ods.Length(), 0.0001f); //don't divide by 0
-                    float ndl = Math.Max((ods + diff).Length(), 0.001f); //don't scale to 0 size
-                    float dl = ndl / odl;
+                    var ods = DragStartVec - camrel;// ori.Multiply(DragStartVec);
+                    var odl = Math.Max(ods.Length(), 0.0001f); //don't divide by 0
+                    var ndl = Math.Max((ods + diff).Length(), 0.001f); //don't scale to 0 size
+                    var dl = ndl / odl;
 
                     if (diff.Length() < 10000.0f) //limit movement in one go, to avoid crazy values...
                     {
-                        Vector3 oldscale = Scale;
-                        Vector3 sv = Vector3.One;
+                        var oldscale = Scale;
+                        var sv = Vector3.One;
                         switch (DraggedAxis)
                         {
                             case WidgetAxis.X: sv = new Vector3(dl, 1, 1); break;

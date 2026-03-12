@@ -51,18 +51,18 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 10);
+            this.label6.Location = new System.Drawing.Point(12, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(113, 13);
+            this.label6.Size = new System.Drawing.Size(149, 12);
             this.label6.TabIndex = 56;
             this.label6.Text = "Extract all YSC scripts:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 170);
+            this.label5.Location = new System.Drawing.Point(12, 157);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(87, 13);
+            this.label5.Size = new System.Drawing.Size(101, 12);
             this.label5.TabIndex = 55;
             this.label5.Text = "Decryption Keys:";
             this.label5.Visible = false;
@@ -70,17 +70,17 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(20, 55);
+            this.label4.Location = new System.Drawing.Point(20, 51);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 13);
+            this.label4.Size = new System.Drawing.Size(89, 12);
             this.label4.TabIndex = 54;
             this.label4.Text = "Output folder:";
             // 
             // OutputFolderBrowseButton
             // 
-            this.OutputFolderBrowseButton.Location = new System.Drawing.Point(355, 50);
+            this.OutputFolderBrowseButton.Location = new System.Drawing.Point(355, 46);
             this.OutputFolderBrowseButton.Name = "OutputFolderBrowseButton";
-            this.OutputFolderBrowseButton.Size = new System.Drawing.Size(27, 23);
+            this.OutputFolderBrowseButton.Size = new System.Drawing.Size(27, 21);
             this.OutputFolderBrowseButton.TabIndex = 53;
             this.OutputFolderBrowseButton.Text = "...";
             this.OutputFolderBrowseButton.UseVisualStyleBackColor = true;
@@ -88,17 +88,17 @@
             // 
             // OutputFolderTextBox
             // 
-            this.OutputFolderTextBox.Location = new System.Drawing.Point(98, 52);
+            this.OutputFolderTextBox.Location = new System.Drawing.Point(115, 48);
             this.OutputFolderTextBox.Name = "OutputFolderTextBox";
-            this.OutputFolderTextBox.Size = new System.Drawing.Size(251, 20);
+            this.OutputFolderTextBox.Size = new System.Drawing.Size(234, 21);
             this.OutputFolderTextBox.TabIndex = 52;
             this.OutputFolderTextBox.TextChanged += new System.EventHandler(this.OutputFolderTextBox_TextChanged);
             // 
             // FindKeysButton
             // 
-            this.FindKeysButton.Location = new System.Drawing.Point(388, 185);
+            this.FindKeysButton.Location = new System.Drawing.Point(388, 171);
             this.FindKeysButton.Name = "FindKeysButton";
-            this.FindKeysButton.Size = new System.Drawing.Size(75, 23);
+            this.FindKeysButton.Size = new System.Drawing.Size(75, 21);
             this.FindKeysButton.TabIndex = 51;
             this.FindKeysButton.Text = "Find keys";
             this.FindKeysButton.UseVisualStyleBackColor = true;
@@ -108,18 +108,18 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 190);
+            this.label3.Location = new System.Drawing.Point(20, 175);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(68, 13);
+            this.label3.Size = new System.Drawing.Size(65, 12);
             this.label3.TabIndex = 50;
             this.label3.Text = "GTAV dump:";
             this.label3.Visible = false;
             // 
             // DumpBrowseButton
             // 
-            this.DumpBrowseButton.Location = new System.Drawing.Point(355, 185);
+            this.DumpBrowseButton.Location = new System.Drawing.Point(355, 171);
             this.DumpBrowseButton.Name = "DumpBrowseButton";
-            this.DumpBrowseButton.Size = new System.Drawing.Size(27, 23);
+            this.DumpBrowseButton.Size = new System.Drawing.Size(27, 21);
             this.DumpBrowseButton.TabIndex = 49;
             this.DumpBrowseButton.Text = "...";
             this.DumpBrowseButton.UseVisualStyleBackColor = true;
@@ -128,9 +128,9 @@
             // 
             // DumpTextBox
             // 
-            this.DumpTextBox.Location = new System.Drawing.Point(98, 187);
+            this.DumpTextBox.Location = new System.Drawing.Point(98, 173);
             this.DumpTextBox.Name = "DumpTextBox";
-            this.DumpTextBox.Size = new System.Drawing.Size(251, 20);
+            this.DumpTextBox.Size = new System.Drawing.Size(251, 21);
             this.DumpTextBox.TabIndex = 48;
             this.DumpTextBox.Text = "gta5_dump.exe";
             this.DumpTextBox.Visible = false;
@@ -139,27 +139,27 @@
             // ExtractStatusLabel
             // 
             this.ExtractStatusLabel.AutoEllipsis = true;
-            this.ExtractStatusLabel.Location = new System.Drawing.Point(45, 80);
+            this.ExtractStatusLabel.Location = new System.Drawing.Point(45, 74);
             this.ExtractStatusLabel.Name = "ExtractStatusLabel";
-            this.ExtractStatusLabel.Size = new System.Drawing.Size(455, 41);
+            this.ExtractStatusLabel.Size = new System.Drawing.Size(455, 38);
             this.ExtractStatusLabel.TabIndex = 47;
             this.ExtractStatusLabel.Text = "Initialising...";
             // 
             // DumpStatusLabel
             // 
             this.DumpStatusLabel.AutoEllipsis = true;
-            this.DumpStatusLabel.Location = new System.Drawing.Point(45, 215);
+            this.DumpStatusLabel.Location = new System.Drawing.Point(45, 198);
             this.DumpStatusLabel.Name = "DumpStatusLabel";
-            this.DumpStatusLabel.Size = new System.Drawing.Size(455, 37);
+            this.DumpStatusLabel.Size = new System.Drawing.Size(455, 34);
             this.DumpStatusLabel.TabIndex = 46;
             this.DumpStatusLabel.Text = "Keys not found!";
             this.DumpStatusLabel.Visible = false;
             // 
             // ExtractScriptsButton
             // 
-            this.ExtractScriptsButton.Location = new System.Drawing.Point(388, 50);
+            this.ExtractScriptsButton.Location = new System.Drawing.Point(388, 46);
             this.ExtractScriptsButton.Name = "ExtractScriptsButton";
-            this.ExtractScriptsButton.Size = new System.Drawing.Size(75, 23);
+            this.ExtractScriptsButton.Size = new System.Drawing.Size(75, 21);
             this.ExtractScriptsButton.TabIndex = 45;
             this.ExtractScriptsButton.Text = "Extract";
             this.ExtractScriptsButton.UseVisualStyleBackColor = true;
@@ -168,17 +168,17 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 29);
+            this.label1.Location = new System.Drawing.Point(32, 27);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 13);
+            this.label1.Size = new System.Drawing.Size(77, 12);
             this.label1.TabIndex = 44;
             this.label1.Text = "GTAV folder:";
             // 
             // FolderBrowseButton
             // 
-            this.FolderBrowseButton.Location = new System.Drawing.Point(355, 24);
+            this.FolderBrowseButton.Location = new System.Drawing.Point(355, 22);
             this.FolderBrowseButton.Name = "FolderBrowseButton";
-            this.FolderBrowseButton.Size = new System.Drawing.Size(27, 23);
+            this.FolderBrowseButton.Size = new System.Drawing.Size(27, 21);
             this.FolderBrowseButton.TabIndex = 43;
             this.FolderBrowseButton.Text = "...";
             this.FolderBrowseButton.UseVisualStyleBackColor = true;
@@ -186,17 +186,17 @@
             // 
             // FolderTextBox
             // 
-            this.FolderTextBox.Location = new System.Drawing.Point(98, 26);
+            this.FolderTextBox.Location = new System.Drawing.Point(115, 24);
             this.FolderTextBox.Name = "FolderTextBox";
             this.FolderTextBox.ReadOnly = true;
-            this.FolderTextBox.Size = new System.Drawing.Size(251, 20);
+            this.FolderTextBox.Size = new System.Drawing.Size(234, 21);
             this.FolderTextBox.TabIndex = 42;
             // 
             // ExtractScriptsForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 143);
+            this.ClientSize = new System.Drawing.Size(512, 132);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
