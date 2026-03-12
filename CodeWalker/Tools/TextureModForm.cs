@@ -41,6 +41,10 @@ namespace CodeWalker.Tools
                 ]);
             }
             replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            var imgList = new ImageList();
+            imgList.ImageSize = new Size(1, 22);
+            imgList.ColorDepth = ColorDepth.Depth32Bit;
+            replacementListView.SmallImageList = imgList;
 
             sourceRefListView.Columns.Add("reference");
             for (var i = 0; i < 100; i++)
@@ -49,7 +53,32 @@ namespace CodeWalker.Tools
                     new ListViewItem(Guid.NewGuid().ToString("N")),
                 ]);
             }
+            sourceRefListView.SmallImageList = imgList;
             sourceRefListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            propertyGridFix1.SelectedObject = new SampleData();
+        }
+
+        public class SampleData
+        {
+            public string Name { get; set; } = "Example Item";
+            public int Count { get; set; } = 5;
+            public bool Enabled { get; set; } = true;
+            public double Price { get; set; } = 19.99;
+            public DateTime Created { get; set; } = DateTime.Now;
+            public MyStruct MyStruct { get; set; } = new MyStruct();
+        }
+
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public class MyStruct
+        {
+            public string strVal;
+            public string strVal2 { get; set; }
+            public int intVal { get; set; }
+            public override string ToString()
+            {
+                return string.Empty;
+            }
         }
     }
 }

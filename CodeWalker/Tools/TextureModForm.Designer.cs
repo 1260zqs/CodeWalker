@@ -395,6 +395,7 @@ namespace CodeWalker.Tools
             this.propertyGridFix1.HelpVisible = false;
             this.propertyGridFix1.Location = new System.Drawing.Point(3, 0);
             this.propertyGridFix1.Name = "propertyGridFix1";
+            this.propertyGridFix1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
             this.propertyGridFix1.Size = new System.Drawing.Size(318, 251);
             this.propertyGridFix1.TabIndex = 0;
             this.propertyGridFix1.ToolbarVisible = false;
@@ -419,6 +420,7 @@ namespace CodeWalker.Tools
             // listView2
             // 
             this.listView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView2.FullRowSelect = true;
             this.listView2.GridLines = true;
             this.listView2.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
