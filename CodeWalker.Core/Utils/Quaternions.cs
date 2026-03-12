@@ -78,6 +78,17 @@ namespace CodeWalker
             r.Normalize();
             return r;
         }
+
+        public static Quaternion LookRotation(this Vector3 forward)
+        {
+            return LookRotation(forward, Vector3.Up);
+        }
+
+        public static Quaternion LookRotation(this Vector3 forward, Vector3 upwards)
+        {
+            Quaternion.RotationLookAtLH(ref forward, ref upwards, out var quaternion);
+            return quaternion;
+        }
     }
 
 

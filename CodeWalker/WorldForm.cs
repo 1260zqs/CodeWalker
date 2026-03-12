@@ -418,6 +418,7 @@ namespace CodeWalker
         {
             float elapsed = (float)frametimer.Elapsed.TotalSeconds;
             frametimer.Restart();
+            EditorApplication.Update();
 
             if (pauserendering) return;
 

@@ -39,7 +39,6 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.EntityResultPanel = new System.Windows.Forms.Panel();
             this.EntityResultViewModelButton = new System.Windows.Forms.Button();
-            this.EntityResultPropertyGrid = new CodeWalker.WinForms.ReadOnlyPropertyGrid();
             this.label7 = new System.Windows.Forms.Label();
             this.EntityResultGoToButton = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -60,7 +59,6 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ArchetypeResultPanel = new System.Windows.Forms.Panel();
-            this.ArchetypeResultPropertyGrid = new CodeWalker.WinForms.ReadOnlyPropertyGrid();
             this.label6 = new System.Windows.Forms.Label();
             this.ArchetypeResultViewModelButton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -99,7 +97,7 @@
             this.MainTabControl.Location = new System.Drawing.Point(4, 4);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(530, 421);
+            this.MainTabControl.Size = new System.Drawing.Size(530, 389);
             this.MainTabControl.TabIndex = 0;
             // 
             // EntitySearchTabPage
@@ -117,7 +115,7 @@
             this.EntitySearchTabPage.Location = new System.Drawing.Point(4, 22);
             this.EntitySearchTabPage.Name = "EntitySearchTabPage";
             this.EntitySearchTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.EntitySearchTabPage.Size = new System.Drawing.Size(522, 395);
+            this.EntitySearchTabPage.Size = new System.Drawing.Size(522, 363);
             this.EntitySearchTabPage.TabIndex = 0;
             this.EntitySearchTabPage.Text = "Entity Search";
             this.EntitySearchTabPage.UseVisualStyleBackColor = true;
@@ -125,9 +123,9 @@
             // EntitySearchSetMarkersButton
             // 
             this.EntitySearchSetMarkersButton.Enabled = false;
-            this.EntitySearchSetMarkersButton.Location = new System.Drawing.Point(426, 16);
+            this.EntitySearchSetMarkersButton.Location = new System.Drawing.Point(426, 15);
             this.EntitySearchSetMarkersButton.Name = "EntitySearchSetMarkersButton";
-            this.EntitySearchSetMarkersButton.Size = new System.Drawing.Size(89, 23);
+            this.EntitySearchSetMarkersButton.Size = new System.Drawing.Size(89, 21);
             this.EntitySearchSetMarkersButton.TabIndex = 9;
             this.EntitySearchSetMarkersButton.Text = "Set markers...";
             this.EntitySearchSetMarkersButton.UseVisualStyleBackColor = true;
@@ -136,9 +134,9 @@
             // EntitySearchExportResultsButton
             // 
             this.EntitySearchExportResultsButton.Enabled = false;
-            this.EntitySearchExportResultsButton.Location = new System.Drawing.Point(426, 43);
+            this.EntitySearchExportResultsButton.Location = new System.Drawing.Point(426, 40);
             this.EntitySearchExportResultsButton.Name = "EntitySearchExportResultsButton";
-            this.EntitySearchExportResultsButton.Size = new System.Drawing.Size(89, 23);
+            this.EntitySearchExportResultsButton.Size = new System.Drawing.Size(89, 21);
             this.EntitySearchExportResultsButton.TabIndex = 6;
             this.EntitySearchExportResultsButton.Text = "Export results...";
             this.EntitySearchExportResultsButton.UseVisualStyleBackColor = true;
@@ -149,7 +147,7 @@
             this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer2.Location = new System.Drawing.Point(0, 94);
+            this.splitContainer2.Location = new System.Drawing.Point(0, 87);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -159,7 +157,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.EntityResultPanel);
-            this.splitContainer2.Size = new System.Drawing.Size(522, 301);
+            this.splitContainer2.Size = new System.Drawing.Size(522, 278);
             this.splitContainer2.SplitterDistance = 325;
             this.splitContainer2.TabIndex = 8;
             // 
@@ -176,7 +174,7 @@
             this.EntityResultsListView.Location = new System.Drawing.Point(3, 0);
             this.EntityResultsListView.MultiSelect = false;
             this.EntityResultsListView.Name = "EntityResultsListView";
-            this.EntityResultsListView.Size = new System.Drawing.Size(319, 298);
+            this.EntityResultsListView.Size = new System.Drawing.Size(319, 275);
             this.EntityResultsListView.TabIndex = 8;
             this.EntityResultsListView.UseCompatibleStateImageBehavior = false;
             this.EntityResultsListView.View = System.Windows.Forms.View.Details;
@@ -201,7 +199,6 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EntityResultPanel.Controls.Add(this.EntityResultViewModelButton);
-            this.EntityResultPanel.Controls.Add(this.EntityResultPropertyGrid);
             this.EntityResultPanel.Controls.Add(this.label7);
             this.EntityResultPanel.Controls.Add(this.EntityResultGoToButton);
             this.EntityResultPanel.Controls.Add(this.label8);
@@ -211,46 +208,33 @@
             this.EntityResultPanel.Enabled = false;
             this.EntityResultPanel.Location = new System.Drawing.Point(3, 0);
             this.EntityResultPanel.Name = "EntityResultPanel";
-            this.EntityResultPanel.Size = new System.Drawing.Size(187, 298);
+            this.EntityResultPanel.Size = new System.Drawing.Size(187, 275);
             this.EntityResultPanel.TabIndex = 9;
             // 
             // EntityResultViewModelButton
             // 
-            this.EntityResultViewModelButton.Location = new System.Drawing.Point(94, 91);
+            this.EntityResultViewModelButton.Location = new System.Drawing.Point(94, 84);
             this.EntityResultViewModelButton.Name = "EntityResultViewModelButton";
-            this.EntityResultViewModelButton.Size = new System.Drawing.Size(89, 23);
+            this.EntityResultViewModelButton.Size = new System.Drawing.Size(89, 21);
             this.EntityResultViewModelButton.TabIndex = 5;
             this.EntityResultViewModelButton.Text = "View model";
             this.EntityResultViewModelButton.UseVisualStyleBackColor = true;
             this.EntityResultViewModelButton.Click += new System.EventHandler(this.EntityResultViewModelButton_Click);
             // 
-            // EntityResultPropertyGrid
-            // 
-            this.EntityResultPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.EntityResultPropertyGrid.HelpVisible = false;
-            this.EntityResultPropertyGrid.Location = new System.Drawing.Point(3, 146);
-            this.EntityResultPropertyGrid.Name = "EntityResultPropertyGrid";
-            this.EntityResultPropertyGrid.ReadOnly = true;
-            this.EntityResultPropertyGrid.Size = new System.Drawing.Size(181, 152);
-            this.EntityResultPropertyGrid.TabIndex = 7;
-            this.EntityResultPropertyGrid.ToolbarVisible = false;
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 130);
+            this.label7.Location = new System.Drawing.Point(3, 120);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(56, 13);
+            this.label7.Size = new System.Drawing.Size(77, 12);
             this.label7.TabIndex = 6;
             this.label7.Text = "Entity info:";
             // 
             // EntityResultGoToButton
             // 
-            this.EntityResultGoToButton.Location = new System.Drawing.Point(3, 91);
+            this.EntityResultGoToButton.Location = new System.Drawing.Point(3, 84);
             this.EntityResultGoToButton.Name = "EntityResultGoToButton";
-            this.EntityResultGoToButton.Size = new System.Drawing.Size(89, 23);
+            this.EntityResultGoToButton.Size = new System.Drawing.Size(89, 21);
             this.EntityResultGoToButton.TabIndex = 4;
             this.EntityResultGoToButton.Text = "Go to entity";
             this.EntityResultGoToButton.UseVisualStyleBackColor = true;
@@ -259,9 +243,9 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 48);
+            this.label8.Location = new System.Drawing.Point(3, 44);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(53, 13);
+            this.label8.Size = new System.Drawing.Size(65, 12);
             this.label8.TabIndex = 2;
             this.label8.Text = "Ymap file:";
             // 
@@ -270,18 +254,18 @@
             this.EntityResultYmapTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EntityResultYmapTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.EntityResultYmapTextBox.Location = new System.Drawing.Point(3, 64);
+            this.EntityResultYmapTextBox.Location = new System.Drawing.Point(3, 59);
             this.EntityResultYmapTextBox.Name = "EntityResultYmapTextBox";
             this.EntityResultYmapTextBox.ReadOnly = true;
-            this.EntityResultYmapTextBox.Size = new System.Drawing.Size(180, 20);
+            this.EntityResultYmapTextBox.Size = new System.Drawing.Size(180, 21);
             this.EntityResultYmapTextBox.TabIndex = 3;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 7);
+            this.label9.Location = new System.Drawing.Point(3, 6);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(80, 13);
+            this.label9.Size = new System.Drawing.Size(101, 12);
             this.label9.TabIndex = 0;
             this.label9.Text = "Selected result:";
             // 
@@ -290,10 +274,10 @@
             this.EntityResultNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EntityResultNameTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.EntityResultNameTextBox.Location = new System.Drawing.Point(3, 23);
+            this.EntityResultNameTextBox.Location = new System.Drawing.Point(3, 21);
             this.EntityResultNameTextBox.Name = "EntityResultNameTextBox";
             this.EntityResultNameTextBox.ReadOnly = true;
-            this.EntityResultNameTextBox.Size = new System.Drawing.Size(180, 20);
+            this.EntityResultNameTextBox.Size = new System.Drawing.Size(180, 21);
             this.EntityResultNameTextBox.TabIndex = 1;
             // 
             // EntitySearchStatusLabel
@@ -301,18 +285,18 @@
             this.EntitySearchStatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EntitySearchStatusLabel.AutoEllipsis = true;
-            this.EntitySearchStatusLabel.Location = new System.Drawing.Point(6, 73);
+            this.EntitySearchStatusLabel.Location = new System.Drawing.Point(6, 67);
             this.EntitySearchStatusLabel.Name = "EntitySearchStatusLabel";
-            this.EntitySearchStatusLabel.Size = new System.Drawing.Size(510, 18);
+            this.EntitySearchStatusLabel.Size = new System.Drawing.Size(510, 17);
             this.EntitySearchStatusLabel.TabIndex = 7;
             this.EntitySearchStatusLabel.Text = "Ready";
             // 
             // EntitySearchAbortButton
             // 
             this.EntitySearchAbortButton.Enabled = false;
-            this.EntitySearchAbortButton.Location = new System.Drawing.Point(152, 43);
+            this.EntitySearchAbortButton.Location = new System.Drawing.Point(152, 40);
             this.EntitySearchAbortButton.Name = "EntitySearchAbortButton";
-            this.EntitySearchAbortButton.Size = new System.Drawing.Size(75, 23);
+            this.EntitySearchAbortButton.Size = new System.Drawing.Size(75, 21);
             this.EntitySearchAbortButton.TabIndex = 4;
             this.EntitySearchAbortButton.Text = "Abort";
             this.EntitySearchAbortButton.UseVisualStyleBackColor = true;
@@ -320,9 +304,9 @@
             // 
             // EntitySearchButton
             // 
-            this.EntitySearchButton.Location = new System.Drawing.Point(71, 43);
+            this.EntitySearchButton.Location = new System.Drawing.Point(71, 40);
             this.EntitySearchButton.Name = "EntitySearchButton";
-            this.EntitySearchButton.Size = new System.Drawing.Size(75, 23);
+            this.EntitySearchButton.Size = new System.Drawing.Size(75, 21);
             this.EntitySearchButton.TabIndex = 3;
             this.EntitySearchButton.Text = "Search";
             this.EntitySearchButton.UseVisualStyleBackColor = true;
@@ -333,9 +317,9 @@
             this.EntitySearchLoadedOnlyCheckBox.AutoSize = true;
             this.EntitySearchLoadedOnlyCheckBox.Checked = true;
             this.EntitySearchLoadedOnlyCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.EntitySearchLoadedOnlyCheckBox.Location = new System.Drawing.Point(277, 47);
+            this.EntitySearchLoadedOnlyCheckBox.Location = new System.Drawing.Point(236, 43);
             this.EntitySearchLoadedOnlyCheckBox.Name = "EntitySearchLoadedOnlyCheckBox";
-            this.EntitySearchLoadedOnlyCheckBox.Size = new System.Drawing.Size(105, 17);
+            this.EntitySearchLoadedOnlyCheckBox.Size = new System.Drawing.Size(126, 16);
             this.EntitySearchLoadedOnlyCheckBox.TabIndex = 5;
             this.EntitySearchLoadedOnlyCheckBox.Text = "Loaded files only";
             this.EntitySearchLoadedOnlyCheckBox.UseVisualStyleBackColor = true;
@@ -343,26 +327,26 @@
             // EntitySearchHashLabel
             // 
             this.EntitySearchHashLabel.AutoSize = true;
-            this.EntitySearchHashLabel.Location = new System.Drawing.Point(276, 16);
+            this.EntitySearchHashLabel.Location = new System.Drawing.Point(287, 15);
             this.EntitySearchHashLabel.Name = "EntitySearchHashLabel";
-            this.EntitySearchHashLabel.Size = new System.Drawing.Size(22, 13);
+            this.EntitySearchHashLabel.Size = new System.Drawing.Size(35, 12);
             this.EntitySearchHashLabel.TabIndex = 1;
             this.EntitySearchHashLabel.Text = "     ";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 16);
+            this.label1.Location = new System.Drawing.Point(6, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 13);
+            this.label1.Size = new System.Drawing.Size(71, 12);
             this.label1.TabIndex = 2;
             this.label1.Text = "Search for:";
             // 
             // EntitySearchTextBox
             // 
-            this.EntitySearchTextBox.Location = new System.Drawing.Point(71, 13);
+            this.EntitySearchTextBox.Location = new System.Drawing.Point(79, 12);
             this.EntitySearchTextBox.Name = "EntitySearchTextBox";
-            this.EntitySearchTextBox.Size = new System.Drawing.Size(199, 20);
+            this.EntitySearchTextBox.Size = new System.Drawing.Size(199, 21);
             this.EntitySearchTextBox.TabIndex = 0;
             this.EntitySearchTextBox.TextChanged += new System.EventHandler(this.EntitySearchTextBox_TextChanged);
             this.EntitySearchTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.EntitySearchTextBox_KeyPress);
@@ -378,7 +362,7 @@
             this.ArchetypeSearchTabPage.Controls.Add(this.ArchetypeSearchTextBox);
             this.ArchetypeSearchTabPage.Location = new System.Drawing.Point(4, 22);
             this.ArchetypeSearchTabPage.Name = "ArchetypeSearchTabPage";
-            this.ArchetypeSearchTabPage.Size = new System.Drawing.Size(522, 395);
+            this.ArchetypeSearchTabPage.Size = new System.Drawing.Size(522, 363);
             this.ArchetypeSearchTabPage.TabIndex = 1;
             this.ArchetypeSearchTabPage.Text = "Archetype Search";
             this.ArchetypeSearchTabPage.UseVisualStyleBackColor = true;
@@ -386,9 +370,9 @@
             // ArchetypeSearchExportResultsButton
             // 
             this.ArchetypeSearchExportResultsButton.Enabled = false;
-            this.ArchetypeSearchExportResultsButton.Location = new System.Drawing.Point(426, 43);
+            this.ArchetypeSearchExportResultsButton.Location = new System.Drawing.Point(426, 40);
             this.ArchetypeSearchExportResultsButton.Name = "ArchetypeSearchExportResultsButton";
-            this.ArchetypeSearchExportResultsButton.Size = new System.Drawing.Size(89, 23);
+            this.ArchetypeSearchExportResultsButton.Size = new System.Drawing.Size(89, 21);
             this.ArchetypeSearchExportResultsButton.TabIndex = 5;
             this.ArchetypeSearchExportResultsButton.Text = "Export results...";
             this.ArchetypeSearchExportResultsButton.UseVisualStyleBackColor = true;
@@ -399,7 +383,7 @@
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.splitContainer1.Location = new System.Drawing.Point(0, 94);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 87);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -409,7 +393,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.ArchetypeResultPanel);
-            this.splitContainer1.Size = new System.Drawing.Size(522, 301);
+            this.splitContainer1.Size = new System.Drawing.Size(522, 278);
             this.splitContainer1.SplitterDistance = 325;
             this.splitContainer1.TabIndex = 7;
             // 
@@ -426,7 +410,7 @@
             this.ArchetypeResultsListView.Location = new System.Drawing.Point(3, 0);
             this.ArchetypeResultsListView.MultiSelect = false;
             this.ArchetypeResultsListView.Name = "ArchetypeResultsListView";
-            this.ArchetypeResultsListView.Size = new System.Drawing.Size(319, 298);
+            this.ArchetypeResultsListView.Size = new System.Drawing.Size(319, 275);
             this.ArchetypeResultsListView.TabIndex = 6;
             this.ArchetypeResultsListView.UseCompatibleStateImageBehavior = false;
             this.ArchetypeResultsListView.View = System.Windows.Forms.View.Details;
@@ -450,7 +434,6 @@
             this.ArchetypeResultPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ArchetypeResultPanel.Controls.Add(this.ArchetypeResultPropertyGrid);
             this.ArchetypeResultPanel.Controls.Add(this.label6);
             this.ArchetypeResultPanel.Controls.Add(this.ArchetypeResultViewModelButton);
             this.ArchetypeResultPanel.Controls.Add(this.label5);
@@ -461,36 +444,23 @@
             this.ArchetypeResultPanel.Enabled = false;
             this.ArchetypeResultPanel.Location = new System.Drawing.Point(3, 0);
             this.ArchetypeResultPanel.Name = "ArchetypeResultPanel";
-            this.ArchetypeResultPanel.Size = new System.Drawing.Size(187, 298);
+            this.ArchetypeResultPanel.Size = new System.Drawing.Size(187, 275);
             this.ArchetypeResultPanel.TabIndex = 7;
-            // 
-            // ArchetypeResultPropertyGrid
-            // 
-            this.ArchetypeResultPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ArchetypeResultPropertyGrid.HelpVisible = false;
-            this.ArchetypeResultPropertyGrid.Location = new System.Drawing.Point(3, 146);
-            this.ArchetypeResultPropertyGrid.Name = "ArchetypeResultPropertyGrid";
-            this.ArchetypeResultPropertyGrid.ReadOnly = true;
-            this.ArchetypeResultPropertyGrid.Size = new System.Drawing.Size(181, 152);
-            this.ArchetypeResultPropertyGrid.TabIndex = 7;
-            this.ArchetypeResultPropertyGrid.ToolbarVisible = false;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 130);
+            this.label6.Location = new System.Drawing.Point(3, 120);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(78, 13);
+            this.label6.Size = new System.Drawing.Size(95, 12);
             this.label6.TabIndex = 6;
             this.label6.Text = "Archetype info:";
             // 
             // ArchetypeResultViewModelButton
             // 
-            this.ArchetypeResultViewModelButton.Location = new System.Drawing.Point(94, 91);
+            this.ArchetypeResultViewModelButton.Location = new System.Drawing.Point(94, 84);
             this.ArchetypeResultViewModelButton.Name = "ArchetypeResultViewModelButton";
-            this.ArchetypeResultViewModelButton.Size = new System.Drawing.Size(89, 23);
+            this.ArchetypeResultViewModelButton.Size = new System.Drawing.Size(89, 21);
             this.ArchetypeResultViewModelButton.TabIndex = 5;
             this.ArchetypeResultViewModelButton.Text = "View model";
             this.ArchetypeResultViewModelButton.UseVisualStyleBackColor = true;
@@ -499,17 +469,17 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 48);
+            this.label5.Location = new System.Drawing.Point(3, 44);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(47, 13);
+            this.label5.Size = new System.Drawing.Size(65, 12);
             this.label5.TabIndex = 2;
             this.label5.Text = "Ytyp file:";
             // 
             // ArchetypeResultFindEntitiesButton
             // 
-            this.ArchetypeResultFindEntitiesButton.Location = new System.Drawing.Point(3, 91);
+            this.ArchetypeResultFindEntitiesButton.Location = new System.Drawing.Point(3, 84);
             this.ArchetypeResultFindEntitiesButton.Name = "ArchetypeResultFindEntitiesButton";
-            this.ArchetypeResultFindEntitiesButton.Size = new System.Drawing.Size(89, 23);
+            this.ArchetypeResultFindEntitiesButton.Size = new System.Drawing.Size(89, 21);
             this.ArchetypeResultFindEntitiesButton.TabIndex = 4;
             this.ArchetypeResultFindEntitiesButton.Text = "Find entities";
             this.ArchetypeResultFindEntitiesButton.UseVisualStyleBackColor = true;
@@ -520,18 +490,18 @@
             this.ArchetypeResultYtypTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ArchetypeResultYtypTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.ArchetypeResultYtypTextBox.Location = new System.Drawing.Point(3, 64);
+            this.ArchetypeResultYtypTextBox.Location = new System.Drawing.Point(3, 59);
             this.ArchetypeResultYtypTextBox.Name = "ArchetypeResultYtypTextBox";
             this.ArchetypeResultYtypTextBox.ReadOnly = true;
-            this.ArchetypeResultYtypTextBox.Size = new System.Drawing.Size(180, 20);
+            this.ArchetypeResultYtypTextBox.Size = new System.Drawing.Size(180, 21);
             this.ArchetypeResultYtypTextBox.TabIndex = 3;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 7);
+            this.label4.Location = new System.Drawing.Point(3, 6);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(80, 13);
+            this.label4.Size = new System.Drawing.Size(101, 12);
             this.label4.TabIndex = 0;
             this.label4.Text = "Selected result:";
             // 
@@ -540,10 +510,10 @@
             this.ArchetypeResultNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ArchetypeResultNameTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.ArchetypeResultNameTextBox.Location = new System.Drawing.Point(3, 23);
+            this.ArchetypeResultNameTextBox.Location = new System.Drawing.Point(3, 21);
             this.ArchetypeResultNameTextBox.Name = "ArchetypeResultNameTextBox";
             this.ArchetypeResultNameTextBox.ReadOnly = true;
-            this.ArchetypeResultNameTextBox.Size = new System.Drawing.Size(180, 20);
+            this.ArchetypeResultNameTextBox.Size = new System.Drawing.Size(180, 21);
             this.ArchetypeResultNameTextBox.TabIndex = 1;
             // 
             // ArchetypeSearchStatusLabel
@@ -551,18 +521,18 @@
             this.ArchetypeSearchStatusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ArchetypeSearchStatusLabel.AutoEllipsis = true;
-            this.ArchetypeSearchStatusLabel.Location = new System.Drawing.Point(6, 73);
+            this.ArchetypeSearchStatusLabel.Location = new System.Drawing.Point(6, 67);
             this.ArchetypeSearchStatusLabel.Name = "ArchetypeSearchStatusLabel";
-            this.ArchetypeSearchStatusLabel.Size = new System.Drawing.Size(510, 18);
+            this.ArchetypeSearchStatusLabel.Size = new System.Drawing.Size(510, 17);
             this.ArchetypeSearchStatusLabel.TabIndex = 6;
             this.ArchetypeSearchStatusLabel.Text = "Ready";
             // 
             // ArchetypeSearchAbortButton
             // 
             this.ArchetypeSearchAbortButton.Enabled = false;
-            this.ArchetypeSearchAbortButton.Location = new System.Drawing.Point(152, 43);
+            this.ArchetypeSearchAbortButton.Location = new System.Drawing.Point(152, 40);
             this.ArchetypeSearchAbortButton.Name = "ArchetypeSearchAbortButton";
-            this.ArchetypeSearchAbortButton.Size = new System.Drawing.Size(75, 23);
+            this.ArchetypeSearchAbortButton.Size = new System.Drawing.Size(75, 21);
             this.ArchetypeSearchAbortButton.TabIndex = 4;
             this.ArchetypeSearchAbortButton.Text = "Abort";
             this.ArchetypeSearchAbortButton.UseVisualStyleBackColor = true;
@@ -570,9 +540,9 @@
             // 
             // ArchetypeSearchButton
             // 
-            this.ArchetypeSearchButton.Location = new System.Drawing.Point(71, 43);
+            this.ArchetypeSearchButton.Location = new System.Drawing.Point(71, 40);
             this.ArchetypeSearchButton.Name = "ArchetypeSearchButton";
-            this.ArchetypeSearchButton.Size = new System.Drawing.Size(75, 23);
+            this.ArchetypeSearchButton.Size = new System.Drawing.Size(75, 21);
             this.ArchetypeSearchButton.TabIndex = 3;
             this.ArchetypeSearchButton.Text = "Search";
             this.ArchetypeSearchButton.UseVisualStyleBackColor = true;
@@ -581,17 +551,17 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Location = new System.Drawing.Point(6, 15);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.Size = new System.Drawing.Size(71, 12);
             this.label3.TabIndex = 1;
             this.label3.Text = "Search for:";
             // 
             // ArchetypeSearchTextBox
             // 
-            this.ArchetypeSearchTextBox.Location = new System.Drawing.Point(71, 13);
+            this.ArchetypeSearchTextBox.Location = new System.Drawing.Point(79, 12);
             this.ArchetypeSearchTextBox.Name = "ArchetypeSearchTextBox";
-            this.ArchetypeSearchTextBox.Size = new System.Drawing.Size(199, 20);
+            this.ArchetypeSearchTextBox.Size = new System.Drawing.Size(199, 21);
             this.ArchetypeSearchTextBox.TabIndex = 0;
             this.ArchetypeSearchTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ArchetypeSearchTextBox_KeyPress);
             // 
@@ -602,9 +572,9 @@
             // 
             // WorldSearchForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(536, 428);
+            this.ClientSize = new System.Drawing.Size(536, 395);
             this.Controls.Add(this.MainTabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "WorldSearchForm";
