@@ -624,6 +624,11 @@ namespace CodeWalker.World
             _zoom = 1f;
             _pan = new PointF();
             _rect = new Rectangle();
+
+            rectBoxX.Value = 0;
+            rectBoxY.Value = 0;
+            rectBoxW.Value = 0;
+            rectBoxH.Value = 0;
         }
 
         private void SelDrawableTexturePictureBox_MouseWheel(object sender, MouseEventArgs e)
@@ -679,8 +684,17 @@ namespace CodeWalker.World
             else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
                 _drawing = false;
+                UpdateRectTexBox();
                 ApplyPaintDrawing();
             }
+        }
+
+        private void UpdateRectTexBox()
+        {
+            rectBoxX.Value = _rect.X;
+            rectBoxY.Value = _rect.Y;
+            rectBoxW.Value = _rect.Width;
+            rectBoxH.Value = _rect.Height;
         }
 
         private void ApplyPaintDrawing()
