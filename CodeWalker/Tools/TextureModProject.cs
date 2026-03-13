@@ -15,6 +15,38 @@ namespace CodeWalker
         public OrderedDictionary<Guid, ModTexture> modTextures = new OrderedDictionary<Guid, ModTexture>();
         public OrderedDictionary<Guid, SourceTexture> sourceTextures = new OrderedDictionary<Guid, SourceTexture>();
 
+        public void CreateReplacement()
+        {
+            var replacement = new TextureReplacement();
+            replacement.id = Guid.NewGuid();
+            replacements.Add(replacement);
+        }
+
+        public SourceTexture GetOrAddSourceTexture(string sourceFile)
+        {
+            var sourceTexture = FindSourceTexture(sourceFile);
+            if (sourceTexture == null)
+            {
+                sourceTexture = new SourceTexture();
+                sourceTexture.id = Guid.NewGuid();
+                sourceTexture.sourceFile = sourceFile;
+                sourceTextures.Add(sourceTexture.id, sourceTexture);
+            }
+            return sourceTexture;
+        }
+
+        public SourceTexture FindSourceTexture(string sourceFile)
+        {
+            foreach (var texture in sourceTextures.Values)
+            {
+                if (texture.sourceFile == sourceFile)
+                {
+                    return texture;
+                }
+            }
+            return null;
+        }
+
         public List<SourceTexture> FindSourceTextures(Guid modeTexId)
         {
             var list = new List<SourceTexture>();
