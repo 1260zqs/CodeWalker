@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(YtdForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,6 +73,7 @@
             this.FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.OpenDDSFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.SaveYTDFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.MainToolbar.SuspendLayout();
@@ -159,6 +161,7 @@
             // 
             // toolStrip1
             // 
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NewButton,
             this.OpenButton,
@@ -519,6 +522,10 @@
             // 
             this.SaveYTDFileDialog.Filter = "YTD files|*.ytd|All files|*.*";
             // 
+            // vsExtender
+            // 
+            this.vsExtender.DefaultRenderer = null;
+            // 
             // YtdForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -601,5 +608,6 @@
         private System.Windows.Forms.ToolStripMenuItem ToolbarSaveAsMenu;
         private System.Windows.Forms.ToolStripMenuItem ToolbarSaveTextureAsMenu;
         private System.Windows.Forms.SaveFileDialog SaveYTDFileDialog;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
     }
 }

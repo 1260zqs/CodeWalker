@@ -43,6 +43,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Update="Tools\TextureModForm.Core.cs">
+      <DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

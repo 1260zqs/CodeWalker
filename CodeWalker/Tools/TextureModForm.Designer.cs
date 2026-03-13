@@ -40,7 +40,8 @@ namespace CodeWalker.Tools
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.replacementListView = new System.Windows.Forms.ListView();
+            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
+            this.modListView = new System.Windows.Forms.ListView();
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.previewTabPage = new System.Windows.Forms.TabPage();
@@ -50,16 +51,18 @@ namespace CodeWalker.Tools
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.replacementListView = new System.Windows.Forms.ListView();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton7 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
-            this.sourceRefListView = new System.Windows.Forms.ListView();
             this.listView2 = new System.Windows.Forms.ListView();
+            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.previewPictureBox = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -72,6 +75,7 @@ namespace CodeWalker.Tools
             this.toolStrip1.SuspendLayout();
             this.imageContainer.SuspendLayout();
             this.imageTabControl.SuspendLayout();
+            this.previewTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bottomSplitContainer)).BeginInit();
             this.bottomSplitContainer.Panel1.SuspendLayout();
             this.bottomSplitContainer.Panel2.SuspendLayout();
@@ -82,6 +86,7 @@ namespace CodeWalker.Tools
             this.toolStrip2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // vsExtender
@@ -132,7 +137,7 @@ namespace CodeWalker.Tools
             // 
             this.projectListPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.projectListPanel.Controls.Add(this.toolStrip1);
-            this.projectListPanel.Controls.Add(this.replacementListView);
+            this.projectListPanel.Controls.Add(this.modListView);
             this.projectListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.projectListPanel.Location = new System.Drawing.Point(6, 6);
             this.projectListPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -150,7 +155,8 @@ namespace CodeWalker.Tools
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripButton3});
+            this.toolStripButton3,
+            this.repViewModeBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
@@ -166,6 +172,8 @@ namespace CodeWalker.Tools
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.ToolTipText = "New Texture mod";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton2
             // 
@@ -175,6 +183,8 @@ namespace CodeWalker.Tools
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripButton2.ToolTipText = "Rename";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripButton3
             // 
@@ -185,25 +195,39 @@ namespace CodeWalker.Tools
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton3.Text = "toolStripButton3";
             // 
-            // replacementListView
+            // repViewModeBtn
             // 
-            this.replacementListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
+            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.repViewModeBtn.Name = "repViewModeBtn";
+            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
+            this.repViewModeBtn.Text = "toolStripButton8";
+            this.repViewModeBtn.ToolTipText = "View mode";
+            // 
+            // modListView
+            // 
+            this.modListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.replacementListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.replacementListView.FullRowSelect = true;
-            this.replacementListView.GridLines = true;
-            this.replacementListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.replacementListView.HideSelection = false;
-            this.replacementListView.LabelEdit = true;
-            this.replacementListView.Location = new System.Drawing.Point(0, 25);
-            this.replacementListView.Margin = new System.Windows.Forms.Padding(0);
-            this.replacementListView.MultiSelect = false;
-            this.replacementListView.Name = "replacementListView";
-            this.replacementListView.Size = new System.Drawing.Size(312, 310);
-            this.replacementListView.TabIndex = 0;
-            this.replacementListView.UseCompatibleStateImageBehavior = false;
-            this.replacementListView.View = System.Windows.Forms.View.Details;
+            this.modListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.modListView.FullRowSelect = true;
+            this.modListView.GridLines = true;
+            this.modListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.modListView.HideSelection = false;
+            this.modListView.LabelEdit = true;
+            this.modListView.Location = new System.Drawing.Point(0, 25);
+            this.modListView.Margin = new System.Windows.Forms.Padding(0);
+            this.modListView.MultiSelect = false;
+            this.modListView.Name = "modListView";
+            this.modListView.Size = new System.Drawing.Size(312, 310);
+            this.modListView.TabIndex = 0;
+            this.modListView.UseCompatibleStateImageBehavior = false;
+            this.modListView.View = System.Windows.Forms.View.Details;
+            this.modListView.VirtualMode = true;
+            this.modListView.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.modListView_AfterLabelEdit);
+            this.modListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.modListView_RetrieveVirtualItem);
+            this.modListView.SelectedIndexChanged += new System.EventHandler(this.modListView_SelectedIndexChanged);
             // 
             // imageContainer
             // 
@@ -231,12 +255,13 @@ namespace CodeWalker.Tools
             // 
             // previewTabPage
             // 
+            this.previewTabPage.Controls.Add(this.previewPictureBox);
             this.previewTabPage.Location = new System.Drawing.Point(4, 22);
             this.previewTabPage.Name = "previewTabPage";
             this.previewTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.previewTabPage.Size = new System.Drawing.Size(397, 312);
             this.previewTabPage.TabIndex = 0;
-            this.previewTabPage.Text = "preview";
+            this.previewTabPage.Text = "Preview";
             this.previewTabPage.UseVisualStyleBackColor = true;
             // 
             // textureTabPage
@@ -246,7 +271,7 @@ namespace CodeWalker.Tools
             this.textureTabPage.Padding = new System.Windows.Forms.Padding(3);
             this.textureTabPage.Size = new System.Drawing.Size(397, 312);
             this.textureTabPage.TabIndex = 1;
-            this.textureTabPage.Text = "texture";
+            this.textureTabPage.Text = "Texture";
             this.textureTabPage.UseVisualStyleBackColor = true;
             // 
             // panel1
@@ -298,19 +323,36 @@ namespace CodeWalker.Tools
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(623, 225);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Reference";
+            this.tabPage1.Text = "Replacements";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this.sourceRefListView);
+            this.panel2.Controls.Add(this.replacementListView);
             this.panel2.Controls.Add(this.toolStrip2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 3);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(617, 219);
             this.panel2.TabIndex = 0;
+            // 
+            // replacementListView
+            // 
+            this.replacementListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.replacementListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.replacementListView.FullRowSelect = true;
+            this.replacementListView.GridLines = true;
+            this.replacementListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.replacementListView.HideSelection = false;
+            this.replacementListView.Location = new System.Drawing.Point(0, 25);
+            this.replacementListView.Name = "replacementListView";
+            this.replacementListView.Size = new System.Drawing.Size(615, 192);
+            this.replacementListView.TabIndex = 1;
+            this.replacementListView.UseCompatibleStateImageBehavior = false;
+            this.replacementListView.View = System.Windows.Forms.View.Details;
             // 
             // toolStrip2
             // 
@@ -365,7 +407,7 @@ namespace CodeWalker.Tools
             this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
             this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
             this.toolStripButton7.Text = "toolStripButton7";
             // 
             // tabPage2
@@ -389,34 +431,6 @@ namespace CodeWalker.Tools
             this.panel3.Size = new System.Drawing.Size(617, 219);
             this.panel3.TabIndex = 0;
             // 
-            // propertyGridFix1
-            // 
-            this.propertyGridFix1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGridFix1.HelpVisible = false;
-            this.propertyGridFix1.Location = new System.Drawing.Point(3, 0);
-            this.propertyGridFix1.Name = "propertyGridFix1";
-            this.propertyGridFix1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGridFix1.Size = new System.Drawing.Size(318, 251);
-            this.propertyGridFix1.TabIndex = 0;
-            this.propertyGridFix1.ToolbarVisible = false;
-            // 
-            // sourceRefListView
-            // 
-            this.sourceRefListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.sourceRefListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.sourceRefListView.FullRowSelect = true;
-            this.sourceRefListView.GridLines = true;
-            this.sourceRefListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.sourceRefListView.HideSelection = false;
-            this.sourceRefListView.Location = new System.Drawing.Point(0, 25);
-            this.sourceRefListView.Name = "sourceRefListView";
-            this.sourceRefListView.Size = new System.Drawing.Size(615, 192);
-            this.sourceRefListView.TabIndex = 1;
-            this.sourceRefListView.UseCompatibleStateImageBehavior = false;
-            this.sourceRefListView.View = System.Windows.Forms.View.Details;
-            // 
             // listView2
             // 
             this.listView2.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -431,6 +445,32 @@ namespace CodeWalker.Tools
             this.listView2.TabIndex = 0;
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
+            // 
+            // propertyGridFix1
+            // 
+            this.propertyGridFix1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGridFix1.HelpVisible = false;
+            this.propertyGridFix1.Location = new System.Drawing.Point(3, 0);
+            this.propertyGridFix1.Name = "propertyGridFix1";
+            this.propertyGridFix1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+            this.propertyGridFix1.Size = new System.Drawing.Size(318, 251);
+            this.propertyGridFix1.TabIndex = 0;
+            this.propertyGridFix1.ToolbarVisible = false;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
+            this.openFileDialog1.RestoreDirectory = true;
+            // 
+            // previewPictureBox
+            // 
+            this.previewPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewPictureBox.Location = new System.Drawing.Point(3, 3);
+            this.previewPictureBox.Name = "previewPictureBox";
+            this.previewPictureBox.Size = new System.Drawing.Size(391, 306);
+            this.previewPictureBox.TabIndex = 0;
+            this.previewPictureBox.TabStop = false;
             // 
             // TextureModForm
             // 
@@ -453,6 +493,7 @@ namespace CodeWalker.Tools
             this.toolStrip1.PerformLayout();
             this.imageContainer.ResumeLayout(false);
             this.imageTabControl.ResumeLayout(false);
+            this.previewTabPage.ResumeLayout(false);
             this.bottomSplitContainer.Panel1.ResumeLayout(false);
             this.bottomSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bottomSplitContainer)).EndInit();
@@ -464,6 +505,7 @@ namespace CodeWalker.Tools
             this.toolStrip2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -476,7 +518,7 @@ namespace CodeWalker.Tools
         private Panel panel1;
         private Panel imageContainer;
         private WinForms.PropertyGridFix propertyGridFix1;
-        private ListView replacementListView;
+        private ListView modListView;
         private TabControl imageTabControl;
         private TabPage previewTabPage;
         private TabPage textureTabPage;
@@ -493,9 +535,12 @@ namespace CodeWalker.Tools
         private ToolStripButton toolStripButton4;
         private ToolStripButton toolStripButton5;
         private ToolStripButton toolStripButton6;
-        private ToolStripButton toolStripButton7;
         private Panel panel3;
-        private ListView sourceRefListView;
+        private ListView replacementListView;
         private ListView listView2;
+        private ToolStripDropDownButton repViewModeBtn;
+        private ToolStripDropDownButton toolStripButton7;
+        private OpenFileDialog openFileDialog1;
+        private PictureBox previewPictureBox;
     }
 }

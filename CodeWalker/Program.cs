@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Shell;
+using CodeWalker.TexMod;
 
 namespace CodeWalker
 {
@@ -19,7 +20,6 @@ namespace CodeWalker
         [STAThread]
         static void Main(string[] args)
         {
-
             bool menumode = false;
             bool explorermode = false;
             bool projectmode = false;
@@ -60,7 +60,6 @@ namespace CodeWalker
             Application.SetCompatibleTextRenderingDefault(false);
             EditorApplication.Startup();
 
-
             // Always check the GTA folder first thing
             if (!GTAFolder.UpdateGTAFolder(Properties.Settings.Default.RememberGTAFolder))
             {
@@ -71,31 +70,34 @@ namespace CodeWalker
             try
             {
 #endif
-                if (menumode)
-                {
-                    Application.Run(new MenuForm());
-                }
-                else if (explorermode)
-                {
-                    Application.Run(new ExploreForm());
-                }
-                else if (projectmode)
-                {
-                    Application.Run(new Project.ProjectForm());
-                }
-                else if (vehiclesmode)
-                {
-                    Application.Run(new VehicleForm());
-                }
-                else if (pedsmode)
-                {
-                    Application.Run(new PedsForm());
-                }
-                else
-                {
-                    //Application.Run(new WorldForm());
-                    Application.Run(new TextureModForm());
-                }
+            if (menumode || true)
+            {
+                Application.Run(new MenuForm());
+            }
+            else if (explorermode)
+            {
+                Application.Run(new ExploreForm());
+            }
+            else if (projectmode)
+            {
+                Application.Run(new Project.ProjectForm());
+            }
+            else if (vehiclesmode)
+            {
+                Application.Run(new VehicleForm());
+            }
+            else if (pedsmode)
+            {
+                Application.Run(new PedsForm());
+            }
+            else
+            {
+                //Application.Run(new WorldForm());
+                var form = new TextureModForm();
+                form.project = new TextureModProject();
+                form.adapter = new GTAVTextureModAdapter();
+                Application.Run(form);
+            }
 #if !DEBUG
             }
             catch (Exception ex)
@@ -105,7 +107,6 @@ namespace CodeWalker
             }
 #endif
         }
-
 
         static void EnsureJumpList()
         {
@@ -165,7 +166,8 @@ namespace CodeWalker
                 Settings.Default.Save();
             }
             catch
-            { }
+            {
+            }
         }
     }
 }

@@ -1,84 +1,122 @@
 ﻿using CodeWalker.Properties;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
+using CodeWalker.TexMod;
+using CodeWalker.Utils;
 using WeifenLuo.WinFormsUI.Docking;
+using Rectangle = SharpDX.Rectangle;
 
-namespace CodeWalker.Tools
+namespace CodeWalker.Tools;
+
+public partial class TextureModForm : Form
 {
-    public partial class TextureModForm : Form
+    private AsyncPictureBox previewPictureBoxAsync;
+
+    public TextureModForm()
     {
-        public TextureModForm()
-        {
-            InitializeComponent();
-            var theme = Settings.Default.GetProjectWindowTheme();
-            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
-            vsExtender.SetStyle(toolStrip1, version, theme);
-            vsExtender.SetStyle(toolStrip2, version, theme);
+        InitializeComponent();
+        var theme = Settings.Default.GetProjectWindowTheme();
+        var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+        vsExtender.SetStyle(toolStrip1, version, theme);
+        vsExtender.SetStyle(toolStrip2, version, theme);
 
-            InitializeListView();
-        }
+        PictureBoxViewer.AddFeature(previewPictureBox);
+        previewPictureBoxAsync = new AsyncPictureBox(previewPictureBox);
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            // dxPreview1.InitDevice();
-        }
+        InitializeListView();
+    }
 
-        private void InitializeListView()
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        // dxPreview1.InitDevice();
+        RefreshModListView();
+        RefreshReplacementListView();
+    }
+
+    private void InitializeListView()
+    {
+        modListView.Columns.Add("project");
+        modListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+        replacementListView.Columns.Add("reference");
+        replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+        repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
+        repViewModeBtn.SelectEnum(modListView.View);
+
+        toolStripButton7.SetEnumDrop<View>(x => replacementListView.View = x);
+        toolStripButton7.SelectEnum(replacementListView.View);
+    }
+
+    private void RefreshModListView()
+    {
+        modListView.VirtualListSize = project.modTextures.Count;
+        modListView.Invalidate();
+    }
+
+    private void RefreshReplacementListView()
+    {
+        replacementListView.VirtualListSize = replacements.Count;
+        replacementListView.Invalidate();
+    }
+
+    private void modListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+    {
+        var replacement = project.modTextures.Values[e.ItemIndex];
+        e.Item = new ListViewItem(replacement.name);
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e)
+    {
+        if (openFileDialog1.ShowDialog() == DialogResult.OK)
         {
-            replacementListView.Columns.Add("project");
-            for (var i = 0; i < 100; i++)
+            try
             {
-                replacementListView.Items.AddRange([
-                    new ListViewItem(Guid.NewGuid().ToString("N")),
-                ]);
+                var fileName = openFileDialog1.FileName;
+                if (string.IsNullOrEmpty(fileName)) return;
+                using var stream = File.OpenRead(fileName);
+                using var image = Image.FromStream(stream, false, false);
+                project.CreateTextureMod(fileName, out var modTexture, out _);
+                modTexture.sourceRect = new Rectangle(0, 0, image.Width, image.Height);
+                RefreshModListView();
             }
-            replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            var imgList = new ImageList();
-            imgList.ImageSize = new Size(1, 22);
-            imgList.ColorDepth = ColorDepth.Depth32Bit;
-            replacementListView.SmallImageList = imgList;
-
-            sourceRefListView.Columns.Add("reference");
-            for (var i = 0; i < 100; i++)
+            catch (Exception exception)
             {
-                sourceRefListView.Items.AddRange([
-                    new ListViewItem(Guid.NewGuid().ToString("N")),
-                ]);
+                exception.ShowDialog();
             }
-            sourceRefListView.SmallImageList = imgList;
-            sourceRefListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-            propertyGridFix1.SelectedObject = new SampleData();
         }
+    }
 
-        public class SampleData
-        {
-            public string Name { get; set; } = "Example Item";
-            public int Count { get; set; } = 5;
-            public bool Enabled { get; set; } = true;
-            public double Price { get; set; } = 19.99;
-            public DateTime Created { get; set; } = DateTime.Now;
-            public MyStruct MyStruct { get; set; } = new MyStruct();
-        }
+    private void DisplayPicture(AsyncPictureBox pictureBox, string fileName)
+    {
+        pictureBox.DisplayPicture(adapter, fileName);
+    }
 
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public class MyStruct
+    private void modListView_AfterLabelEdit(object sender, LabelEditEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Label)) return;
+        var replacement = project.modTextures.Values[e.Item];
+        replacement.name = e.Label;
+    }
+
+    private void toolStripButton2_Click(object sender, EventArgs e)
+    {
+        // foreach (ListViewItem selectedItem in replacementListView.SelectedIndices)
+        // {
+        //     selectedItem.BeginEdit();
+        //     break;
+        // }
+    }
+
+    private void modListView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        foreach (int index in modListView.SelectedIndices)
         {
-            public string strVal;
-            public string strVal2 { get; set; }
-            public int intVal { get; set; }
-            public override string ToString()
-            {
-                return string.Empty;
-            }
+            OnSelectTexMod(project.modTextures.Values[index]);
+            break;
         }
     }
 }

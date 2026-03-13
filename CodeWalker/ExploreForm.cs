@@ -74,62 +74,31 @@ namespace CodeWalker
             //MainDockPanel.SaveAsXml(configFile);
             //CloseAllContents();
 
-            foreach (ToolStripMenuItem menu in ViewThemeMenu.DropDownItems)
-            {
-                menu.Checked = false;
-            }
-
-            Theme = null;
-            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
-
-            switch (themestr)
-            {
-                default:
-                case "Windows":
-                    //Theme = new VS2005Theme();
-                    ViewThemeWindowsMenu.Checked = true;
-                    version = VisualStudioToolStripExtender.VsVersion.Unknown;
-                    if (changing)
-                    {
-                        MessageBox.Show("Please reopen RPF Explorer to change back to Windows theme.");
-                    }
-                    break;
-                case "Blue":
-                    Theme = new VS2015BlueTheme();
-                    ViewThemeBlueMenu.Checked = true;
-                    break;
-                case "Light":
-                    Theme = new VS2015LightTheme();
-                    ViewThemeLightMenu.Checked = true;
-                    break;
-                case "Dark":
-                    Theme = new VS2015DarkTheme();
-                    ViewThemeDarkMenu.Checked = true;
-                    break;
-            }
-
             if (changing)
             {
                 Settings.Default.ExplorerWindowTheme = themestr;
                 Settings.Default.Save();
             }
 
+            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+            Theme = Settings.Default.GetProjectWindowTheme(themestr);
+            ViewThemeBlueMenu.Checked = themestr == "Blue";
+            ViewThemeLightMenu.Checked = themestr == "Light";
+            ViewThemeDarkMenu.Checked = themestr == "Dark";
 
             //Theme.Extender.FloatWindowFactory = new ExplorerFloatWindowFactory();
             //MainDockPanel.Theme = Theme;
 
             if (Theme != null)
             {
-                VSExtender.SetStyle(MainMenu, version, Theme);
-                VSExtender.SetStyle(MainToolbar, version, Theme);
-                VSExtender.SetStyle(MainStatusBar, version, Theme);
+                vsExtender.SetStyle(MainMenu, version, Theme);
+                vsExtender.SetStyle(MainToolbar, version, Theme);
+                vsExtender.SetStyle(MainStatusBar, version, Theme);
 
                 FormTheme.SetTheme(this, Theme);
 
                 MainSplitContainer.BackColor = Theme.ColorPalette.MainWindowActive.Background;
             }
-
-
             //if (File.Exists(configFile)) MainDockPanel.LoadFromXml(configFile, m_deserializeDockContent);
         }
 

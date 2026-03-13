@@ -1,4 +1,5 @@
 ﻿using CodeWalker.GameFiles;
+using CodeWalker.Properties;
 using CodeWalker.Utils;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.Forms
 {
@@ -25,6 +27,7 @@ namespace CodeWalker.Forms
         private bool Modified = false;
         private ExploreForm ExploreForm = null;
         private ModelForm ModelForm = null;
+        private List<Texture> listData;
 
 
         public YtdForm(ExploreForm exploreForm = null, ModelForm modelForm = null)
@@ -32,8 +35,16 @@ namespace CodeWalker.Forms
             ExploreForm = exploreForm;
             ModelForm = modelForm;
             InitializeComponent();
-        }
+            TexturesListView.VirtualMode = true;
+            TexturesListView.RetrieveVirtualItem += OnTexturesListViewOnRetrieveVirtualItem;
+            PictureBoxViewer.AddFeature(SelTexturePictureBox);
+            PictureBoxViewer.SimplePaint(SelTexturePictureBox);
 
+            var theme = Settings.Default.GetProjectWindowTheme();
+            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+            vsExtender.SetStyle(toolStrip1, version, theme);
+            vsExtender.SetStyle(menuStrip1, version, theme);
+        }
 
         public void LoadYtd(YtdFile ytd)
         {
@@ -45,14 +56,14 @@ namespace CodeWalker.Forms
                 FileName = ytd?.RpfFileEntry?.Name;
             }
 
-            LoadTexDict(ytd.TextureDict, FileName);
+            LoadTexDict(ytd?.TextureDict, FileName);
         }
         public void LoadTexDict(TextureDictionary texdict, string filename)
         {
             TexDict = texdict;
             FileName = filename;
 
-            TexturesListView.Items.Clear();
+            TexturesListView.VirtualListSize = 0;
             SelTexturePictureBox.Image = null;
             SelTextureNameTextBox.Text = string.Empty;
             SelTextureDimensionsLabel.Text = "-";
@@ -60,36 +71,34 @@ namespace CodeWalker.Forms
             SelTextureMipTrackBar.Value = 0;
             SelTextureMipTrackBar.Maximum = 0;
 
-            if (TexDict == null)
-            {
-                return;
-            }
-
+            if (TexDict == null) return;
 
             if ((TexDict.Textures == null) || (TexDict.Textures.data_items == null)) return;
             var texs = TexDict.Textures.data_items;
-            List<Texture> texlist = new List<Texture>(texs);
-            texlist.Sort((a, b) => { return a.Name?.CompareTo(b.Name) ?? 0; });
+            listData = new List<Texture>(texs);
+            listData.Sort((a, b) => String.CompareOrdinal(a.Name, b.Name));
 
-            foreach (var tex in texlist)
+            TexturesListView.VirtualListSize = listData.Count;
+            if (listData.Count > 0)
             {
-                ListViewItem lvi = TexturesListView.Items.Add(tex.Name);
-                lvi.ToolTipText = tex.Name;
-                lvi.Tag = tex;
-                lvi.SubItems.Add(tex.Width.ToString() + " x " + tex.Height.ToString());
-            }
-
-            if (TexturesListView.Items.Count > 0)
-            {
-                TexturesListView.Items[0].Selected = true;
+                TexturesListView.SelectedIndices.Add(0);
             }
             UpdateStatus(GetTexCountStr());
-
 
             UpdateFormTitle();
             UpdateSaveYTDAs();
         }
-
+        
+        private void OnTexturesListViewOnRetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            var texture = listData[e.ItemIndex];
+            var listItem = new ListViewItem(texture.Name);
+            listItem.ToolTipText = texture.Name;
+            listItem.Tag = texture.Name;
+            listItem.SubItems.Add($"{texture.Width} x {texture.Height}");
+            e.Item = listItem;
+        }
+        
         private string GetTexCountStr()
         {
             var texs = TexDict?.Textures?.data_items;
@@ -100,15 +109,12 @@ namespace CodeWalker.Forms
 
         private void SelectTexture(Texture tex)
         {
-            TexturesListView.SelectedItems.Clear();
+            TexturesListView.SelectedIndices.Clear();
             if (tex == null) return;
-            foreach (ListViewItem lvi in TexturesListView.Items)
+            var indexOf = listData.IndexOf(tex);
+            if (indexOf >= 0)
             {
-                if (lvi.Tag == tex)
-                {
-                    lvi.Selected = true;
-                    break;
-                }
+                TexturesListView.SelectedIndices.Add(indexOf);
             }
         }
 
@@ -317,15 +323,9 @@ namespace CodeWalker.Forms
             TexDict.BuildFromTextureList(textures);
 
             Modified = true;
-
-            foreach (ListViewItem lvi in TexturesListView.Items)
+            foreach (int index in TexturesListView.SelectedIndices)
             {
-                if (lvi.Tag == tex)
-                {
-                    lvi.Text = tex.Name;
-                    lvi.ToolTipText = tex.Name;
-                    break;
-                }
+                TexturesListView.RedrawItems(index, index, false);
             }
 
             UpdateFormTitle();
@@ -394,6 +394,7 @@ namespace CodeWalker.Forms
             //update the image controls for the current zoom level
 
             var img = SelTexturePictureBox.Image;
+            if (img == null) return;
 
             if (CurrentZoom <= 0.0f)
             {
@@ -579,9 +580,10 @@ namespace CodeWalker.Forms
         private void TexturesListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             Texture tex = null;
-            if (TexturesListView.SelectedItems.Count == 1)
+            if (TexturesListView.SelectedIndices.Count == 1)
             {
-                tex = TexturesListView.SelectedItems[0].Tag as Texture;
+                var index = TexturesListView.SelectedIndices[0];
+                tex = listData[index];
             }
             ShowTextureMip(tex, 0, false);
         }
@@ -628,9 +630,10 @@ namespace CodeWalker.Forms
         private void SelTextureMipTrackBar_Scroll(object sender, EventArgs e)
         {
             Texture tex = null;
-            if (TexturesListView.SelectedItems.Count == 1)
+            if (TexturesListView.SelectedIndices.Count == 1)
             {
-                tex = TexturesListView.SelectedItems[0].Tag as Texture;
+                var index = TexturesListView.SelectedIndices[0];
+                tex = listData[index];
             }
             SelTextureMipLabel.Text = SelTextureMipTrackBar.Value.ToString();
             ShowTextureMip(tex, SelTextureMipTrackBar.Value, true);
