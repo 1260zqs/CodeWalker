@@ -2,19 +2,66 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Xml;
 using System.Xml.Serialization;
+using Spine.Collections;
 
 namespace CodeWalker
 {
     public class TextureModProject
     {
-        public string package;
+        public string workingPath;
         public List<TextureReplacement> replacements = new List<TextureReplacement>();
-        public Dictionary<Guid, ModTexture> modTextures = new Dictionary<Guid, ModTexture>();
-        public Dictionary<Guid, SourceTexture> sourceTextures = new Dictionary<Guid, SourceTexture>();
+        public OrderedDictionary<Guid, ModTexture> modTextures = new OrderedDictionary<Guid, ModTexture>();
+        public OrderedDictionary<Guid, SourceTexture> sourceTextures = new OrderedDictionary<Guid, SourceTexture>();
 
         public static void Save(TextureModProject project, string file)
         {
+            var settings = new XmlWriterSettings
+            {
+                Indent = true
+            };
+
+            using (var writer = XmlWriter.Create(file, settings))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("TextureModProject");
+                writer.WriteElementString("WorkingPath", project.workingPath);
+
+                writer.WriteStartElement("Replacements");
+                foreach (var replacement in project.replacements)
+                {
+                    writer.WriteStartElement("TextureReplacement");
+                    writer.WriteElementString("Id", $"{replacement.id:D}");
+                    writer.WriteElementString("ModTexture", $"{replacement.modTexture:D}");
+                    writer.WriteElementString("SourceTexture", $"{replacement.sourceTexture:D}");
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("ModTextures");
+                foreach (var modTexture in project.modTextures.Values)
+                {
+                    writer.WriteStartElement("ModTexture");
+                    writer.WriteElementString("Id", $"{modTexture.id:D}");
+                    writer.WriteElementString("CreatedAt", $"{modTexture.createdAt:G}");
+                    writer.WriteElementString("Filename", modTexture.filename);
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                writer.WriteStartElement("SourceTextures");
+                foreach (var sourceTexture in project.sourceTextures.Values)
+                {
+                    writer.WriteStartElement("SourceTexture");
+                    writer.WriteElementString("Id", $"{sourceTexture.id:D}");
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
+            }
             // var serializer = new XmlSerializer();
             // using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
             // {
