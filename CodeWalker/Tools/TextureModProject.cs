@@ -15,6 +15,22 @@ namespace CodeWalker
         public OrderedDictionary<Guid, ModTexture> modTextures = new OrderedDictionary<Guid, ModTexture>();
         public OrderedDictionary<Guid, SourceTexture> sourceTextures = new OrderedDictionary<Guid, SourceTexture>();
 
+        public List<SourceTexture> FindSourceTextures(Guid modeTexId)
+        {
+            var list = new List<SourceTexture>();
+            foreach (var replacement in replacements)
+            {
+                if (replacement.modTexture == modeTexId)
+                {
+                    if (sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
+                    {
+                        list.Add(sourceTexture);
+                    }
+                }
+            }
+            return list;
+        }
+
         public static void Save(TextureModProject project, string file)
         {
             var settings = new XmlWriterSettings
@@ -32,9 +48,14 @@ namespace CodeWalker
                 foreach (var replacement in project.replacements)
                 {
                     writer.WriteStartElement("TextureReplacement");
-                    writer.WriteElementString("Id", $"{replacement.id:D}");
-                    writer.WriteElementString("ModTexture", $"{replacement.modTexture:D}");
-                    writer.WriteElementString("SourceTexture", $"{replacement.sourceTexture:D}");
+                    writer.WriteElementString("Id", $"{replacement.id:N}");
+                    writer.WriteElementString("ModTexture", $"{replacement.modTexture:N}");
+                    writer.WriteElementString("SourceTexture", $"{replacement.sourceTexture:N}");
+                    writer.WriteElementString("Tag", replacement.tag);
+                    writer.WriteElementString("FlipX", $"{replacement.flipX}");
+                    writer.WriteElementString("FlipY", $"{replacement.flipY}");
+                    writer.WriteElementString("Rotation", $"{replacement.rotation}");
+                    writer.WriteElementString("Comment", replacement.comment);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
@@ -43,7 +64,7 @@ namespace CodeWalker
                 foreach (var modTexture in project.modTextures.Values)
                 {
                     writer.WriteStartElement("ModTexture");
-                    writer.WriteElementString("Id", $"{modTexture.id:D}");
+                    writer.WriteElementString("Id", $"{modTexture.id:N}");
                     writer.WriteElementString("CreatedAt", $"{modTexture.createdAt:G}");
                     writer.WriteElementString("Filename", modTexture.filename);
                     writer.WriteEndElement();
@@ -54,7 +75,9 @@ namespace CodeWalker
                 foreach (var sourceTexture in project.sourceTextures.Values)
                 {
                     writer.WriteStartElement("SourceTexture");
-                    writer.WriteElementString("Id", $"{sourceTexture.id:D}");
+                    writer.WriteElementString("Id", $"{sourceTexture.id:N}");
+                    writer.WriteElementString("SourceFile", sourceTexture.sourceFile);
+                    writer.WriteElementString("LocalFile", sourceTexture.localFile);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
@@ -62,11 +85,6 @@ namespace CodeWalker
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
             }
-            // var serializer = new XmlSerializer();
-            // using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
-            // {
-            //     serializer.Serialize(fs, project);
-            // }
         }
         //
         // public static TextureModProject Load(string file)
@@ -92,27 +110,8 @@ namespace CodeWalker
     public class SourceTexture
     {
         public Guid id;
-        public SourceLocation src;
-        public ModLocation local;
-    }
-
-    /// <summary>
-    /// mod package archive location
-    /// </summary>
-    public struct ModLocation
-    {
-        public string path;
-        public string filename;
-    }
-
-    /// <summary>
-    /// game file source location
-    /// </summary>
-    public struct SourceLocation
-    {
-        public string archive;
-        public string path;
-        public string filename;
+        public string sourceFile;
+        public string localFile;
     }
 
     public class TextureReplacement
