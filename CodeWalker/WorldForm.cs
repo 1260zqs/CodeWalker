@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
-using System.Diagnostics;
-using System.Linq;
+﻿using CodeWalker.GameFiles;
+using CodeWalker.Project;
+using CodeWalker.Properties;
+using CodeWalker.Rendering;
+using CodeWalker.Tools;
+using CodeWalker.World;
 using SharpDX;
 using SharpDX.XInput;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 using Device = SharpDX.Direct3D11.Device;
 using DeviceContext = SharpDX.Direct3D11.DeviceContext;
-using CodeWalker.World;
-using CodeWalker.Project;
-using CodeWalker.Rendering;
-using CodeWalker.GameFiles;
-using CodeWalker.Properties;
-using CodeWalker.Tools;
 
 namespace CodeWalker
 {
@@ -229,7 +230,12 @@ namespace CodeWalker
             PrevMouseHit.WorldForm = this;
 
             initedOk = Renderer.Init();
-            ToolbarPanel.Visible = ShowToolbarCheckBox.Checked = Settings.Default.ShowToolbar; 
+            ToolbarPanel.Visible = ShowToolbarCheckBox.Checked = Settings.Default.ShowToolbar;
+            
+            var theme = Settings.Default.GetProjectWindowTheme();
+            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+            vsExtender.SetStyle(Toolbar, version, theme);
+            // vsExtender.SetStyle();
 
             GTAFolder.UpdateEnhancedFormTitle(this);
         }
@@ -361,6 +367,7 @@ namespace CodeWalker
             try
             {
                 Renderer.DeviceCreated(device, width, height);
+                // DxGraphics.Initialize(device);
             }
             catch (Exception ex)
             {
@@ -4072,9 +4079,6 @@ namespace CodeWalker
 
         private void ShowInfoForm()
         {
-            var form = new TextureModForm();
-            form.Show(this);
-            return;
             if (InfoForm == null)
             {
                 InfoForm = new WorldInfoForm(this);
@@ -8055,6 +8059,21 @@ namespace CodeWalker
                     Renderer.shaders.Basic.SetTexSamplerFilter(Renderer.Device, filter);
                 }
             }
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            ShowTextureModForm();
+        }
+
+        private void textureModToolsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowTextureModForm();
+        }
+
+        private void ShowTextureModForm()
+        {
+            TextureModForm.ShowWindow(this);
         }
     }
 

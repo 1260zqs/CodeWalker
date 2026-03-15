@@ -39,14 +39,34 @@ namespace CodeWalker.Tools
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
             this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this.modListView = new System.Windows.Forms.ListView();
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.previewTabPage = new System.Windows.Forms.TabPage();
+            this.previewPictureBox = new System.Windows.Forms.PictureBox();
             this.textureTabPage = new System.Windows.Forms.TabPage();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.rectLabel = new System.Windows.Forms.Label();
+            this.rectBoxX = new System.Windows.Forms.NumericUpDown();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.rectBoxY = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.rectBoxH = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.rectBoxW = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
             this.bottomSplitContainer = new System.Windows.Forms.SplitContainer();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -62,7 +82,10 @@ namespace CodeWalker.Tools
             this.listView2 = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.previewPictureBox = new System.Windows.Forms.PictureBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -76,6 +99,18 @@ namespace CodeWalker.Tools
             this.imageContainer.SuspendLayout();
             this.imageTabControl.SuspendLayout();
             this.previewTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).BeginInit();
+            this.textureTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxH)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxW)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bottomSplitContainer)).BeginInit();
             this.bottomSplitContainer.Panel1.SuspendLayout();
             this.bottomSplitContainer.Panel2.SuspendLayout();
@@ -86,7 +121,6 @@ namespace CodeWalker.Tools
             this.toolStrip2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // vsExtender
@@ -155,7 +189,7 @@ namespace CodeWalker.Tools
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton2,
-            this.toolStripButton3,
+            this.saveProjectBtn,
             this.repViewModeBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -186,14 +220,15 @@ namespace CodeWalker.Tools
             this.toolStripButton2.ToolTipText = "Rename";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
-            // toolStripButton3
+            // saveProjectBtn
             // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.Text = "toolStripButton3";
+            this.saveProjectBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveProjectBtn.Image = ((System.Drawing.Image)(resources.GetObject("saveProjectBtn.Image")));
+            this.saveProjectBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveProjectBtn.Name = "saveProjectBtn";
+            this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
+            this.saveProjectBtn.Text = "Save";
+            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
             // 
             // repViewModeBtn
             // 
@@ -249,41 +284,248 @@ namespace CodeWalker.Tools
             this.imageTabControl.Location = new System.Drawing.Point(0, 0);
             this.imageTabControl.Margin = new System.Windows.Forms.Padding(0);
             this.imageTabControl.Name = "imageTabControl";
+            this.imageTabControl.Padding = new System.Drawing.Point(6, 6);
             this.imageTabControl.SelectedIndex = 0;
             this.imageTabControl.Size = new System.Drawing.Size(405, 338);
             this.imageTabControl.TabIndex = 0;
+            this.imageTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.imageTabControl_Selected);
             // 
             // previewTabPage
             // 
             this.previewTabPage.Controls.Add(this.previewPictureBox);
-            this.previewTabPage.Location = new System.Drawing.Point(4, 22);
+            this.previewTabPage.Location = new System.Drawing.Point(4, 28);
             this.previewTabPage.Name = "previewTabPage";
             this.previewTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.previewTabPage.Size = new System.Drawing.Size(397, 312);
+            this.previewTabPage.Size = new System.Drawing.Size(397, 306);
             this.previewTabPage.TabIndex = 0;
             this.previewTabPage.Text = "Preview";
             this.previewTabPage.UseVisualStyleBackColor = true;
             // 
+            // previewPictureBox
+            // 
+            this.previewPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewPictureBox.Location = new System.Drawing.Point(3, 3);
+            this.previewPictureBox.Name = "previewPictureBox";
+            this.previewPictureBox.Size = new System.Drawing.Size(391, 300);
+            this.previewPictureBox.TabIndex = 0;
+            this.previewPictureBox.TabStop = false;
+            // 
             // textureTabPage
             // 
-            this.textureTabPage.Location = new System.Drawing.Point(4, 22);
+            this.textureTabPage.Controls.Add(this.pictureBox1);
+            this.textureTabPage.Location = new System.Drawing.Point(4, 28);
             this.textureTabPage.Name = "textureTabPage";
             this.textureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.textureTabPage.Size = new System.Drawing.Size(397, 312);
+            this.textureTabPage.Size = new System.Drawing.Size(397, 306);
             this.textureTabPage.TabIndex = 1;
             this.textureTabPage.Text = "Texture";
             this.textureTabPage.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(391, 300);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
             // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.groupBox1);
+            this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Location = new System.Drawing.Point(414, 6);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(221, 337);
             this.panel1.TabIndex = 0;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.button5);
+            this.groupBox1.Controls.Add(this.button6);
+            this.groupBox1.Controls.Add(this.button4);
+            this.groupBox1.Controls.Add(this.button3);
+            this.groupBox1.Controls.Add(this.button2);
+            this.groupBox1.Controls.Add(this.button1);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.numericUpDown1);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.numericUpDown2);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox1.Location = new System.Drawing.Point(0, 112);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(219, 191);
+            this.groupBox1.TabIndex = 58;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Target rect";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(147, 48);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(60, 23);
+            this.button2.TabIndex = 60;
+            this.button2.Text = "set";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(147, 21);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(60, 23);
+            this.button1.TabIndex = 59;
+            this.button1.Text = "set";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(5, 24);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(41, 12);
+            this.label1.TabIndex = 55;
+            this.label1.Text = "width:";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(60, 21);
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.ReadOnly = true;
+            this.numericUpDown1.Size = new System.Drawing.Size(80, 21);
+            this.numericUpDown1.TabIndex = 56;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(5, 55);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(47, 12);
+            this.label2.TabIndex = 57;
+            this.label2.Text = "height:";
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Location = new System.Drawing.Point(60, 50);
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.ReadOnly = true;
+            this.numericUpDown2.Size = new System.Drawing.Size(80, 21);
+            this.numericUpDown2.TabIndex = 58;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.rectLabel);
+            this.groupBox2.Controls.Add(this.rectBoxX);
+            this.groupBox2.Controls.Add(this.checkBox2);
+            this.groupBox2.Controls.Add(this.rectBoxY);
+            this.groupBox2.Controls.Add(this.checkBox1);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.rectBoxH);
+            this.groupBox2.Controls.Add(this.label6);
+            this.groupBox2.Controls.Add(this.rectBoxW);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(219, 112);
+            this.groupBox2.TabIndex = 59;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Sources Rect";
+            // 
+            // rectLabel
+            // 
+            this.rectLabel.AutoSize = true;
+            this.rectLabel.Location = new System.Drawing.Point(6, 27);
+            this.rectLabel.Name = "rectLabel";
+            this.rectLabel.Size = new System.Drawing.Size(17, 12);
+            this.rectLabel.TabIndex = 48;
+            this.rectLabel.Text = "x:";
+            // 
+            // rectBoxX
+            // 
+            this.rectBoxX.Location = new System.Drawing.Point(25, 24);
+            this.rectBoxX.Name = "rectBoxX";
+            this.rectBoxX.Size = new System.Drawing.Size(80, 21);
+            this.rectBoxX.TabIndex = 49;
+            this.rectBoxX.ValueChanged += new System.EventHandler(this.rectBoxX_ValueChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(78, 79);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(54, 16);
+            this.checkBox2.TabIndex = 57;
+            this.checkBox2.Text = "solid";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
+            // rectBoxY
+            // 
+            this.rectBoxY.Location = new System.Drawing.Point(140, 24);
+            this.rectBoxY.Name = "rectBoxY";
+            this.rectBoxY.Size = new System.Drawing.Size(80, 21);
+            this.rectBoxY.TabIndex = 50;
+            this.rectBoxY.ValueChanged += new System.EventHandler(this.rectBoxY_ValueChanged);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(8, 79);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(54, 16);
+            this.checkBox1.TabIndex = 56;
+            this.checkBox1.Text = "paint";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 47);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(17, 12);
+            this.label5.TabIndex = 51;
+            this.label5.Text = "w:";
+            // 
+            // rectBoxH
+            // 
+            this.rectBoxH.Location = new System.Drawing.Point(140, 44);
+            this.rectBoxH.Name = "rectBoxH";
+            this.rectBoxH.Size = new System.Drawing.Size(80, 21);
+            this.rectBoxH.TabIndex = 55;
+            this.rectBoxH.ValueChanged += new System.EventHandler(this.rectBoxH_ValueChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(121, 27);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(17, 12);
+            this.label6.TabIndex = 52;
+            this.label6.Text = "y:";
+            // 
+            // rectBoxW
+            // 
+            this.rectBoxW.Location = new System.Drawing.Point(25, 44);
+            this.rectBoxW.Name = "rectBoxW";
+            this.rectBoxW.Size = new System.Drawing.Size(80, 21);
+            this.rectBoxW.TabIndex = 54;
+            this.rectBoxW.ValueChanged += new System.EventHandler(this.rectBoxW_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(121, 47);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(17, 12);
+            this.label7.TabIndex = 53;
+            this.label7.Text = "h:";
             // 
             // bottomSplitContainer
             // 
@@ -353,6 +595,9 @@ namespace CodeWalker.Tools
             this.replacementListView.TabIndex = 1;
             this.replacementListView.UseCompatibleStateImageBehavior = false;
             this.replacementListView.View = System.Windows.Forms.View.Details;
+            this.replacementListView.VirtualMode = true;
+            this.replacementListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.replacementListView_RetrieveVirtualItem);
+            this.replacementListView.SelectedIndexChanged += new System.EventHandler(this.replacementListView_SelectedIndexChanged);
             // 
             // toolStrip2
             // 
@@ -463,14 +708,45 @@ namespace CodeWalker.Tools
             this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
             this.openFileDialog1.RestoreDirectory = true;
             // 
-            // previewPictureBox
+            // button3
             // 
-            this.previewPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewPictureBox.Location = new System.Drawing.Point(3, 3);
-            this.previewPictureBox.Name = "previewPictureBox";
-            this.previewPictureBox.Size = new System.Drawing.Size(391, 306);
-            this.previewPictureBox.TabIndex = 0;
-            this.previewPictureBox.TabStop = false;
+            this.button3.Location = new System.Drawing.Point(4, 80);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(93, 23);
+            this.button3.TabIndex = 61;
+            this.button3.Text = "fill by width";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(108, 80);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(99, 23);
+            this.button4.TabIndex = 62;
+            this.button4.Text = "fill by height";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(108, 111);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(99, 23);
+            this.button5.TabIndex = 64;
+            this.button5.Text = "clip by height";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(4, 111);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(93, 23);
+            this.button6.TabIndex = 63;
+            this.button6.Text = "clip by width";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // TextureModForm
             // 
@@ -494,6 +770,20 @@ namespace CodeWalker.Tools
             this.imageContainer.ResumeLayout(false);
             this.imageTabControl.ResumeLayout(false);
             this.previewTabPage.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();
+            this.textureTabPage.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxH)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.rectBoxW)).EndInit();
             this.bottomSplitContainer.Panel1.ResumeLayout(false);
             this.bottomSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bottomSplitContainer)).EndInit();
@@ -505,7 +795,6 @@ namespace CodeWalker.Tools
             this.toolStrip2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -525,7 +814,7 @@ namespace CodeWalker.Tools
         private ToolStrip toolStrip1;
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
-        private ToolStripButton toolStripButton3;
+        private ToolStripButton saveProjectBtn;
         private Panel projectListPanel;
         private TabControl tabControl2;
         private TabPage tabPage1;
@@ -542,5 +831,28 @@ namespace CodeWalker.Tools
         private ToolStripDropDownButton toolStripButton7;
         private OpenFileDialog openFileDialog1;
         private PictureBox previewPictureBox;
+        private PictureBox pictureBox1;
+        private NumericUpDown rectBoxH;
+        private NumericUpDown rectBoxW;
+        private Label label7;
+        private Label label6;
+        private Label label5;
+        private NumericUpDown rectBoxY;
+        private NumericUpDown rectBoxX;
+        private Label rectLabel;
+        private CheckBox checkBox2;
+        private CheckBox checkBox1;
+        private GroupBox groupBox1;
+        private GroupBox groupBox2;
+        private Label label1;
+        private NumericUpDown numericUpDown1;
+        private Label label2;
+        private NumericUpDown numericUpDown2;
+        private Button button2;
+        private Button button1;
+        private Button button4;
+        private Button button3;
+        private Button button5;
+        private Button button6;
     }
 }

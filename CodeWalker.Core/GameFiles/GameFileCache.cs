@@ -2076,6 +2076,36 @@ namespace CodeWalker.GameFiles
             return node;
         }
 
+
+        public GameFile GetFile(RpfEntry rpfEntry)
+        {
+            var fileName = Path.GetFileName(rpfEntry.Path);
+            var ext = Path.GetExtension(fileName);
+            switch (ext)
+            {
+                case ".ydr":
+                    return GetYdr(rpfEntry.ShortNameHash);
+                case ".ydd":
+                    return GetYdd(rpfEntry.ShortNameHash);
+                case ".ytd":
+                    return GetYtd(rpfEntry.ShortNameHash);
+                case ".ymap":
+                    return GetYmap(rpfEntry.ShortNameHash);
+                case ".ytf":
+                    return GetYft(rpfEntry.ShortNameHash);
+                case ".ybn":
+                    return GetYbn(rpfEntry.ShortNameHash);
+                case ".ycd":
+                    return GetYcd(rpfEntry.ShortNameHash);
+                case ".yed":
+                    return GetYed(rpfEntry.ShortNameHash);
+                case ".ynv":
+                    return GetYnv(rpfEntry.ShortNameHash);
+                default:
+                    break;
+            }
+            return null;
+        }
         public YdrFile GetYdr(uint hash)
         {
             if (!IsInited) return null;

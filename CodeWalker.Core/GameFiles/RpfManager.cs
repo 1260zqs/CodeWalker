@@ -55,6 +55,8 @@ namespace CodeWalker.GameFiles
             ModRpfDict = new Dictionary<string, RpfFile>();
             ModEntryDict = new Dictionary<string, RpfEntry>();
 
+            var locker = new object();
+            var tasks = new List<Task>(allfiles.Length);
             foreach (string rpfpath in allfiles)
             {
                 try
@@ -74,21 +76,32 @@ namespace CodeWalker.GameFiles
                         }
                         if (excl) continue; //skip files in exclude paths.
                     }
-
-                    rf.ScanStructure(updateStatus, errorLog);
-
-                    if (rf.LastException != null) //incase of corrupted rpf (or renamed NG encrypted RPF)
+                    tasks.Add(Task.Run(() =>
                     {
-                        continue;
-                    }
-
-                    AddRpfFile(rf, false, false);
+                        try
+                        {
+                            rf.ScanStructure(updateStatus, errorLog);
+                        }
+                        catch (Exception e)
+                        {
+                            errorLog($"{replpath}:\n{e}");
+                        }
+                        if (rf.LastException == null) 
+                        {
+                            lock (locker)
+                            {
+                                AddRpfFile(rf, false, false);
+                            }
+                        }
+                        //incase of corrupted rpf (or renamed NG encrypted RPF)
+                    }));
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    errorLog(rpfpath + ": " + ex.ToString());
+                    errorLog($"{replpath}:\n{e}");
                 }
             }
+            Task.WaitAll(tasks.ToArray());
 
             if (buildIndex)
             {

@@ -13,17 +13,15 @@ public class TextureModProject
     public SortedList<Guid, ModTexture> modTextures = new();
     public SortedList<Guid, SourceTexture> sourceTextures = new();
 
-    public void CreateTextureMod(string filename, out ModTexture modTexture, out TextureReplacement replacement)
+    public ModTexture CreateTextureMod(string filename)
     {
-        modTexture = new ModTexture();
+        var modTexture = new ModTexture();
         modTexture.id = Guid.NewGuid();
         modTexture.filename = filename;
         modTexture.name = Path.GetFileName(filename);
         modTexture.createdAt = DateTimeOffset.Now;
         modTextures.Add(modTexture.id, modTexture);
-
-        replacement = CreateReplacement();
-        replacement.modTexture = modTexture.id;
+        return modTexture;
     }
 
     public TextureReplacement CreateReplacement()
@@ -118,6 +116,8 @@ public class ModTexture
 
     public Vector3 position;
     public Vector3 lookAtDirection;
+
+    public object editorState;
 }
 
 public class SourceTexture
@@ -132,6 +132,7 @@ public class TextureReplacement
     public Guid id;
 
     public string tag;
+    public string name;
     public string comment;
 
     public Guid modTexture;
@@ -141,4 +142,6 @@ public class TextureReplacement
     public bool flipX;
     public bool flipY;
     public float rotation;
+
+    public object editorState;
 }

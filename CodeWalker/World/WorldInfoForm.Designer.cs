@@ -46,6 +46,7 @@ namespace CodeWalker.World
             this.SelDrawableModelPropertyGrid = new CodeWalker.WinForms.PropertyGridFix();
             this.SelectionTexturesTabPage = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.modBtn = new System.Windows.Forms.Button();
             this.SaveAllTexturesButton = new System.Windows.Forms.Button();
             this.SaveTextureButton = new System.Windows.Forms.Button();
             this.SelDrawableTexturesTreeView = new CodeWalker.WinForms.TreeViewFix();
@@ -297,6 +298,7 @@ namespace CodeWalker.World
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.modBtn);
             this.splitContainer2.Panel1.Controls.Add(this.SaveAllTexturesButton);
             this.splitContainer2.Panel1.Controls.Add(this.SaveTextureButton);
             this.splitContainer2.Panel1.Controls.Add(this.SelDrawableTexturesTreeView);
@@ -307,6 +309,18 @@ namespace CodeWalker.World
             this.splitContainer2.Size = new System.Drawing.Size(817, 469);
             this.splitContainer2.SplitterDistance = 327;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // modBtn
+            // 
+            this.modBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.modBtn.Location = new System.Drawing.Point(226, 443);
+            this.modBtn.Name = "modBtn";
+            this.modBtn.Size = new System.Drawing.Size(75, 23);
+            this.modBtn.TabIndex = 5;
+            this.modBtn.Text = "Mod";
+            this.modBtn.UseVisualStyleBackColor = true;
+            this.modBtn.Click += new System.EventHandler(this.modBtn_Click);
             // 
             // SaveAllTexturesButton
             // 
@@ -825,5 +839,6 @@ namespace CodeWalker.World
         private System.Windows.Forms.NumericUpDown rectBoxW;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button modBtn;
     }
 }

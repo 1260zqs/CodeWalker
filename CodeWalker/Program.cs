@@ -70,7 +70,7 @@ namespace CodeWalker
             try
             {
 #endif
-            if (menumode || true)
+            if (menumode || false)
             {
                 Application.Run(new MenuForm());
             }
@@ -92,11 +92,8 @@ namespace CodeWalker
             }
             else
             {
-                //Application.Run(new WorldForm());
-                var form = new TextureModForm();
-                form.project = new TextureModProject();
-                form.adapter = new GTAVTextureModAdapter();
-                Application.Run(form);
+                //Application.Run(TextureModForm.Create());
+                Application.Run(new WorldForm());
             }
 #if !DEBUG
             }

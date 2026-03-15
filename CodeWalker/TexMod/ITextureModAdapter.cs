@@ -4,15 +4,24 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeWalker.GameFiles;
 
 namespace CodeWalker.TexMod;
 
 public interface ITextureModAdapter
 {
+    string MakeSourcePath(GameFile gameFile, string texName);
+    GameFile GetSourceFile(string sourcePath);
+    string GetSourceTextureName(string sourcePath);
+    Texture GetSourceTexture(GameFile gameFile, string texName);
 }
 
 public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
 {
+    static TextureModAdapter()
+    {
+    }
+
     class LoadingImage
     {
         public string fileName;
@@ -27,6 +36,7 @@ public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
         public int referenceCount;
     }
 
+    public WorldForm worldForm;
     private object locker = new();
     private Dictionary<string, LoadedImage> loadedImages = new();
     private Dictionary<string, LoadingImage> loadingImages = new();
@@ -109,4 +119,9 @@ public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
             // }
         }
     }
+
+    public abstract string MakeSourcePath(GameFile gameFile, string texName);
+    public abstract GameFile GetSourceFile(string sourcePath);
+    public abstract string GetSourceTextureName(string sourcePath);
+    public abstract Texture GetSourceTexture(GameFile gameFile, string texName);
 }

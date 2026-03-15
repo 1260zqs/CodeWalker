@@ -1,11 +1,47 @@
 ﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using CodeWalker.GameFiles;
+using Image = System.Drawing.Image;
 
 namespace CodeWalker.Utils;
 
 public static class FormExtensions
 {
+    public static SharpDX.Rectangle Convert(this System.Drawing.Rectangle rectangle)
+    {
+        return new SharpDX.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+    }
+
+    public static System.Drawing.Rectangle Convert(this SharpDX.Rectangle rectangle)
+    {
+        return new System.Drawing.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+    }
+
+    public static Image CreateImage(this Texture tex, int mip)
+    {
+        var cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
+        var pixels = DDSIO.GetPixels(tex, cmip);
+        var w = tex.Width >> cmip;
+        var h = tex.Height >> cmip;
+
+        if (pixels != null)
+        {
+            var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+            var boundsRect = new System.Drawing.Rectangle(0, 0, w, h);
+            var bmpData = bmp.LockBits(boundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
+            var ptr = bmpData.Scan0;
+            var bytes = bmpData.Stride * bmp.Height;
+            Marshal.Copy(pixels, 0, ptr, bytes);
+            bmp.UnlockBits(bmpData);
+            return bmp;
+        }
+        return null;
+    }
+
     public static void ShowDialog(this Exception exception)
     {
         if (exception == null) return;

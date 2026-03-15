@@ -314,6 +314,9 @@ namespace CodeWalker
             this.ToolbarCameraOrthographicButton = new System.Windows.Forms.ToolStripMenuItem();
             this.SubtitleLabel = new System.Windows.Forms.Label();
             this.SubtitleTimer = new System.Windows.Forms.Timer(this.components);
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.textureModToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.StatusStrip.SuspendLayout();
             this.ToolsPanel.SuspendLayout();
             this.ToolsTabControl.SuspendLayout();
@@ -2793,6 +2796,7 @@ namespace CodeWalker
             this.ToolsMenuRPFBrowser,
             this.ToolsMenuRPFExplorer,
             this.ToolsMenuSelectionInfo,
+            this.textureModToolsToolStripMenuItem,
             this.ToolsMenuProjectWindow,
             this.ToolsMenuCutsceneViewer,
             this.ToolsMenuAudioExplorer,
@@ -2806,7 +2810,7 @@ namespace CodeWalker
             this.ToolsMenuExtractShaders,
             this.ToolsMenuOptions});
             this.ToolsMenu.Name = "ToolsMenu";
-            this.ToolsMenu.Size = new System.Drawing.Size(181, 356);
+            this.ToolsMenu.Size = new System.Drawing.Size(181, 400);
             // 
             // ToolsMenuConfigureGame
             // 
@@ -2928,18 +2932,19 @@ namespace CodeWalker
             // 
             // ToolbarPanel
             // 
+            this.ToolbarPanel.AutoSize = true;
             this.ToolbarPanel.BackColor = System.Drawing.SystemColors.Control;
             this.ToolbarPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ToolbarPanel.Controls.Add(this.Toolbar);
-            this.ToolbarPanel.Location = new System.Drawing.Point(7, 6);
+            this.ToolbarPanel.Location = new System.Drawing.Point(6, 6);
             this.ToolbarPanel.Name = "ToolbarPanel";
-            this.ToolbarPanel.Size = new System.Drawing.Size(557, 24);
+            this.ToolbarPanel.Size = new System.Drawing.Size(638, 27);
             this.ToolbarPanel.TabIndex = 7;
             this.ToolbarPanel.Visible = false;
             // 
             // Toolbar
             // 
-            this.Toolbar.Dock = System.Windows.Forms.DockStyle.None;
+            this.Toolbar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Toolbar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.Toolbar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolbarNewButton,
@@ -2958,6 +2963,7 @@ namespace CodeWalker
             this.ToolbarUndoButton,
             this.ToolbarRedoButton,
             this.toolStripSeparator3,
+            this.toolStripButton1,
             this.ToolbarInfoWindowButton,
             this.ToolbarProjectWindowButton,
             this.toolStripSeparator4,
@@ -2968,9 +2974,9 @@ namespace CodeWalker
             this.ToolbarPasteButton,
             this.toolStripSeparator7,
             this.ToolbarCameraModeButton});
-            this.Toolbar.Location = new System.Drawing.Point(1, 0);
+            this.Toolbar.Location = new System.Drawing.Point(0, 0);
             this.Toolbar.Name = "Toolbar";
-            this.Toolbar.Size = new System.Drawing.Size(554, 25);
+            this.Toolbar.Size = new System.Drawing.Size(636, 25);
             this.Toolbar.TabIndex = 6;
             this.Toolbar.Text = "toolStrip1";
             // 
@@ -3649,6 +3655,27 @@ namespace CodeWalker
             // 
             this.SubtitleTimer.Tick += new System.EventHandler(this.SubtitleTimer_Tick);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "texModBtn";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // vsExtender
+            // 
+            this.vsExtender.DefaultRenderer = null;
+            // 
+            // textureModToolsToolStripMenuItem
+            // 
+            this.textureModToolsToolStripMenuItem.Name = "textureModToolsToolStripMenuItem";
+            this.textureModToolsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.textureModToolsToolStripMenuItem.Text = "Texture Mod...";
+            this.textureModToolsToolStripMenuItem.Click += new System.EventHandler(this.textureModToolsToolStripMenuItem_Click);
+            // 
             // WorldForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -4022,5 +4049,8 @@ namespace CodeWalker
         private System.Windows.Forms.CheckBox SavePositionCheckBox;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.ComboBox TexFilterComboBox;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
+        private System.Windows.Forms.ToolStripMenuItem textureModToolsToolStripMenuItem;
     }
 }

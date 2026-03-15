@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CodeWalker.TexMod;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
@@ -29,6 +30,7 @@ namespace CodeWalker.World
         string SelectionMode = "";
         bool MouseSelectEnable = false;
         Texture currentTex; // Used by save button
+        GameFile currentTexOwner;
 
         public WorldInfoForm(WorldForm worldForm)
         {
@@ -324,21 +326,10 @@ namespace CodeWalker.World
             try
             {
                 var cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
-                var pixels = DDSIO.GetPixels(tex, cmip);
                 var w = tex.Width >> cmip;
                 var h = tex.Height >> cmip;
-                var bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-
-                if (pixels != null)
-                {
-                    var BoundsRect = new System.Drawing.Rectangle(0, 0, w, h);
-                    var bmpData = bmp.LockBits(BoundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
-                    var ptr = bmpData.Scan0;
-                    var bytes = bmpData.Stride * bmp.Height;
-                    Marshal.Copy(pixels, 0, ptr, bytes);
-                    bmp.UnlockBits(bmpData);
-                }
-
+                var bmp = tex.CreateImage(mip);
+                
                 SelDrawableTexturePictureBox.Image = bmp;
                 SelTextureDimensionsLabel.Text = $"{w} x {h}";
             }
@@ -354,6 +345,7 @@ namespace CodeWalker.World
             var tex = texbase as Texture;
             YtdFile ytd = null;
             var errstr = string.Empty;
+            currentTexOwner = null;
             if ((tex == null) && (texbase != null))
             {
                 tex = TryGetTexture(texbase, out ytd, ref errstr);
@@ -387,8 +379,14 @@ namespace CodeWalker.World
                 SelTextureNameTextBox.Text = tex.Name;
                 SelTextureDictionaryTextBox.Text = (ytd != null) ? ytd.Name : (ydr != null) ? ydr.Name : (ydd != null) ? ydd.Name : (yft != null) ? yft.Name : string.Empty;
                 SaveTextureButton.Enabled = true;
-                if (owner is GameFile gameFile)
+                if (ytd != null)
                 {
+                    currentTexOwner = ytd;
+                    pathTextBox.Text = ytd.RpfFileEntry?.Path;
+                }
+                else if (owner is GameFile gameFile)
+                {
+                    currentTexOwner = gameFile;
                     pathTextBox.Text = gameFile.RpfFileEntry?.Path;
                 }
                 else
@@ -631,7 +629,7 @@ namespace CodeWalker.World
             rectBoxW.Value = 0;
             rectBoxH.Value = 0;
         }
-        
+
         private void OnZoomUpdate()
         {
             SelDrawableTexturePictureBox.Invalidate();
@@ -801,6 +799,14 @@ namespace CodeWalker.World
                         e.Graphics.DrawRectangle(pen, _rect);
                     }
                 }
+            }
+        }
+
+        private void modBtn_Click(object sender, EventArgs e)
+        {
+            if (currentTexOwner != null)
+            {
+                Tools.TextureModForm.ShowAddModSource(WorldForm, currentTexOwner, currentTex.Name);
             }
         }
     }

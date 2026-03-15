@@ -148,6 +148,11 @@ namespace CodeWalker
         public TKey Key;
         public DateTime LastUseTime;
         public long MemoryUsage;
+
+        public void Use()
+        {
+            LastUseTime = DateTime.Now;
+        }
     }
 
 }

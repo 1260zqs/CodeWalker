@@ -29,9 +29,9 @@ namespace CodeWalker.Rendering
         public DepthStencilView depthview { get; private set; }
 
         private volatile bool Running = false;
-        private volatile bool Rendering = false;
+        public volatile bool Rendering = false;
         private volatile bool Resizing = false;
-        private object syncroot = new object(); //for thread safety
+        public object syncroot = new object(); //for thread safety
         public int multisamplecount { get; private set; } = 4; //should be a setting..
         public int multisamplequality { get; private set; } = 0; //should be a setting...
         public Color clearcolour { get; private set; } = new Color(0.2f, 0.4f, 0.6f, 1.0f); //gross
