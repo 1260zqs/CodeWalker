@@ -161,6 +161,7 @@ namespace CodeWalker
         MapSelection LastMouseHit = new MapSelection();
         MapSelection PrevMouseHit = new MapSelection();
         HashSet<uint> MouseHitIgnoreEntity = new HashSet<uint>();
+        YmapEntityDef MouseHideEntity;
 
         bool MouseRayCollisionEnabled = true;
         bool MouseRayCollisionVisible = false;
@@ -456,6 +457,8 @@ namespace CodeWalker
 
             Renderer.BeginRender(context);
 
+            Renderer.RenderHideEntity(MouseHideEntity);
+
             Renderer.RenderSkyAndClouds();
 
             Renderer.SelectedDrawable = SelectedItem.Drawable;
@@ -554,6 +557,22 @@ namespace CodeWalker
                         LastMouseHit.Clear();
                         PrevMouseHit.Clear();
                         SelectedItem.Clear();
+                    }
+                }
+                if (Input.kbHideEntity)
+                {
+                    Input.kbHideEntity = false;
+                    if (Input.CtrlPressed)
+                    {
+                        MouseHideEntity = null;
+                    }
+                    else if (MouseHideEntity != null)
+                    {
+                        MouseHideEntity = null;
+                    }
+                    else if (CurMouseHit.EntityDef != null)
+                    {
+                        MouseHideEntity = CurMouseHit.EntityDef;
                     }
                 }
             }
