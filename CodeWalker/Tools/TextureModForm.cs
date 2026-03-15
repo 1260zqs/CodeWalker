@@ -54,6 +54,7 @@ public partial class TextureModForm : Form
         pictureBox1Async = new AsyncPictureBox(pictureBox1);
         previewPictureBoxAsync = new AsyncPictureBox(previewPictureBox);
         previewPictureBoxAsync.onPaint = PaintPreviewPicture;
+        UpdateGroupBoxVisibility();
 
         InitializeListView();
     }
@@ -341,7 +342,14 @@ public partial class TextureModForm : Form
     private void imageTabControl_Selected(object sender, TabControlEventArgs e)
     {
         ReadPanelDataFromSource();
-        groupBox1.Visible = e.TabPage == textureTabPage;
+        UpdateGroupBoxVisibility();
+    }
+
+    private void UpdateGroupBoxVisibility()
+    {
+        var tabPage = imageTabControl.SelectedTab;
+        groupBox1.Visible = tabPage == textureTabPage;
+        groupBox2.Visible = tabPage == previewTabPage;
     }
 
     private void WritePanelDataToSource()
@@ -484,5 +492,14 @@ public partial class TextureModForm : Form
 
         var h = rectBoxH.Value;
         rectBoxW.Value = width / height * h;
+    }
+
+    private void button7_Click(object sender, EventArgs e)
+    {
+        ApplyDrawing();
+    }
+
+    private void checkBox3_CheckedChanged(object sender, EventArgs e)
+    {
     }
 }

@@ -312,8 +312,7 @@ namespace CodeWalker.World
             // 
             // modBtn
             // 
-            this.modBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.modBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.modBtn.Location = new System.Drawing.Point(226, 443);
             this.modBtn.Name = "modBtn";
             this.modBtn.Size = new System.Drawing.Size(75, 23);

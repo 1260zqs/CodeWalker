@@ -40,6 +40,7 @@ namespace CodeWalker
         public volatile bool kbmoveup = false;
         public volatile bool kbmovedn = false;
         public volatile bool kbjump = false;
+        public volatile bool kbHideSelection = false;
         public volatile bool kbmoving = false;
 
         public KeyBindings keyBindings = new KeyBindings(Settings.Default.KeyBindings);
@@ -136,6 +137,7 @@ namespace CodeWalker
                 if (k == keyBindings.Jump) kbjump = true;
             }
 
+            if (k == Keys.H) kbHideSelection = true;
             kbmoving = kbmovefwd || kbmovebck || kbmovelft || kbmovergt || kbmoveup || kbmovedn || kbjump;
 
         }
@@ -153,6 +155,7 @@ namespace CodeWalker
             if (k == keyBindings.MoveUp) kbmoveup = false;
             if (k == keyBindings.MoveDown) kbmovedn = false;
             if (k == keyBindings.Jump) kbjump = false;
+            if (k == Keys.H) kbHideSelection = false;
 
             kbmoving = kbmovefwd || kbmovebck || kbmovelft || kbmovergt || kbmoveup || kbmovedn || kbjump;
 

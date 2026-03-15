@@ -136,7 +136,14 @@ public partial class TextureModForm
         {
             g.Clear(Color.Transparent);
             g.DrawImageUnscaled(sourceTex, 0, 0);
-            g.DrawImage(image, targetRect.Convert(), sourceRect.Convert(), GraphicsUnit.Pixel);
+            if (checkBox3.Checked)
+            {
+                g.FillRectangle(Brushes.Lime, targetRect.Convert());
+            }
+            else
+            {
+                g.DrawImage(image, targetRect.Convert(), sourceRect.Convert(), GraphicsUnit.Pixel);
+            }
         }
 
         lock (adapter.worldForm.RenderSyncRoot)

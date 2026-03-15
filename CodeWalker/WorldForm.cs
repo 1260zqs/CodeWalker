@@ -160,6 +160,7 @@ namespace CodeWalker
         MapSelection CurMouseHit = new MapSelection();
         MapSelection LastMouseHit = new MapSelection();
         MapSelection PrevMouseHit = new MapSelection();
+        HashSet<uint> MouseHitIgnoreEntity = new HashSet<uint>();
 
         bool MouseRayCollisionEnabled = true;
         bool MouseRayCollisionVisible = false;
@@ -535,6 +536,25 @@ namespace CodeWalker
                 if (Input.ControllerButtonJustPressed(GamepadButtonFlags.Start))
                 {
                     SetControlMode(ControlMode == WorldControlMode.Free ? WorldControlMode.Ped : WorldControlMode.Free);
+                }
+            }
+            if (ControlMode == WorldControlMode.Free)
+            {
+                if (Input.kbHideSelection)
+                {
+                    Input.kbHideSelection = false;
+                    if (Input.CtrlPressed)
+                    {
+                        MouseHitIgnoreEntity.Clear();
+                    }
+                    else if (CurMouseHit.EntityDef != null)
+                    {
+                        MouseHitIgnoreEntity.Add(CurMouseHit.EntityDef.EntityHash);
+                        CurMouseHit.Clear();
+                        LastMouseHit.Clear();
+                        PrevMouseHit.Clear();
+                        SelectedItem.Clear();
+                    }
                 }
             }
 
@@ -2422,6 +2442,10 @@ namespace CodeWalker
         {
             foreach (var rd in Renderer.RenderedDrawables)
             {
+                if (MouseHitIgnoreEntity.Contains(rd.Entity.EntityHash))
+                {
+                    continue;
+                }
                 UpdateMouseHits(rd.Drawable, rd.Archetype, rd.Entity);
             }
         }

@@ -49,7 +49,14 @@ namespace CodeWalker.Tools
             this.textureTabPage = new System.Windows.Forms.TabPage();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.button7 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -82,10 +89,6 @@ namespace CodeWalker.Tools
             this.listView2 = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -103,6 +106,7 @@ namespace CodeWalker.Tools
             this.textureTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
@@ -335,6 +339,7 @@ namespace CodeWalker.Tools
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.groupBox2);
             this.panel1.Location = new System.Drawing.Point(414, 6);
@@ -342,6 +347,39 @@ namespace CodeWalker.Tools
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(221, 337);
             this.panel1.TabIndex = 0;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.checkBox3);
+            this.groupBox3.Controls.Add(this.button7);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox3.Location = new System.Drawing.Point(0, 256);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(219, 100);
+            this.groupBox3.TabIndex = 60;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "groupBox3";
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(5, 52);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(114, 16);
+            this.checkBox3.TabIndex = 1;
+            this.checkBox3.Text = "draw test color";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(4, 21);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(105, 23);
+            this.button7.TabIndex = 0;
+            this.button7.Text = "update viewport";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // groupBox1
             // 
@@ -358,10 +396,50 @@ namespace CodeWalker.Tools
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 112);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(219, 191);
+            this.groupBox1.Size = new System.Drawing.Size(219, 144);
             this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Target rect";
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(108, 111);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(99, 23);
+            this.button5.TabIndex = 64;
+            this.button5.Text = "clip by height";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(4, 111);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(93, 23);
+            this.button6.TabIndex = 63;
+            this.button6.Text = "clip by width";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(108, 80);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(99, 23);
+            this.button4.TabIndex = 62;
+            this.button4.Text = "fill by height";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(4, 80);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(93, 23);
+            this.button3.TabIndex = 61;
+            this.button3.Text = "fill by width";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -708,46 +786,6 @@ namespace CodeWalker.Tools
             this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
             this.openFileDialog1.RestoreDirectory = true;
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(4, 80);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(93, 23);
-            this.button3.TabIndex = 61;
-            this.button3.Text = "fill by width";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(108, 80);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(99, 23);
-            this.button4.TabIndex = 62;
-            this.button4.Text = "fill by height";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(108, 111);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(99, 23);
-            this.button5.TabIndex = 64;
-            this.button5.Text = "clip by height";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(4, 111);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(93, 23);
-            this.button6.TabIndex = 63;
-            this.button6.Text = "clip by width";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
             // TextureModForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -774,6 +812,8 @@ namespace CodeWalker.Tools
             this.textureTabPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
@@ -854,5 +894,8 @@ namespace CodeWalker.Tools
         private Button button3;
         private Button button5;
         private Button button6;
+        private GroupBox groupBox3;
+        private CheckBox checkBox3;
+        private Button button7;
     }
 }

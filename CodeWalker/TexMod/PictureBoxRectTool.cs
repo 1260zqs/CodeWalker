@@ -114,14 +114,15 @@ public static class PictureBoxRectTool
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
                 var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
-                if (stateObject.enable == false) return;
-
-                stateObject.drawing = true;
-                stateObject.solid = e.Button == MouseButtons.Right;
-                stateObject.start = ScreenToImage(stateObject, e.Location);
-                stateObject.rect = new Rectangle(stateObject.start, Size.Empty);
-                stateObject.notify?.Invoke(stateObject.rect);
-                control.Invalidate();
+                if (stateObject.enable)
+                {
+                    stateObject.drawing = true;
+                    stateObject.solid = e.Button == MouseButtons.Right;
+                    stateObject.start = ScreenToImage(stateObject, e.Location);
+                    stateObject.rect = new Rectangle(stateObject.start, Size.Empty);
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
             }
         }
     }
