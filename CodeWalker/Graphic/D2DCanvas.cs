@@ -206,10 +206,11 @@ public class D2DCanvas : Control
         {
             if (imageSource.error)
             {
-
+                //target.DrawText("unable to load image");
             }
             else if (imageSource.loading)
             {
+                //target.DrawText("loading...");
                 Invalidate();
             }
             else if (imageSource.ready)
