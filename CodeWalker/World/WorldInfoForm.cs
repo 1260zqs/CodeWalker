@@ -806,7 +806,7 @@ namespace CodeWalker.World
         {
             if (currentTexOwner != null)
             {
-                Tools.TextureModForm.ShowAddModSource(WorldForm, currentTexOwner, currentTex.Name);
+                TexMod.TextureModForm.ShowAddModSource(WorldForm, currentTexOwner, currentTex.Name);
             }
         }
     }

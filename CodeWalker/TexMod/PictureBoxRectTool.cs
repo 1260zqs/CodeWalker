@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using SharpDX;
+using SharpDX.Mathematics.Interop;
+using Color = System.Drawing.Color;
+using Matrix = System.Drawing.Drawing2D.Matrix;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace CodeWalker;
 
@@ -17,8 +22,13 @@ public static class PictureBoxRectTool
         public Point start;
         public Rectangle rect;
         public Color color;
+
+        public bool gdi;
+        public bool d2d;
         public Matrix matrix;
         public bool matrixInvert;
+        public Matrix3x2 matrix3x2;
+
         public Action<Rectangle> notify;
     }
 
@@ -69,6 +79,29 @@ public static class PictureBoxRectTool
         }
     }
 
+    public static void Paint(D2DCanvas canvas)
+    {
+        if (stateObjects.TryGetValue(GetHandle(canvas), out var stateObject))
+        {
+            stateObject.d2d = true;
+            stateObject.gdi = false;
+            stateObject.matrixInvert = false;
+            stateObject.matrix3x2 = canvas.transform;
+            var rect = stateObject.rect;
+            if (rect.Width > 0 && rect.Height > 0)
+            {
+                if (stateObject.solid)
+                {
+                    canvas.FillRectangle(rect, new RawColor4(1f, 0, 0, 0.5f));
+                }
+                else
+                {
+                    canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f);
+                }
+            }
+        }
+    }
+
     public static void Paint(PictureBox pictureBox, Graphics graphics)
     {
         if (stateObjects.TryGetValue(GetHandle(pictureBox), out var stateObject))
@@ -76,6 +109,8 @@ public static class PictureBoxRectTool
             var rect = stateObject.rect;
             stateObject.matrix = graphics.Transform;
             stateObject.matrixInvert = false;
+            stateObject.gdi = true;
+            stateObject.d2d = true;
             if (rect.Width > 0 && rect.Height > 0)
             {
                 if (stateObject.solid)
@@ -129,16 +164,31 @@ public static class PictureBoxRectTool
 
     static Point ScreenToImage(StateObject stateObject, Point p)
     {
-        if (stateObject.matrix != null)
+        if (stateObject.gdi)
         {
             var pts = new[] { p };
+            if (stateObject.matrix != null)
+            {
+                if (!stateObject.matrixInvert)
+                {
+                    stateObject.matrixInvert = true;
+                    stateObject.matrix.Invert();
+                }
+                stateObject.matrix.TransformPoints(pts);
+            }
+            return pts[0];
+        }
+        else if (stateObject.d2d)
+        {
             if (!stateObject.matrixInvert)
             {
                 stateObject.matrixInvert = true;
-                stateObject.matrix.Invert();
+                stateObject.matrix3x2.Invert();
             }
-            stateObject.matrix.TransformPoints(pts);
-            return pts[0];
+            var point = new Vector2(p.X, p.Y);
+            Matrix3x2.TransformPoint(ref stateObject.matrix3x2, ref point, out var result);
+            p.X = (int)result.X;
+            p.Y = (int)result.Y;
         }
         return p;
     }
@@ -169,6 +219,7 @@ public static class PictureBoxRectTool
     private static StateObject ValueFactory(int key)
     {
         var stateObject = new StateObject();
+        stateObject.matrix3x2 = Matrix3x2.Identity;
         stateObject.color = defaultColor;
         stateObject.enable = true;
         return stateObject;

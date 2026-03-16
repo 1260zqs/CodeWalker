@@ -1,61 +1,85 @@
-﻿using SharpDX;
-using SharpDX.Direct2D1;
-using SharpDX.DXGI;
-using SharpDX.Mathematics.Interop;
-using SharpDX.WIC;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows.Forms;
-
+using SharpDX;
+using SharpDX.WIC;
+using SharpDX.DXGI;
+using SharpDX.Direct2D1;
+using SharpDX.DirectWrite;
+using SharpDX.Mathematics.Interop;
+using CodeWalker.Utils;
+using Bitmap = SharpDX.Direct2D1.Bitmap;
 using Factory = SharpDX.Direct2D1.Factory;
 using WicFactory = SharpDX.WIC.ImagingFactory;
+using FactoryType = SharpDX.Direct2D1.FactoryType;
+using BitmapInterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode;
 
 namespace CodeWalker;
 
-public class AsyncImageSource : IDisposable
+public enum AsyncImageState : byte
 {
-    private string filename;
-    private WindowRenderTarget target;
-    private SharpDX.Direct2D1.Bitmap bitmap;
-    private Func<SharpDX.Direct2D1.Bitmap> uploadBitmap;
+    None,
+    Loading,
+    Ready,
+    Loaded,
+    Error
+}
 
-    public bool loading;
-    public bool ready;
-    public bool error;
+public abstract class AsyncImageSource : IDisposable
+{
+    public int width;
+    public int height;
+    public AsyncImageState state;
+    public bool loading => state == AsyncImageState.Loading;
+    public bool error => state == AsyncImageState.Error;
 
-    public AsyncImageSource(string filename)
-    {
-        this.filename = filename;
-    }
+    protected Bitmap bitmap;
+    protected Func<Bitmap> uploadBitmap;
 
-    public SharpDX.Direct2D1.Bitmap GetBitmap()
+    public abstract void Load(WindowRenderTarget target);
+    public abstract bool Equals(AsyncImageSource other);
+    public abstract void Dispose();
+
+    public virtual Bitmap GetBitmap()
     {
         if (bitmap != null)
         {
             return bitmap;
         }
-        if (error) return null;
-        if (ready && uploadBitmap != null)
+        if (state == AsyncImageState.Error) return null;
+        if (state == AsyncImageState.Ready && uploadBitmap != null)
         {
             bitmap = uploadBitmap();
+            state = AsyncImageState.Loaded;
             uploadBitmap = null;
         }
         return bitmap;
     }
+}
 
-    public void StartLoad(WindowRenderTarget target)
+public class AsyncImageFileSource : AsyncImageSource
+{
+    private string filename;
+    private WindowRenderTarget target;
+
+    private bool disposed;
+
+    public AsyncImageFileSource(string filename)
     {
-        if (loading || ready) return;
-        this.target = target;
+        this.filename = filename;
+    }
 
-        error = false;
-        ready = false;
-        loading = true;
-
-        Task.Run(Load);
+    public override void Load(WindowRenderTarget target)
+    {
+        if (state == AsyncImageState.None)
+        {
+            this.target = target;
+            state = AsyncImageState.Loading;
+            Task.Run(Load);
+        }
     }
 
     private void Load()
@@ -75,41 +99,42 @@ public class AsyncImageSource : IDisposable
                 BitmapPaletteType.Custom
             );
 
-            var width = converter.Size.Width;
-            var height = converter.Size.Height;
+            width = converter.Size.Width;
+            height = converter.Size.Height;
 
             var stride = width * 4;
             var pixels = new byte[stride * height];
             converter.CopyPixels(pixels, stride);
 
-            var dataStream = new DataStream(pixels.Length, true, true);
-            dataStream.Write(pixels, 0, pixels.Length);
-            dataStream.Position = 0;
+            var data = new DataStream(pixels.Length, true, true);
+            data.Write(pixels, 0, pixels.Length);
+            data.Position = 0;
+            if (disposed)
+            {
+                data.Dispose();
+                return;
+            }
 
-            uploadBitmap = () => UploadBitmap(width, height, dataStream);
-            loading = false;
+            uploadBitmap = () => UploadBitmap(data);
+            state = AsyncImageState.Ready;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            loading = false;
-            ready = false;
-            error = true;
+            Console.WriteLine(ex);
+            state = AsyncImageState.Error;
         }
     }
 
-    private SharpDX.Direct2D1.Bitmap UploadBitmap(int width, int height, DataStream data)
+    private Bitmap UploadBitmap(DataStream data)
     {
-        SharpDX.Direct2D1.Bitmap bitmap = null;
         try
         {
-            var format = new SharpDX.Direct2D1.PixelFormat(
-                Format.B8G8R8A8_UNorm,
-                SharpDX.Direct2D1.AlphaMode.Premultiplied
-            );
-            var bmpProps = new BitmapProperties(format);
+            var pixelFormat = new SharpDX.Direct2D1.
+                PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Premultiplied);
+            var bmpProps = new BitmapProperties(pixelFormat);
 
             var stride = width * 4;
-            bitmap = new SharpDX.Direct2D1.Bitmap(
+            bitmap = new Bitmap(
                 target,
                 new Size2(width, height),
                 new DataPointer(data.DataPointer, stride * height),
@@ -117,20 +142,31 @@ public class AsyncImageSource : IDisposable
                 bmpProps
             );
             data.Dispose();
-            ready = true;
+            data = null;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            loading = false;
-            error = true;
-            data.Dispose();
+            state = AsyncImageState.Error;
+            Console.WriteLine(ex);
+            data?.Dispose();
         }
         return bitmap;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
+        disposed = true;
+        uploadBitmap = null;
         Utilities.Dispose(ref bitmap);
+    }
+
+    public override bool Equals(AsyncImageSource other)
+    {
+        if (other is AsyncImageFileSource x)
+        {
+            return x.filename == filename;
+        }
+        return false;
     }
 }
 
@@ -138,21 +174,32 @@ public class D2DCanvas : Control
 {
     public static readonly WicFactory wic;
     public static readonly Factory factory;
+    public static readonly TextFormat fontSegoeUI_16;
+    public static readonly TextFormat fontSegoeUI_12;
 
     static D2DCanvas()
     {
         wic = new WicFactory();
         factory = new Factory(FactoryType.MultiThreaded);
+
+        using var dwFactory = new SharpDX.DirectWrite.Factory();
+        fontSegoeUI_16 = new TextFormat(dwFactory, "Segoe UI", 16f);
+        fontSegoeUI_12 = new TextFormat(dwFactory, "Segoe UI", 12f);
     }
 
+    SolidColorBrush brush;
     WindowRenderTarget target;
     AsyncImageSource imageSource;
+    Bitmap safeBitmap;
+
+    public RawMatrix3x2 transform => target.Transform;
+    public Action<D2DCanvas, WindowRenderTarget, Bitmap> onPaint;
 
     public D2DCanvas()
     {
         SetStyle(ControlStyles.AllPaintingInWmPaint
-            | ControlStyles.SupportsTransparentBackColor
-            | ControlStyles.UserPaint, true);
+                 | ControlStyles.UserPaint
+                 | ControlStyles.Opaque, true);
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -163,24 +210,32 @@ public class D2DCanvas : Control
         {
             Hwnd = Handle,
             PixelSize = new Size2(Width, Height),
-            PresentOptions = PresentOptions.None
+            PresentOptions = PresentOptions.Immediately
         };
         var format = new SharpDX.Direct2D1.PixelFormat(
-            Format.Unknown,
+            Format.R8G8B8A8_UNorm,
             SharpDX.Direct2D1.AlphaMode.Premultiplied
         );
         var rtProps = new RenderTargetProperties(
-            RenderTargetType.Default,
+            RenderTargetType.Hardware,
             format, 0, 0,
             RenderTargetUsage.None,
             FeatureLevel.Level_DEFAULT
         );
         target = new WindowRenderTarget(factory, rtProps, props);
+        brush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
+        if (imageSource != null)
+        {
+            imageSource.Load(target);
+        }
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
+        safeBitmap = null;
+        Utilities.Dispose(ref brush);
         Utilities.Dispose(ref target);
+        Utilities.Dispose(ref imageSource);
         base.OnHandleDestroyed(e);
     }
 
@@ -194,39 +249,181 @@ public class D2DCanvas : Control
         }
     }
 
+    public bool HasImage()
+    {
+        if (imageSource != null)
+        {
+            return imageSource.state == AsyncImageState.Loaded;
+        }
+        return false;
+    }
+
+    public Size2 GetImageSize()
+    {
+        if (imageSource != null)
+        {
+            return new Size2(imageSource.width, imageSource.height);
+        }
+        return Size2.Zero;
+    }
+
+    public Bitmap GetImage()
+    {
+        return safeBitmap;
+    }
+
+    public void SetImage(string imagePath)
+    {
+        SetImage(new AsyncImageFileSource(imagePath));
+    }
+
+    public void SetImage(AsyncImageSource source)
+    {
+        if (imageSource != null && imageSource.Equals(source))
+        {
+            return;
+        }
+        safeBitmap = null;
+        Utilities.Dispose(ref imageSource);
+        imageSource = source;
+        if (target != null)
+        {
+            imageSource?.Load(target);
+        }
+        Invalidate();
+    }
+
+    protected override void OnPaintBackground(PaintEventArgs e)
+    {
+    }
+
     protected override void OnPaint(PaintEventArgs e)
     {
         if (target == null) return;
 
         var c = BackColor;
         target.BeginDraw();
-        target.Clear(new RawColor4(c.R, c.G, c.B, c.A));
+        target.Clear(new RawColor4(
+            c.R / 255f,
+            c.G / 255f,
+            c.B / 255f,
+            c.A / 255f
+        ));
 
+        target.Transform = Matrix3x2.Identity;
         if (imageSource != null)
         {
             if (imageSource.error)
             {
-                //target.DrawText("unable to load image");
+                DrawText("unable to load image", 6, 0, Color.Red, fontSegoeUI_16);
             }
             else if (imageSource.loading)
             {
-                //target.DrawText("loading...");
+                DrawText("loading...", 6, 0, Color.Orange, fontSegoeUI_16);
                 Invalidate();
             }
-            else if (imageSource.ready)
+            else if (imageSource.state == AsyncImageState.Ready || imageSource.state == AsyncImageState.Loaded)
             {
-                var bitmap = imageSource.GetBitmap();
-                if (bitmap != null)
+                if (imageSource.GetBitmap() is { } bitmap)
                 {
-                    target.DrawBitmap(
-                        bitmap,
-                        new RawRectangleF(0, 0, bitmap.Size.Width, bitmap.Size.Height),
-                        1f,
-                        SharpDX.Direct2D1.BitmapInterpolationMode.Linear
-                    );
+                    safeBitmap = bitmap;
+                    if (onPaint == null)
+                    {
+                        target.DrawBitmap(
+                            bitmap,
+                            new RawRectangleF(0, 0, bitmap.Size.Width, bitmap.Size.Height),
+                            1f,
+                            BitmapInterpolationMode.NearestNeighbor
+                        );
+                    }
+                    else
+                    {
+                        try
+                        {
+                            onPaint?.Invoke(this, target, bitmap);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex);
+                        }
+                    }
                 }
             }
         }
         target.EndDraw();
+    }
+
+    public void FillRectangle(in System.Drawing.Rectangle rectangle, RawColor4 color)
+    {
+        var r = new RawRectangleF(
+            rectangle.Left,
+            rectangle.Top,
+            rectangle.Right,
+            rectangle.Bottom
+        );
+        brush.Color = color;
+        target.FillRectangle(r, brush);
+    }
+
+    public void DrawRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color, float thickness)
+    {
+        var r = new RawRectangleF(
+            rectangle.Left,
+            rectangle.Top,
+            rectangle.Right,
+            rectangle.Bottom
+        );
+        brush.Color = color;
+        target.DrawRectangle(r, brush, thickness);
+    }
+
+    public void DrawBitmap(Bitmap bitmap, int x, int y)
+    {
+        DrawBitmap(bitmap, new RawRectangleF(0, 0, bitmap.Size.Width, bitmap.Size.Height));
+    }
+
+    public void DrawBitmap(Bitmap bitmap, in RawRectangleF rectangle)
+    {
+        target.DrawBitmap(bitmap, rectangle, 1f, BitmapInterpolationMode.NearestNeighbor);
+    }
+
+    public void DrawBitmap(Bitmap bitmap, in System.Drawing.Rectangle destinationRectangle, in System.Drawing.Rectangle sourceRectangle)
+    {
+        target.DrawBitmap(
+            bitmap,
+            destinationRectangle.Convert2(),
+            1f,
+            BitmapInterpolationMode.NearestNeighbor,
+            sourceRectangle.Convert2()
+        );
+    }
+
+    public void DrawBitmap(Bitmap bitmap, in RawRectangleF destinationRectangle, in RawRectangleF sourceRectangle)
+    {
+        target.DrawBitmap(
+            bitmap,
+            destinationRectangle,
+            1f,
+            BitmapInterpolationMode.NearestNeighbor,
+            sourceRectangle
+        );
+    }
+
+    public void SetTransformation(float x, float y, float scale)
+    {
+        target.Transform = Matrix3x2.Scaling(scale, scale) * Matrix3x2.Translation(x, y);
+    }
+
+    public void DrawText(string text, int x, int y, in Color color, TextFormat font = null)
+    {
+        brush.Color = color;
+        target.DrawText(
+            text,
+            font ?? fontSegoeUI_12,
+            new RawRectangleF(x, y, Width, Height),
+            brush,
+            DrawTextOptions.None,
+            MeasuringMode.Natural
+        );
     }
 }

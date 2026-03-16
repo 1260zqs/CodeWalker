@@ -5,11 +5,14 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CodeWalker.GameFiles;
-using CodeWalker.TexMod;
 using CodeWalker.Utils;
+using SharpDX.Direct2D1;
+using SharpDX.Mathematics.Interop;
 using WeifenLuo.WinFormsUI.Docking;
+using Bitmap = SharpDX.Direct2D1.Bitmap;
+using Image = System.Drawing.Image;
 
-namespace CodeWalker.Tools;
+namespace CodeWalker.TexMod;
 
 public partial class TextureModForm : Form
 {
@@ -46,34 +49,55 @@ public partial class TextureModForm : Form
         numericUpDown2.Maximum = int.MaxValue;
         numericUpDown2.Minimum = int.MinValue;
 
-        PictureBoxViewer.AddFeature(previewPictureBox);
-        PictureBoxRectTool.AddFeature(previewPictureBox, OnRectDrawingChange);
+        PictureBoxViewer.AddFeature(previewCanvas);
+        PictureBoxViewer.AddFeature(textureCanvas);
 
-        PictureBoxViewer.AddFeature(pictureBox1);
-        PictureBoxRectTool.AddFeature(pictureBox1, OnRectDrawingChange);
-        pictureBox1Async = new AsyncPictureBox(pictureBox1);
-        previewPictureBoxAsync = new AsyncPictureBox(previewPictureBox);
-        previewPictureBoxAsync.onPaint = PaintPreviewPicture;
+        PictureBoxRectTool.AddFeature(previewCanvas, OnRectDrawingChange);
+        PictureBoxRectTool.AddFeature(textureCanvas, OnRectDrawingChange);
+        previewCanvas.onPaint = PaintPreviewPicture;
+        textureCanvas.onPaint = PaintTexturePicture;
         UpdateGroupBoxVisibility();
 
         InitializeListView();
     }
 
-    private void PaintPreviewPicture(Graphics g, Image image)
+    private void PaintTexturePicture(D2DCanvas canvas, WindowRenderTarget target, Bitmap bitmap)
     {
-        g.DrawImage(image, 0, 0);
+        var pixelSize = bitmap.PixelSize;
+        PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
+        canvas.DrawText(
+            $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
+            6, 0,
+            new SharpDX.Color(0, 0, 0, 0.5f)
+        );
+        canvas.SetTransformation(pan.X, pan.Y, zoom);
+        canvas.DrawBitmap(bitmap, 0, 0);
+        PictureBoxRectTool.Paint(canvas);
+    }
+
+    private void PaintPreviewPicture(D2DCanvas canvas, WindowRenderTarget target, Bitmap bitmap)
+    {
+        var pixelSize = bitmap.PixelSize;
+        PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
+        canvas.DrawText(
+            $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
+            6, 0,
+            new SharpDX.Color(0, 0, 0, 0.5f)
+        );
+        canvas.SetTransformation(pan.X, pan.Y, zoom);
+        canvas.DrawBitmap(bitmap, 0, 0);
         if (currentMod != null && currentReplacement != null)
         {
-            var tex = pictureBox1Async.GetImage();
+            var tex = textureCanvas.GetImage();
             if (tex == null)
             {
-                previewPictureBox.Invalidate();
+                previewCanvas.Invalidate();
                 return;
             }
             var srcRect = currentMod.sourceRect.Convert();
             var destRect = currentReplacement.targetRect.Convert();
-            var imgBounds = new Rectangle(0, 0, image.Width, image.Height);
-            var clippedDest = Rectangle.Intersect(destRect, imgBounds);
+            var imgBounds = new System.Drawing.Rectangle(0, 0, pixelSize.Width, pixelSize.Height);
+            var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
 
             if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
                 return;
@@ -89,17 +113,15 @@ public partial class TextureModForm : Form
             srcRect.Width = (int)(clippedDest.Width * scaleX);
             srcRect.Height = (int)(clippedDest.Height * scaleY);
 
-            g.DrawImage(tex, clippedDest, srcRect, GraphicsUnit.Pixel);
+            canvas.DrawBitmap(tex, clippedDest, srcRect);
         }
+        PictureBoxRectTool.Paint(canvas);
     }
 
     private void OnRectDrawingChange(System.Drawing.Rectangle obj)
     {
         WritePanelDataToSource();
     }
-
-    private AsyncPictureBox pictureBox1Async;
-    private AsyncPictureBox previewPictureBoxAsync;
 
     protected override void OnLoad(EventArgs e)
     {
@@ -229,7 +251,7 @@ public partial class TextureModForm : Form
         {
             if (currentMod != null)
             {
-                currentMod.editorState = PictureBoxViewer.SaveState(pictureBox1);
+                currentMod.editorState = PictureBoxViewer.SaveState(textureCanvas);
             }
             OnSelectTexMod(project.modTextures.Values[index]);
             break;
@@ -245,14 +267,13 @@ public partial class TextureModForm : Form
             {
                 if (currentReplacement != null)
                 {
-                    currentReplacement.editorState = PictureBoxViewer.SaveState(previewPictureBox);
+                    currentReplacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
                 }
                 OnReplacementSelected(replacement);
-                var pictureSource = new GamePackPictureSource(sourceTexture.sourceFile);
-                pictureSource.adapter = adapter;
-                DisplayPicture(previewPictureBoxAsync, pictureSource);
-                PictureBoxViewer.ResetViewer(previewPictureBox);
-                PictureBoxViewer.LoadState(previewPictureBox, replacement.editorState);
+                var imageSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
+                previewCanvas.SetImage(imageSource);
+                PictureBoxViewer.ResetViewer(previewCanvas);
+                PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
             }
             return;
         }
@@ -275,15 +296,15 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.GetRect(previewPictureBox, out var rect);
+            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
             rect.X = (int)rectBoxX.Value;
-            PictureBoxRectTool.SetRect(previewPictureBox, rect);
+            PictureBoxRectTool.SetRect(previewCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.GetRect(pictureBox1, out var rect);
+            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
             rect.X = (int)rectBoxX.Value;
-            PictureBoxRectTool.SetRect(pictureBox1, rect);
+            PictureBoxRectTool.SetRect(textureCanvas, rect);
         }
         WritePanelDataToSource();
     }
@@ -292,15 +313,15 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.GetRect(previewPictureBox, out var rect);
+            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
             rect.Y = (int)rectBoxY.Value;
-            PictureBoxRectTool.SetRect(previewPictureBox, rect);
+            PictureBoxRectTool.SetRect(previewCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.GetRect(pictureBox1, out var rect);
+            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
             rect.Y = (int)rectBoxY.Value;
-            PictureBoxRectTool.SetRect(pictureBox1, rect);
+            PictureBoxRectTool.SetRect(textureCanvas, rect);
         }
         WritePanelDataToSource();
     }
@@ -309,15 +330,15 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.GetRect(previewPictureBox, out var rect);
+            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
             rect.Width = (int)rectBoxW.Value;
-            PictureBoxRectTool.SetRect(previewPictureBox, rect);
+            PictureBoxRectTool.SetRect(previewCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.GetRect(pictureBox1, out var rect);
+            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
             rect.Width = (int)rectBoxW.Value;
-            PictureBoxRectTool.SetRect(pictureBox1, rect);
+            PictureBoxRectTool.SetRect(textureCanvas, rect);
         }
         WritePanelDataToSource();
     }
@@ -326,15 +347,15 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.GetRect(previewPictureBox, out var rect);
+            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
             rect.Height = (int)rectBoxH.Value;
-            PictureBoxRectTool.SetRect(previewPictureBox, rect);
+            PictureBoxRectTool.SetRect(previewCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.GetRect(pictureBox1, out var rect);
+            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
             rect.Height = (int)rectBoxH.Value;
-            PictureBoxRectTool.SetRect(pictureBox1, rect);
+            PictureBoxRectTool.SetRect(textureCanvas, rect);
         }
         WritePanelDataToSource();
     }
@@ -356,7 +377,7 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.GetRect(previewPictureBox, out var rect);
+            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
             if (currentReplacement != null)
             {
                 currentReplacement.targetRect = rect.Convert();
@@ -365,7 +386,7 @@ public partial class TextureModForm : Form
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.GetRect(pictureBox1, out var rect);
+            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
             if (currentMod != null)
             {
                 currentMod.sourceRect = rect.Convert();
@@ -384,9 +405,9 @@ public partial class TextureModForm : Form
             {
                 rect = currentReplacement.targetRect.Convert();
             }
-            PictureBoxRectTool.SetRect(previewPictureBox, rect);
-            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(previewPictureBox);
-            checkBox2.Checked = PictureBoxRectTool.GetSolid(previewPictureBox);
+            PictureBoxRectTool.SetRect(previewCanvas, rect);
+            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(previewCanvas);
+            checkBox2.Checked = PictureBoxRectTool.GetSolid(previewCanvas);
             SetRectBox(rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
@@ -396,9 +417,9 @@ public partial class TextureModForm : Form
             {
                 rect = currentMod.sourceRect.Convert();
             }
-            PictureBoxRectTool.SetRect(pictureBox1, rect);
-            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(pictureBox1);
-            checkBox2.Checked = PictureBoxRectTool.GetSolid(pictureBox1);
+            PictureBoxRectTool.SetRect(textureCanvas, rect);
+            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(textureCanvas);
+            checkBox2.Checked = PictureBoxRectTool.GetSolid(textureCanvas);
             SetRectBox(rect);
 
             numericUpDown1.Value = currentReplacement?.targetRect.Width ?? 0;
@@ -410,13 +431,13 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.SetSolid(previewPictureBox, checkBox2.Checked);
-            previewPictureBox.Invalidate();
+            PictureBoxRectTool.SetSolid(previewCanvas, checkBox2.Checked);
+            previewCanvas.Invalidate();
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.SetSolid(pictureBox1, checkBox2.Checked);
-            pictureBox1.Invalidate();
+            PictureBoxRectTool.SetSolid(textureCanvas, checkBox2.Checked);
+            textureCanvas.Invalidate();
         }
     }
 
@@ -424,13 +445,13 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == previewTabPage)
         {
-            PictureBoxRectTool.SetPaintEnable(previewPictureBox, checkBox1.Checked);
-            previewPictureBox.Invalidate();
+            PictureBoxRectTool.SetPaintEnable(previewCanvas, checkBox1.Checked);
+            previewCanvas.Invalidate();
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
-            PictureBoxRectTool.SetPaintEnable(pictureBox1, checkBox1.Checked);
-            pictureBox1.Invalidate();
+            PictureBoxRectTool.SetPaintEnable(textureCanvas, checkBox1.Checked);
+            textureCanvas.Invalidate();
         }
     }
 
@@ -446,30 +467,30 @@ public partial class TextureModForm : Form
 
     private void button3_Click(object sender, EventArgs e)
     {
-        var tex = pictureBox1Async.GetImage();
-        if (tex == null) return;
+        if (!textureCanvas.HasImage()) return;
+        var imageSize = textureCanvas.GetImageSize();
 
         var width = numericUpDown1.Value;
         var height = numericUpDown2.Value;
         if (width <= 0) return;
 
         rectBoxX.Value = 0;
-        rectBoxW.Value = tex.Width;
-        rectBoxH.Value = height / width * tex.Width;
+        rectBoxW.Value = imageSize.Width;
+        rectBoxH.Value = height / width * imageSize.Width;
     }
 
     private void button4_Click(object sender, EventArgs e)
     {
-        var tex = pictureBox1Async.GetImage();
-        if (tex == null) return;
+        if (!textureCanvas.HasImage()) return;
+        var imageSize = textureCanvas.GetImageSize();
 
         var width = numericUpDown1.Value;
         var height = numericUpDown2.Value;
         if (height <= 0) return;
 
         rectBoxY.Value = 0;
-        rectBoxH.Value = tex.Height;
-        rectBoxW.Value = width / height * tex.Width;
+        rectBoxH.Value = imageSize.Height;
+        rectBoxW.Value = width / height * imageSize.Width;
     }
 
     private void button6_Click(object sender, EventArgs e)

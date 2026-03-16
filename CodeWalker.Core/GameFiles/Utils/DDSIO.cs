@@ -102,13 +102,39 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace CodeWalker.Utils
 {
 
     public static class DDSIO
     {
+        public static DataStream GetPixelDataStream(Texture texture,
+            int mip,
+            out int dataSize,
+            out int width,
+            out int height,
+            out int ddsRowPitch,
+            out int ddsSlicePitch,
+            out DXGI_FORMAT format
+            )
+        {
+            format = GetDXGIFormat(texture.Format);
+            var img = GetImageStruct(texture, format);
+            var images = GetMipmapImages(img, format);
+            var meta = GetImageMetadata(img, format);
 
+            var i0 = images[Math.Min(Math.Max(mip, 0), images.Length - 1)];
+            width = i0.width;
+            height = i0.height;
+            dataSize = i0.slicePitch; // h * i0.rowPitch;
+            DXTex.ComputePitch(meta.format, i0.width, i0.height, out ddsRowPitch, out ddsSlicePitch, 0);
+
+            var data = new SharpDX.DataStream(dataSize, true, true);
+            data.Write(img.Data, i0.pixels, dataSize);
+            data.Position = 0;
+            return data;
+        }
 
         public static byte[] GetPixels(Texture texture, int mip)
         {

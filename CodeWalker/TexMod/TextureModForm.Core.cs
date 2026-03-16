@@ -9,7 +9,7 @@ using CodeWalker.Utils;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace CodeWalker.Tools;
+namespace CodeWalker.TexMod;
 
 public partial class TextureModForm
 {
@@ -29,9 +29,9 @@ public partial class TextureModForm
         if (currentMod != null)
         {
             project.FindTextureReplacements(currentMod.id, replacements);
-            DisplayPicture(pictureBox1Async, currentMod.filename);
-            PictureBoxViewer.ResetViewer(pictureBox1Async.pictureBox);
-            PictureBoxViewer.LoadState(pictureBox1, currentMod.editorState);
+            textureCanvas.SetImage(currentMod.filename);
+            PictureBoxViewer.ResetViewer(textureCanvas);
+            PictureBoxViewer.LoadState(textureCanvas, currentMod.editorState);
         }
         ReadPanelDataFromSource();
         replacementListView.SelectedIndices.Clear();
@@ -115,43 +115,43 @@ public partial class TextureModForm
 
     private void ApplyDrawing()
     {
-        var targetImage = pictureBox1Async.GetImage();
-        var sourceImage = previewPictureBoxAsync.GetImage();
-        if (sourceImage == null || targetImage == null) return;
-        if (currentMod == null || currentReplacement == null) return;
-
-        var image = (Image)targetImage;
-        var sourceTex = (Image)sourceImage;
-
-        var sourceRect = currentMod.sourceRect;
-        var targetRect = currentReplacement.targetRect;
-        var sourceTexture = project.sourceTextures[currentReplacement.sourceTexture];
-        var textureName = adapter.GetSourceTextureName(sourceTexture.sourceFile);
-        var nameHash = JenkHash.GenHash(textureName.ToLowerInvariant());
-
-        var width = sourceTex.Width;
-        var height = sourceTex.Height;
-        using var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-        using (var g = Graphics.FromImage(bitmap))
-        {
-            g.Clear(Color.Transparent);
-            g.DrawImageUnscaled(sourceTex, 0, 0);
-            if (checkBox3.Checked)
-            {
-                g.FillRectangle(Brushes.Lime, targetRect.Convert());
-            }
-            else
-            {
-                g.DrawImage(image, targetRect.Convert(), sourceRect.Convert(), GraphicsUnit.Pixel);
-            }
-        }
-
-        lock (adapter.worldForm.RenderSyncRoot)
-        {
-            var tex = adapter.worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
-                x.Key.NameHash == nameHash);
-            if (tex == null) return;
-            tex.Load(adapter.worldForm.Renderer.Device, bitmap);
-        }
+        // var targetImage = pictureBox1Async.GetImage();
+        // var sourceImage = previewPictureBoxAsync.GetImage();
+        // if (sourceImage == null || targetImage == null) return;
+        // if (currentMod == null || currentReplacement == null) return;
+        //
+        // var image = (Image)targetImage;
+        // var sourceTex = (Image)sourceImage;
+        //
+        // var sourceRect = currentMod.sourceRect;
+        // var targetRect = currentReplacement.targetRect;
+        // var sourceTexture = project.sourceTextures[currentReplacement.sourceTexture];
+        // var textureName = adapter.GetSourceTextureName(sourceTexture.sourceFile);
+        // var nameHash = JenkHash.GenHash(textureName.ToLowerInvariant());
+        //
+        // var width = sourceTex.Width;
+        // var height = sourceTex.Height;
+        // using var bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+        // using (var g = Graphics.FromImage(bitmap))
+        // {
+        //     g.Clear(Color.Transparent);
+        //     g.DrawImageUnscaled(sourceTex, 0, 0);
+        //     if (checkBox3.Checked)
+        //     {
+        //         g.FillRectangle(Brushes.Lime, targetRect.Convert());
+        //     }
+        //     else
+        //     {
+        //         g.DrawImage(image, targetRect.Convert(), sourceRect.Convert(), GraphicsUnit.Pixel);
+        //     }
+        // }
+        //
+        // lock (adapter.worldForm.RenderSyncRoot)
+        // {
+        //     var tex = adapter.worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+        //         x.Key.NameHash == nameHash);
+        //     if (tex == null) return;
+        //     tex.Load(adapter.worldForm.Renderer.Device, bitmap);
+        // }
     }
 }

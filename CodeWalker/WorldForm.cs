@@ -8116,7 +8116,7 @@ namespace CodeWalker
 
         private void ShowTextureModForm()
         {
-            TextureModForm.ShowWindow(this);
+            CodeWalker.TexMod.TextureModForm.ShowWindow(this);
         }
     }
 

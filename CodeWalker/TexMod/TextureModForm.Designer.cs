@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace CodeWalker.Tools
+namespace CodeWalker.TexMod
 {
     partial class TextureModForm
     {
@@ -45,9 +45,7 @@ namespace CodeWalker.Tools
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.previewTabPage = new System.Windows.Forms.TabPage();
-            this.previewPictureBox = new System.Windows.Forms.PictureBox();
             this.textureTabPage = new System.Windows.Forms.TabPage();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -89,6 +87,8 @@ namespace CodeWalker.Tools
             this.listView2 = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.previewCanvas = new CodeWalker.D2DCanvas();
+            this.textureCanvas = new CodeWalker.D2DCanvas();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -102,9 +102,7 @@ namespace CodeWalker.Tools
             this.imageContainer.SuspendLayout();
             this.imageTabControl.SuspendLayout();
             this.previewTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).BeginInit();
             this.textureTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -296,7 +294,7 @@ namespace CodeWalker.Tools
             // 
             // previewTabPage
             // 
-            this.previewTabPage.Controls.Add(this.previewPictureBox);
+            this.previewTabPage.Controls.Add(this.previewCanvas);
             this.previewTabPage.Location = new System.Drawing.Point(4, 28);
             this.previewTabPage.Name = "previewTabPage";
             this.previewTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -305,18 +303,9 @@ namespace CodeWalker.Tools
             this.previewTabPage.Text = "Preview";
             this.previewTabPage.UseVisualStyleBackColor = true;
             // 
-            // previewPictureBox
-            // 
-            this.previewPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewPictureBox.Location = new System.Drawing.Point(3, 3);
-            this.previewPictureBox.Name = "previewPictureBox";
-            this.previewPictureBox.Size = new System.Drawing.Size(391, 300);
-            this.previewPictureBox.TabIndex = 0;
-            this.previewPictureBox.TabStop = false;
-            // 
             // textureTabPage
             // 
-            this.textureTabPage.Controls.Add(this.pictureBox1);
+            this.textureTabPage.Controls.Add(this.textureCanvas);
             this.textureTabPage.Location = new System.Drawing.Point(4, 28);
             this.textureTabPage.Name = "textureTabPage";
             this.textureTabPage.Padding = new System.Windows.Forms.Padding(3);
@@ -324,15 +313,6 @@ namespace CodeWalker.Tools
             this.textureTabPage.TabIndex = 1;
             this.textureTabPage.Text = "Texture";
             this.textureTabPage.UseVisualStyleBackColor = true;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(391, 300);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // panel1
             // 
@@ -786,6 +766,24 @@ namespace CodeWalker.Tools
             this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
             this.openFileDialog1.RestoreDirectory = true;
             // 
+            // previewCanvas
+            // 
+            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
+            this.previewCanvas.Name = "previewCanvas";
+            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
+            this.previewCanvas.TabIndex = 0;
+            this.previewCanvas.Text = "d2DCanvas1";
+            // 
+            // textureCanvas
+            // 
+            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.textureCanvas.Name = "textureCanvas";
+            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.textureCanvas.TabIndex = 0;
+            this.textureCanvas.Text = "d2DCanvas1";
+            // 
             // TextureModForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -808,9 +806,7 @@ namespace CodeWalker.Tools
             this.imageContainer.ResumeLayout(false);
             this.imageTabControl.ResumeLayout(false);
             this.previewTabPage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.previewPictureBox)).EndInit();
             this.textureTabPage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -870,8 +866,6 @@ namespace CodeWalker.Tools
         private ToolStripDropDownButton repViewModeBtn;
         private ToolStripDropDownButton toolStripButton7;
         private OpenFileDialog openFileDialog1;
-        private PictureBox previewPictureBox;
-        private PictureBox pictureBox1;
         private NumericUpDown rectBoxH;
         private NumericUpDown rectBoxW;
         private Label label7;
@@ -897,5 +891,7 @@ namespace CodeWalker.Tools
         private GroupBox groupBox3;
         private CheckBox checkBox3;
         private Button button7;
+        private D2DCanvas previewCanvas;
+        private D2DCanvas textureCanvas;
     }
 }

@@ -11,6 +11,16 @@ namespace CodeWalker.Utils;
 
 public static class FormExtensions
 {
+    public static SharpDX.Mathematics.Interop.RawRectangleF Convert2(this System.Drawing.Rectangle rectangle)
+    {
+        return new SharpDX.Mathematics.Interop.RawRectangleF(
+            rectangle.Left,
+            rectangle.Top,
+            rectangle.Right,
+            rectangle.Bottom
+        );
+    }
+
     public static SharpDX.Rectangle Convert(this System.Drawing.Rectangle rectangle)
     {
         return new SharpDX.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
@@ -19,6 +29,19 @@ public static class FormExtensions
     public static System.Drawing.Rectangle Convert(this SharpDX.Rectangle rectangle)
     {
         return new System.Drawing.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+    }
+
+    public static Image CreateBitmap(this Texture tex, int mip)
+    {
+        var cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
+        var pixels = DDSIO.GetPixels(tex, cmip);
+        var w = tex.Width >> cmip;
+        var h = tex.Height >> cmip;
+
+        if (pixels != null)
+        {
+        }
+        return null;
     }
 
     public static Image CreateImage(this Texture tex, int mip)
