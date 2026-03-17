@@ -10,6 +10,13 @@ namespace CodeWalker.TexMod;
 
 public class GTAVTextureModAdapter : TextureModAdapter
 {
+    public WorldForm worldForm;
+
+    public GTAVTextureModAdapter(WorldForm form)
+    {
+        this.worldForm = form;
+    }
+
     public override string MakeSourcePath(GameFile gameFile, string texName)
     {
         if (gameFile is YdrFile ydr)

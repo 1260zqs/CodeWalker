@@ -109,12 +109,12 @@ public class AsyncImageFileSource : AsyncImageSource
             var data = new DataStream(pixels.Length, true, true);
             data.Write(pixels, 0, pixels.Length);
             data.Position = 0;
+
             if (disposed)
             {
                 data.Dispose();
                 return;
             }
-
             uploadBitmap = () => UploadBitmap(data);
             state = AsyncImageState.Ready;
         }
@@ -272,6 +272,12 @@ public class D2DCanvas : Control
         return safeBitmap;
     }
 
+    public void ClearImage()
+    {
+        safeBitmap = null;
+        Utilities.Dispose(ref imageSource);
+    }
+
     public void SetImage(string imagePath)
     {
         SetImage(new AsyncImageFileSource(imagePath));
@@ -283,14 +289,13 @@ public class D2DCanvas : Control
         {
             return;
         }
-        safeBitmap = null;
-        Utilities.Dispose(ref imageSource);
+        ClearImage();
         imageSource = source;
         if (target != null)
         {
             imageSource?.Load(target);
+            Invalidate();
         }
-        Invalidate();
     }
 
     protected override void OnPaintBackground(PaintEventArgs e)
@@ -301,14 +306,8 @@ public class D2DCanvas : Control
     {
         if (target == null) return;
 
-        var c = BackColor;
         target.BeginDraw();
-        target.Clear(new RawColor4(
-            c.R / 255f,
-            c.G / 255f,
-            c.B / 255f,
-            c.A / 255f
-        ));
+        target.Clear(null);
 
         target.Transform = Matrix3x2.Identity;
         if (imageSource != null)
@@ -340,7 +339,7 @@ public class D2DCanvas : Control
                     {
                         try
                         {
-                            onPaint?.Invoke(this, target, bitmap);
+                            onPaint(this, target, bitmap);
                         }
                         catch (Exception ex)
                         {
@@ -355,26 +354,14 @@ public class D2DCanvas : Control
 
     public void FillRectangle(in System.Drawing.Rectangle rectangle, RawColor4 color)
     {
-        var r = new RawRectangleF(
-            rectangle.Left,
-            rectangle.Top,
-            rectangle.Right,
-            rectangle.Bottom
-        );
         brush.Color = color;
-        target.FillRectangle(r, brush);
+        target.FillRectangle(rectangle.Convert2(), brush);
     }
 
     public void DrawRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color, float thickness)
     {
-        var r = new RawRectangleF(
-            rectangle.Left,
-            rectangle.Top,
-            rectangle.Right,
-            rectangle.Bottom
-        );
         brush.Color = color;
-        target.DrawRectangle(r, brush, thickness);
+        target.DrawRectangle(rectangle.Convert2(), brush, thickness);
     }
 
     public void DrawBitmap(Bitmap bitmap, int x, int y)

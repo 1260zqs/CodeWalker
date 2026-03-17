@@ -36,7 +36,6 @@ public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
         public int referenceCount;
     }
 
-    public WorldForm worldForm;
     private object locker = new();
     private Dictionary<string, LoadedImage> loadedImages = new();
     private Dictionary<string, LoadingImage> loadingImages = new();

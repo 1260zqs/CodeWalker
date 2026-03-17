@@ -45,14 +45,12 @@ public class AsyncGameTextureSource : AsyncImageSource
         var texName = adapter.GetSourceTextureName(sourceFile);
         while (loading)
         {
-            await Task.Yield();
             if (gameFile.Loaded)
             {
                 var texture = adapter.GetSourceTexture(gameFile, texName);
                 if (texture == null)
                 {
                     state = AsyncImageState.Error;
-
                     return;
                 }
                 try

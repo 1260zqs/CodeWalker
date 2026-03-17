@@ -16,15 +16,6 @@ namespace CodeWalker.TexMod;
 
 public partial class TextureModForm : Form
 {
-    static TextureModForm instance;
-
-    public static void ShowWindow(WorldForm worldForm)
-    {
-        instance = GetWindow(worldForm);
-        instance.Show();
-        instance.Focus();
-    }
-
     private TextureModForm()
     {
         InitializeComponent();
@@ -249,11 +240,7 @@ public partial class TextureModForm : Form
     {
         foreach (int index in modListView.SelectedIndices)
         {
-            if (currentMod != null)
-            {
-                currentMod.editorState = PictureBoxViewer.SaveState(textureCanvas);
-            }
-            OnSelectTexMod(project.modTextures.Values[index]);
+            SelectTexMod(project.modTextures.Values[index]);
             break;
         }
     }
@@ -263,18 +250,7 @@ public partial class TextureModForm : Form
         foreach (int index in replacementListView.SelectedIndices)
         {
             var replacement = replacements[index];
-            if (project.sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
-            {
-                if (currentReplacement != null)
-                {
-                    currentReplacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
-                }
-                OnReplacementSelected(replacement);
-                var imageSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
-                previewCanvas.SetImage(imageSource);
-                PictureBoxViewer.ResetViewer(previewCanvas);
-                PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
-            }
+            SelecteTexReplacement(replacement);
             return;
         }
     }

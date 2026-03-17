@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CodeWalker.Utils;
 using SharpDX;
 using Rectangle = SharpDX.Rectangle;
 
@@ -8,10 +9,39 @@ namespace CodeWalker.TexMod;
 
 public class TextureModProject
 {
-    public string workingPath;
+    public string manifestFile;
+    public PackageManifest manifest;
     public List<TextureReplacement> replacements = new();
     public SortedList<Guid, ModTexture> modTextures = new();
     public SortedList<Guid, SourceTexture> sourceTextures = new();
+
+    public static TextureModProject SetupWorkingProject(string workingDir)
+    {
+        var project = new TextureModProject();
+        var projectFile = Path.Combine(workingDir, "texturemod.xml");
+        if (File.Exists(projectFile))
+        {
+            try
+            {
+                project.Load(projectFile);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+        }
+        //MakesureFolder(Path.Combine(workingDir, "content"));
+        MakesureFolder(Path.Combine(workingDir, "working"));
+        return project;
+    }
+
+    private static void MakesureFolder(string folder)
+    {
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+    }
 
     public ModTexture CreateTextureMod(string filename)
     {

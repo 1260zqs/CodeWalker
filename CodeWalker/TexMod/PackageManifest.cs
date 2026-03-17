@@ -44,9 +44,9 @@ namespace CodeWalker
             XmlElement node = null;
             foreach (var archiveNode in list)
             {
-                foreach (var xmlElement in archiveNode.ChildNodes.OfType<XmlElement>())
+                foreach (XmlElement xmlElement in archiveNode.GetElementsByTagName("add"))
                 {
-                    if (xmlElement.Name == "add" && xmlElement.InnerText == content.filename)
+                    if (xmlElement.InnerText == content.filename)
                     {
                         node = xmlElement;
                         break;
@@ -90,7 +90,7 @@ namespace CodeWalker
                 results.Add(parent);
                 return;
             }
-            foreach (var child in parent.ChildNodes.OfType<XmlElement>())
+            foreach (XmlElement child in parent.GetElementsByTagName("archive"))
             {
                 if (IsArchiveWithPath(child, archives[index]))
                 {
@@ -104,9 +104,9 @@ namespace CodeWalker
             var archives = content.archives;
             if (index >= archives.Count)
             {
-                foreach (var child in parent.ChildNodes.OfType<XmlElement>())
+                foreach (XmlElement child in parent.GetElementsByTagName("add"))
                 {
-                    if (IsValue(child.Name, "add") && IsValue(child.InnerText, content.filename))
+                    if (IsValue(child.InnerText, content.filename))
                     {
                         results.Add(child);
                     }
@@ -114,7 +114,7 @@ namespace CodeWalker
                 return;
             }
 
-            foreach (var child in parent.ChildNodes.OfType<XmlElement>())
+            foreach (XmlElement child in parent.GetElementsByTagName("archive"))
             {
                 if (IsArchiveWithPath(child, archives[index]))
                 {
@@ -166,7 +166,7 @@ namespace CodeWalker
         {
             if (index >= archives.Count) return true;
 
-            foreach (var child in node.ChildNodes.OfType<XmlElement>())
+            foreach (XmlElement child in node.GetElementsByTagName("archive"))
             {
                 if (IsArchiveWithPath(child, archives[index]) && MatchArchiveChain(child, archives, index + 1))
                 {

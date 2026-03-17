@@ -1,21 +1,29 @@
-﻿using System.Xml;
+﻿using SharpDX.Direct2D1;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Windows.Media.Imaging;
+using System.Xml;
+using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CodeWalker.TexMod;
 
 public static class TextureModProjectExtension
 {
-    public static void Save(this TextureModProject project, string file)
+    public static void Save(this TextureModProject project, string filename)
     {
         var settings = new XmlWriterSettings
         {
             Indent = true
         };
 
-        using (var writer = XmlWriter.Create(file, settings))
+        using (var writer = XmlWriter.Create(filename, settings))
         {
             writer.WriteStartDocument();
             writer.WriteStartElement("TextureModProject");
-            writer.WriteElementString("WorkingPath", project.workingPath);
+            writer.WriteElementString("manifestFile", project.manifestFile);
 
             writer.WriteStartElement("Replacements");
             foreach (var replacement in project.replacements)
@@ -40,6 +48,7 @@ public static class TextureModProjectExtension
                 writer.WriteElementString("Id", $"{modTexture.id:N}");
                 writer.WriteElementString("CreatedAt", $"{modTexture.createdAt:G}");
                 writer.WriteElementString("Filename", modTexture.filename);
+                writer.WriteElementString("Name", modTexture.name);
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -59,12 +68,63 @@ public static class TextureModProjectExtension
             writer.WriteEndDocument();
         }
     }
-    //
-    // public static TextureModProject Load(string file)
-    // {
-    //     using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
-    //     {
-    //         return (TextureModProject)serializer.Deserialize(fs);
-    //     }
-    // }
+
+    public static void LoadPackageManifest(this TextureModProject project)
+    {
+        var manifest = new PackageManifest();
+        manifest.Load(project.manifestFile);
+        project.manifest = manifest;
+    }
+
+    public static void Load(this TextureModProject project, string filename)
+    {
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(filename);
+
+        var root = (XmlElement)xmlDoc.SelectSingleNode("/TextureModProject");
+        project.manifestFile = root["manifestFile"].InnerText;
+
+        project.replacements.Clear();
+        if (root["Replacements"] is XmlElement replacements)
+        {
+            foreach (XmlElement xmlElement in replacements.GetElementsByTagName("TextureReplacement"))
+            {
+                var replacement = new TextureReplacement();
+                replacement.id = Guid.Parse(xmlElement["Id"].InnerText);
+                replacement.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
+                replacement.sourceTexture = Guid.Parse(xmlElement["SourceTexture"].InnerText);
+                replacement.tag = xmlElement["Tag"].InnerText;
+                replacement.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
+                replacement.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
+                replacement.rotation = int.Parse(xmlElement["Rotation"].InnerText);
+                replacement.comment = xmlElement["Comment"].InnerText;
+                project.replacements.Add(replacement);
+            }
+        }
+        project.modTextures.Clear();
+        if (root["ModTextures"] is XmlElement modtextures)
+        {
+            foreach (XmlElement xmlElement in modtextures.GetElementsByTagName("ModTexture"))
+            {
+                var modTexture = new ModTexture();
+                modTexture.id = Guid.Parse(xmlElement["Id"].InnerText);
+                modTexture.createdAt = DateTime.Parse(xmlElement["CreatedAt"].InnerText);
+                modTexture.filename = xmlElement["Filename"].InnerText;
+                modTexture.name = xmlElement["Name"].InnerText;
+                project.modTextures.Add(modTexture.id, modTexture);
+            }
+        }
+        project.sourceTextures.Clear();
+        if (root["SourceTextures"] is XmlElement sourceTextures)
+        {
+            foreach (XmlElement xmlElement in sourceTextures.GetElementsByTagName("SourceTexture"))
+            {
+                var sourceTexture = new SourceTexture();
+                sourceTexture.id = Guid.Parse(xmlElement["Id"].InnerText);
+                sourceTexture.sourceFile = xmlElement["SourceFile"].InnerText;
+                sourceTexture.localFile = xmlElement["LocalFile"].InnerText;
+                project.sourceTextures.Add(sourceTexture.id, sourceTexture);
+            }
+        }
+    }
 }

@@ -1,47 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
-using CodeWalker.GameFiles;
+﻿using CodeWalker.GameFiles;
+using CodeWalker.Properties;
 using CodeWalker.TexMod;
 using CodeWalker.Utils;
 using SharpDX;
+using SharpDX.Direct2D1;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Forms;
 using Color = System.Drawing.Color;
 
 namespace CodeWalker.TexMod;
 
 public partial class TextureModForm
 {
-    public TextureModProject project;
-    public TextureModAdapter adapter;
+    static TextureModForm instance;
+    static CodeWalker.TexMod.TextureModProject workingProject;
 
-    private ModTexture currentMod;
-    private TextureReplacement currentReplacement;
-    private List<TextureReplacement> replacements = new();
-    private bool applyDrawing;
-
-    private void OnSelectTexMod(ModTexture modTexture)
+    public static void ShowWindow(WorldForm worldForm)
     {
-        currentMod = modTexture;
-        currentReplacement = null;
-        replacements.Clear();
-        if (currentMod != null)
-        {
-            project.FindTextureReplacements(currentMod.id, replacements);
-            textureCanvas.SetImage(currentMod.filename);
-            PictureBoxViewer.ResetViewer(textureCanvas);
-            PictureBoxViewer.LoadState(textureCanvas, currentMod.editorState);
-        }
-        ReadPanelDataFromSource();
-        replacementListView.SelectedIndices.Clear();
-        RefreshReplacementListView();
+        instance = GetWindow(worldForm);
+        if (instance == null) return;
+
+        instance.Show(worldForm);
+        instance.Focus();
     }
 
-    private void OnReplacementSelected(TextureReplacement replacement)
+    public static void ShowAddModSource(WorldForm worldForm, GameFile gameFile, string texName)
     {
-        currentReplacement = replacement;
-        ReadPanelDataFromSource();
+        var window = GetWindow(worldForm);
+        if (window == null) return;
+
+        window.AddModSource(gameFile, texName);
+        window.Show(window);
+        window.Focus();
     }
 
     public static TextureModForm GetWindow(WorldForm worldForm)
@@ -55,11 +49,96 @@ public partial class TextureModForm
 
     public static TextureModForm Create(WorldForm worldForm)
     {
+        var save = false;
+        var workingDir = Settings.Default.TexModWorkingDir;
+        if (string.IsNullOrEmpty(workingDir) || !Directory.Exists(workingDir))
+        {
+            save = true;
+            var setupForm = new TexModSetupForm();
+            setupForm.ProjectWorkingDir = workingDir;
+            if (setupForm.ShowDialog() != DialogResult.OK)
+            {
+                return null;
+            }
+            workingDir = setupForm.ProjectWorkingDir;
+        }
+        if (string.IsNullOrEmpty(workingDir) || !Directory.Exists(workingDir))
+        {
+            return null;
+        }
+        if (save)
+        {
+            Settings.Default.TexModWorkingDir = workingDir;
+        }
+        if (workingProject == null)
+        {
+            workingProject = CodeWalker.TexMod.TextureModProject.SetupWorkingProject(workingDir);
+        }
+        if (string.IsNullOrEmpty(workingProject.manifestFile) || !File.Exists(workingProject.manifestFile))
+        {
+            var setupForm = new TexModSetupForm();
+            setupForm.ProjectWorkingDir = workingDir;
+            setupForm.PackageManifestFile = workingProject.manifestFile;
+            if (setupForm.ShowDialog() != DialogResult.OK)
+            {
+                return null;
+            }
+            workingProject.manifestFile = setupForm.PackageManifestFile;
+        }
+        workingProject.LoadPackageManifest();
         var form = new TextureModForm();
-        form.project = new CodeWalker.TexMod.TextureModProject();
-        form.adapter = new CodeWalker.TexMod.GTAVTextureModAdapter();
-        form.adapter.worldForm = worldForm;
+        form.project = workingProject;
+        form.adapter = new CodeWalker.TexMod.GTAVTextureModAdapter(worldForm);
         return form;
+    }
+
+    public TextureModProject project;
+    public TextureModAdapter adapter;
+
+    private ModTexture currentMod;
+    private TextureReplacement currentReplacement;
+    private List<TextureReplacement> replacements = new();
+    private bool applyDrawing;
+
+    private void SelectTexMod(ModTexture modTexture)
+    {
+        if (currentMod != null)
+        {
+            currentMod.editorState = PictureBoxViewer.SaveState(textureCanvas);
+        }
+        replacements.Clear();
+        currentMod = modTexture;
+        currentReplacement = null;
+        textureCanvas.ClearImage();
+        previewCanvas.ClearImage();
+        PictureBoxViewer.ResetViewer(textureCanvas);
+        PictureBoxViewer.ResetViewer(previewCanvas);
+        if (currentMod != null)
+        {
+            textureCanvas.SetImage(currentMod.filename);
+            PictureBoxViewer.LoadState(textureCanvas, currentMod.editorState);
+        }
+
+        ReadPanelDataFromSource();
+        replacementListView.SelectedIndices.Clear();
+        RefreshReplacementListView(true);
+    }
+
+    private void SelecteTexReplacement(TextureReplacement replacement)
+    {
+        if (project.sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
+        {
+            if (currentReplacement != null)
+            {
+                currentReplacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
+            }
+            currentReplacement = replacement;
+            ReadPanelDataFromSource();
+
+            PictureBoxViewer.ResetViewer(previewCanvas);
+            PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
+            previewCanvas.SetImage(new AsyncGameTextureSource(adapter, sourceTexture.sourceFile));
+        }
     }
 
     public void AddModSource(GameFile gameFile, string texName)
@@ -90,13 +169,6 @@ public partial class TextureModForm
                 return;
             }
         }
-    }
-
-    public static void ShowAddModSource(WorldForm worldForm, GameFile gameFile, string texName)
-    {
-        var window = GetWindow(worldForm);
-        window.AddModSource(gameFile, texName);
-        window.Focus();
     }
 
     private void RenderUpdate()
