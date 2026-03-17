@@ -198,4 +198,23 @@ public static class PictureBoxViewer
         stateObjects.TryGetValue(GetHandle(control), out var stateObject);
         return stateObject;
     }
+
+    public static void FitViewer(Control control, int width, int height)
+    {
+        var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
+        var maxSize = Math.Max(width, height);
+        var maxView = Math.Min(control.Width, control.Height);
+        if (maxSize > 0)
+        {
+            stateObject.zoom = (maxView * 0.8f) / maxSize;
+
+            var scaledWidth = width * stateObject.zoom;
+            var scaledHeight = height * stateObject.zoom;
+
+            var offsetX = (control.Width - scaledWidth) * 0.5f;
+            var offsetY = (control.Height - scaledHeight) * 0.5f;
+
+            stateObject.pan = new Vector2(offsetX, offsetY);
+        }
+    }
 }

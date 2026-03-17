@@ -25,7 +25,7 @@ public partial class TextureModForm
         instance = GetWindow(worldForm);
         if (instance == null) return;
 
-        instance.Show(worldForm);
+        instance.Show();
         instance.Focus();
     }
 
@@ -35,7 +35,7 @@ public partial class TextureModForm
         if (window == null) return;
 
         window.AddModSource(gameFile, texName);
-        window.Show(window);
+        window.Show();
         window.Focus();
     }
 
@@ -51,6 +51,7 @@ public partial class TextureModForm
     public static TextureModForm Create(WorldForm worldForm)
     {
         var save = false;
+        var packageManifestFile = string.Empty;
         var workingDir = Settings.Default.TexModWorkingDir;
         if (string.IsNullOrEmpty(workingDir) || !Directory.Exists(workingDir))
         {
@@ -62,6 +63,7 @@ public partial class TextureModForm
                 return null;
             }
             workingDir = setupForm.ProjectWorkingDir;
+            packageManifestFile = setupForm.PackageManifestFile;
         }
         if (string.IsNullOrEmpty(workingDir) || !Directory.Exists(workingDir))
         {
@@ -73,9 +75,13 @@ public partial class TextureModForm
         }
         if (workingProject == null)
         {
-            workingProject = CodeWalker.TexMod.TextureModProject.SetupWorkingProject(workingDir);
+            workingProject = TextureModProject.SetupWorkingProject(workingDir);
         }
-        if (string.IsNullOrEmpty(workingProject.manifestFile) || !File.Exists(workingProject.manifestFile))
+        if (!string.IsNullOrEmpty(packageManifestFile) && File.Exists(packageManifestFile))
+        {
+            workingProject.manifestFile = packageManifestFile;
+        }
+        else if (string.IsNullOrEmpty(workingProject.manifestFile) || !File.Exists(workingProject.manifestFile))
         {
             var setupForm = new TexModSetupForm();
             setupForm.ProjectWorkingDir = workingDir;
@@ -86,10 +92,11 @@ public partial class TextureModForm
             }
             workingProject.manifestFile = setupForm.PackageManifestFile;
         }
+        Console.WriteLine("packageManifestFile: {0}", packageManifestFile);
         workingProject.LoadPackageManifest();
         var form = new TextureModForm();
         form.project = workingProject;
-        form.adapter = new CodeWalker.TexMod.GTAVTextureModAdapter(workingProject, worldForm);
+        form.adapter = new GTAVTextureModAdapter(workingProject, worldForm);
         return form;
     }
 
@@ -241,8 +248,10 @@ public partial class TextureModForm
 
         [ReadOnly(true)]
         public string modTexture { get; set; }
+
         [ReadOnly(true)]
         public string sourceTexture { get; set; }
+
         public string targetRect { get; set; }
 
         public bool flipX { get; set; }

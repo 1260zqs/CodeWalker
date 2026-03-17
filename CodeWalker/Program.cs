@@ -1,14 +1,15 @@
 ﻿using CodeWalker.Properties;
+using CodeWalker.TexMod;
 using CodeWalker.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Shell;
-using CodeWalker.TexMod;
 
 namespace CodeWalker
 {
@@ -93,6 +94,7 @@ namespace CodeWalker
             else
             {
                 //Application.Run(TextureModForm.Create());
+                AllocConsole();
                 Application.Run(new WorldForm());
             }
 #if !DEBUG
@@ -166,5 +168,8 @@ namespace CodeWalker
             {
             }
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern bool AllocConsole();
     }
 }

@@ -37,7 +37,7 @@ public abstract class AsyncImageSource : IDisposable
     public bool error => state == AsyncImageState.Error;
 
     protected Bitmap bitmap;
-    protected Func<Bitmap> uploadBitmap;
+    protected Func<Bitmap> createBitmap;
 
     public abstract void Load(WindowRenderTarget target);
     public abstract bool Equals(AsyncImageSource other);
@@ -50,11 +50,10 @@ public abstract class AsyncImageSource : IDisposable
             return bitmap;
         }
         if (state == AsyncImageState.Error) return null;
-        if (state == AsyncImageState.Ready && uploadBitmap != null)
+        if (state == AsyncImageState.Ready && createBitmap != null)
         {
-            bitmap = uploadBitmap();
-            state = AsyncImageState.Loaded;
-            uploadBitmap = null;
+            bitmap = createBitmap();
+            createBitmap = null;
         }
         return bitmap;
     }
@@ -115,7 +114,7 @@ public class AsyncImageFileSource : AsyncImageSource
                 data.Dispose();
                 return;
             }
-            uploadBitmap = () => UploadBitmap(data);
+            createBitmap = () => UploadBitmap(data);
             state = AsyncImageState.Ready;
         }
         catch (Exception ex)
@@ -143,6 +142,7 @@ public class AsyncImageFileSource : AsyncImageSource
             );
             data.Dispose();
             data = null;
+            state = AsyncImageState.Loaded;
         }
         catch (Exception ex)
         {
@@ -156,7 +156,7 @@ public class AsyncImageFileSource : AsyncImageSource
     public override void Dispose()
     {
         disposed = true;
-        uploadBitmap = null;
+        createBitmap = null;
         Utilities.Dispose(ref bitmap);
     }
 
@@ -169,6 +169,8 @@ public class AsyncImageFileSource : AsyncImageSource
         return false;
     }
 }
+
+public delegate void D2DCanvasPaintHandler(D2DCanvas canvas, WindowRenderTarget target, Bitmap bitmap);
 
 public class D2DCanvas : Control
 {
@@ -193,7 +195,7 @@ public class D2DCanvas : Control
     Bitmap safeBitmap;
 
     public RawMatrix3x2 transform => target.Transform;
-    public Action<D2DCanvas, WindowRenderTarget, Bitmap> onPaint;
+    public D2DCanvasPaintHandler onPaint;
 
     public D2DCanvas()
     {
@@ -214,7 +216,7 @@ public class D2DCanvas : Control
         };
         var format = new SharpDX.Direct2D1.PixelFormat(
             Format.R8G8B8A8_UNorm,
-            SharpDX.Direct2D1.AlphaMode.Premultiplied
+            SharpDX.Direct2D1.AlphaMode.Ignore
         );
         var rtProps = new RenderTargetProperties(
             RenderTargetType.Hardware,
@@ -307,7 +309,7 @@ public class D2DCanvas : Control
         if (target == null) return;
 
         target.BeginDraw();
-        target.Clear(null);
+        target.Clear(new RawColor4(1, 1, 1, 1));
 
         target.Transform = Matrix3x2.Identity;
         if (imageSource != null)
@@ -346,6 +348,10 @@ public class D2DCanvas : Control
                             Console.WriteLine(ex);
                         }
                     }
+                }
+                else
+                {
+                    Invalidate();
                 }
             }
         }

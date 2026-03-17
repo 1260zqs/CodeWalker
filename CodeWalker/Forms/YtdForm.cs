@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -13,7 +12,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SharpDX.Direct2D1;
 using WeifenLuo.WinFormsUI.Docking;
+using Bitmap = System.Drawing.Bitmap;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace CodeWalker.Forms
 {
@@ -37,13 +39,28 @@ namespace CodeWalker.Forms
             InitializeComponent();
             TexturesListView.VirtualMode = true;
             TexturesListView.RetrieveVirtualItem += OnTexturesListViewOnRetrieveVirtualItem;
-            PictureBoxViewer.AddFeature(SelTexturePictureBox);
-            PictureBoxViewer.SimplePaint(SelTexturePictureBox);
+            // PictureBoxViewer.AddFeature(SelTexturePictureBox);
+            // PictureBoxViewer.SimplePaint(SelTexturePictureBox);
+            PictureBoxViewer.AddFeature(d2DCanvas1);
+            d2DCanvas1.onPaint = OnDrawTexture;
 
             var theme = Settings.Default.GetProjectWindowTheme();
             var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
             vsExtender.SetStyle(toolStrip1, version, theme);
             vsExtender.SetStyle(menuStrip1, version, theme);
+        }
+
+        private void OnDrawTexture(D2DCanvas canvas, WindowRenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
+        {
+            var pixelSize = bitmap.PixelSize;
+            PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
+            canvas.DrawText(
+                $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
+                6, 0,
+                new SharpDX.Color(0, 0, 0, 0.5f)
+            );
+            canvas.SetTransformation(pan.X, pan.Y, zoom);
+            canvas.DrawBitmap(bitmap, 0, 0);
         }
 
         public void LoadYtd(YtdFile ytd)
@@ -64,7 +81,8 @@ namespace CodeWalker.Forms
             FileName = filename;
 
             TexturesListView.VirtualListSize = 0;
-            SelTexturePictureBox.Image = null;
+            // SelTexturePictureBox.Image = null;
+            d2DCanvas1.ClearImage();
             SelTextureNameTextBox.Text = string.Empty;
             SelTextureDimensionsLabel.Text = "-";
             SelTextureMipLabel.Text = "0";
@@ -125,7 +143,8 @@ namespace CodeWalker.Forms
 
             if (tex == null)
             {
-                SelTexturePictureBox.Image = null;
+                // SelTexturePictureBox.Image = null;
+                d2DCanvas1.ClearImage();
                 SelTextureNameTextBox.Text = string.Empty;
                 SelTextureDimensionsLabel.Text = "-";
                 SelTextureMipLabel.Text = "0";
@@ -158,28 +177,31 @@ namespace CodeWalker.Forms
             try
             {
                 int cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
-                byte[] pixels = DDSIO.GetPixels(tex, cmip);
+                // byte[] pixels = DDSIO.GetPixels(tex, cmip);
                 int w = tex.Width >> cmip;
                 int h = tex.Height >> cmip;
-                Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                // Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                //
+                // if (pixels != null)
+                // {
+                //     var BoundsRect = new System.Drawing.Rectangle(0, 0, w, h);
+                //     BitmapData bmpData = bmp.LockBits(BoundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
+                //     IntPtr ptr = bmpData.Scan0;
+                //     int bytes = bmpData.Stride * bmp.Height;
+                //     Marshal.Copy(pixels, 0, ptr, bytes);
+                //     bmp.UnlockBits(bmpData);
+                // }
 
-                if (pixels != null)
-                {
-                    var BoundsRect = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmpData = bmp.LockBits(BoundsRect, ImageLockMode.WriteOnly, bmp.PixelFormat);
-                    IntPtr ptr = bmpData.Scan0;
-                    int bytes = bmpData.Stride * bmp.Height;
-                    Marshal.Copy(pixels, 0, ptr, bytes);
-                    bmp.UnlockBits(bmpData);
-                }
 
-                var dimstr = w.ToString() + " x " + h.ToString();
-
-                SelTexturePictureBox.Image = bmp;
+                // SelTexturePictureBox.Image = bmp;
+                var dimstr = $"{w} x {h}";
                 SelTextureDimensionsLabel.Text = dimstr;
+                PictureBoxViewer.ResetViewer(d2DCanvas1);
+                PictureBoxViewer.FitViewer(d2DCanvas1, w, h);
+                d2DCanvas1.SetImage(new AsyncTextureSource(tex, cmip));
 
                 var str1 = GetTexCountStr();
-                var str2 = tex.Name + ", mip " + cmip.ToString() + ", " + dimstr;
+                var str2 = $"{tex.Name}, mip {cmip}, {dimstr}";
                 if (!string.IsNullOrEmpty(str1))
                 {
                     UpdateStatus(str1 + ". " + str2);
@@ -192,7 +214,8 @@ namespace CodeWalker.Forms
             catch (Exception ex)
             {
                 UpdateStatus("Error reading texture mip: " + ex.ToString());
-                SelTexturePictureBox.Image = null;
+                d2DCanvas1.ClearImage();
+                // SelTexturePictureBox.Image = null;
             }
 
             UpdateZoom();
@@ -393,29 +416,29 @@ namespace CodeWalker.Forms
         {
             //update the image controls for the current zoom level
 
-            var img = SelTexturePictureBox.Image;
-            if (img == null) return;
-
-            if (CurrentZoom <= 0.0f)
-            {
-                //stretch image to fit the area available.
-                SelTexturePanel.AutoScroll = false;
-                SelTexturePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
-                SelTexturePictureBox.Width = SelTexturePanel.Width - 2;
-                SelTexturePictureBox.Height = SelTexturePanel.Height - 2;
-                SelTexturePictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            }
-            else
-            {
-                //zoom to the given pixel ratio...
-                var w = (int)(img.Width * CurrentZoom);
-                var h = (int)(img.Height * CurrentZoom);
-                SelTexturePictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-                SelTexturePictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-                SelTexturePictureBox.Width = w;
-                SelTexturePictureBox.Height = h;
-                SelTexturePanel.AutoScroll = true;
-            }
+            // var img = SelTexturePictureBox.Image;
+            // if (img == null) return;
+            //
+            // if (CurrentZoom <= 0.0f)
+            // {
+            //     //stretch image to fit the area available.
+            //     SelTexturePanel.AutoScroll = false;
+            //     SelTexturePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            //     SelTexturePictureBox.Width = SelTexturePanel.Width - 2;
+            //     SelTexturePictureBox.Height = SelTexturePanel.Height - 2;
+            //     SelTexturePictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            // }
+            // else
+            // {
+            //     //zoom to the given pixel ratio...
+            //     var w = (int)(img.Width * CurrentZoom);
+            //     var h = (int)(img.Height * CurrentZoom);
+            //     SelTexturePictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            //     SelTexturePictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            //     SelTexturePictureBox.Width = w;
+            //     SelTexturePictureBox.Height = h;
+            //     SelTexturePanel.AutoScroll = true;
+            // }
 
         }
 

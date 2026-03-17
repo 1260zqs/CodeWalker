@@ -10,17 +10,20 @@ using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 
 namespace CodeWalker;
 
-public class AsyncGameTextureSource : AsyncImageSource
+public class AsyncTextureSource : AsyncImageSource
 {
-    private WindowRenderTarget target;
-    public TextureModAdapter adapter;
-    private GameFile gameFile;
-    private string sourceFile;
+    protected WindowRenderTarget target;
+    protected Texture texture;
+    protected int mip;
 
-    public AsyncGameTextureSource(TextureModAdapter adapter, string sourceFile)
+    protected AsyncTextureSource()
     {
-        this.adapter = adapter;
-        this.sourceFile = sourceFile;
+    }
+
+    public AsyncTextureSource(Texture texture, int mip)
+    {
+        this.mip = mip;
+        this.texture = texture;
     }
 
     public override void Load(WindowRenderTarget target)
@@ -29,66 +32,49 @@ public class AsyncGameTextureSource : AsyncImageSource
         {
             this.target = target;
             state = AsyncImageState.Loading;
-            Task.Run(Start);
+            Task.Run(LoadTexture);
         }
     }
 
-    async Task Start()
+    protected void LoadTexture()
     {
-        gameFile = adapter.GetSourceFile(sourceFile);
-        if (gameFile == null)
-        {
-            state = AsyncImageState.Error;
-            return;
-        }
-        gameFile.Use();
-        var texName = adapter.GetSourceTextureName(sourceFile);
         while (loading)
         {
-            if (gameFile.Loaded)
+            try
             {
-                var texture = adapter.GetSourceTexture(gameFile, texName);
-                if (texture == null)
+                var data = DDSIO.GetPixelDataStream(
+                    texture,
+                    mip,
+                    out var dataSize,
+                    out width,
+                    out height,
+                    out var ddsRowPitch,
+                    out var ddsSlicePitch,
+                    out var format
+                );
+                var pixelFormat = GetPixelFormat(format);
+                if (pixelFormat == Format.Unknown)
                 {
+                    data.Dispose();
                     state = AsyncImageState.Error;
                     return;
                 }
-                try
-                {
-                    var data = DDSIO.GetPixelDataStream(
-                        texture,
-                        0,
-                        out var dataSize,
-                        out width,
-                        out height,
-                        out var ddsRowPitch,
-                        out var ddsSlicePitch,
-                        out var format
-                    );
-                    var pixelFormat = GetPixelFormat(format);
-                    if (pixelFormat == Format.Unknown)
-                    {
-                        data.Dispose();
-                        state = AsyncImageState.Error;
-                        return;
-                    }
-                    var ptr = new DataPointer(data.DataPointer, dataSize);
-                    uploadBitmap = () => UploadBitmap(ptr, data, pixelFormat, ddsRowPitch);
-                    state = AsyncImageState.Ready;
-                }
-                catch (Exception)
-                {
-                    state = AsyncImageState.Error;
-                }
+                var ptr = new DataPointer(data.DataPointer, dataSize);
+                createBitmap = () => CreateBitmap(ptr, data, pixelFormat, ddsRowPitch);
+                state = AsyncImageState.Ready;
+            }
+            catch (Exception)
+            {
+                state = AsyncImageState.Error;
             }
         }
     }
 
-    private Bitmap UploadBitmap(DataPointer pointer, DataStream data, Format format, int pitch)
+    private Bitmap CreateBitmap(DataPointer pointer, DataStream data, Format format, int pitch)
     {
         try
         {
-            var pixelFormat = new PixelFormat(format, AlphaMode.Premultiplied);
+            var pixelFormat = new PixelFormat(format, AlphaMode.Ignore);
             var bmpProps = new BitmapProperties(pixelFormat);
             bitmap = new Bitmap(
                 target,
@@ -99,17 +85,19 @@ public class AsyncGameTextureSource : AsyncImageSource
             );
             data.Dispose();
             data = null;
+            state = AsyncImageState.Loaded;
         }
         catch (Exception ex)
         {
             state = AsyncImageState.Error;
             Console.WriteLine(ex);
             data?.Dispose();
+            Utilities.Dispose(ref bitmap);
         }
         return bitmap;
     }
 
-    private Format GetPixelFormat(DDSIO.DXGI_FORMAT format)
+    public static Format GetPixelFormat(DDSIO.DXGI_FORMAT format)
     {
         switch (format)
         {
@@ -146,8 +134,61 @@ public class AsyncGameTextureSource : AsyncImageSource
 
     public override void Dispose()
     {
-        uploadBitmap = null;
+        createBitmap = null;
         Utilities.Dispose(ref bitmap);
+    }
+
+    public override bool Equals(AsyncImageSource other)
+    {
+        return ReferenceEquals(this, other);
+    }
+}
+
+public class AsyncGameTextureSource : AsyncTextureSource
+{
+    public TextureModAdapter adapter;
+    private GameFile gameFile;
+    private string sourceFile;
+
+    public AsyncGameTextureSource(TextureModAdapter adapter, string sourceFile)
+    {
+        this.adapter = adapter;
+        this.sourceFile = sourceFile;
+    }
+
+    public override void Load(WindowRenderTarget target)
+    {
+        if (state == AsyncImageState.None)
+        {
+            this.target = target;
+            state = AsyncImageState.Loading;
+            Task.Run(Start);
+        }
+    }
+
+    private void Start()
+    {
+        gameFile = adapter.GetSourceFile(sourceFile);
+        if (gameFile == null)
+        {
+            state = AsyncImageState.Error;
+            return;
+        }
+        gameFile.Use();
+        var texName = adapter.GetSourceTextureName(sourceFile);
+        while (loading)
+        {
+            if (gameFile.Loaded)
+            {
+                texture = adapter.GetSourceTexture(gameFile, texName);
+                if (texture == null)
+                {
+                    state = AsyncImageState.Error;
+                    return;
+                }
+                LoadTexture();
+            }
+        }
     }
 
     public override bool Equals(AsyncImageSource other)

@@ -233,11 +233,12 @@ namespace CodeWalker
             PrevMouseHit.WorldForm = this;
 
             initedOk = Renderer.Init();
-            ToolbarPanel.Visible = ShowToolbarCheckBox.Checked = Settings.Default.ShowToolbar;
+            //ToolbarPanel.Visible = ShowToolbarCheckBox.Checked = Settings.Default.ShowToolbar;
             
             var theme = Settings.Default.GetProjectWindowTheme();
             var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
             vsExtender.SetStyle(Toolbar, version, theme);
+            vsExtender.SetStyle(toolStrip1, version, theme);
             // vsExtender.SetStyle();
 
             GTAFolder.UpdateEnhancedFormTitle(this);
@@ -297,7 +298,10 @@ namespace CodeWalker
             LocatorMarker = new MapMarker();
             LocatorMarker.Icon = LocatorIcon;
             LocatorMarker.IsMovable = true;
-            ToolsPanelHideButton.Focus();
+            toolStripMaxBtn.Visible = !toolspanelexpanded;
+            toolStripMinBtn.Visible = toolspanelexpanded;
+            ToolsPanel.Visible = false;
+            //ToolsPanelHideButton.Focus();
             //AddDefaultMarkers(); //some POI to start with
 
             var texsamplers = RenderableGeometry.GetTextureSamplerList();
@@ -329,7 +333,10 @@ namespace CodeWalker
                 if (!formopen) return;
                 Renderer.renderworldMaxLOD = x;
                 Settings.Default.LodLevel = x;
+                trackBar1.Value = WorldMaxLodComboBox.SelectedIndex;
             }, Settings.Default.LodLevel);
+            trackBar1.Maximum = Settings.renderLodValues.Length - 1;
+            trackBar1.Value = WorldMaxLodComboBox.SelectedIndex;
 
             WeatherComboBox.SelectedIndex = 0;//show "<Loading...>" until weather types are loaded
 
@@ -2187,7 +2194,7 @@ namespace CodeWalker
             ToolbarMoveButton.ToolTipText = string.Format("Move ({0})", kb.EditPosition);
             ToolbarRotateButton.ToolTipText = string.Format("Rotate ({0})", kb.EditRotation);
             ToolbarScaleButton.ToolTipText = string.Format("Scale ({0})", kb.EditScale);
-            ShowToolbarCheckBox.Text = string.Format("Show Toolbar ({0})", kb.ToggleToolbar);
+            //ShowToolbarCheckBox.Text = string.Format("Show Toolbar ({0})", kb.ToggleToolbar);
         }
 
 
@@ -6064,11 +6071,9 @@ namespace CodeWalker
 
         private void ToggleToolbar()
         {
-            ToolbarPanel.Visible = !ToolbarPanel.Visible;
-            ShowToolbarCheckBox.Checked = ToolbarPanel.Visible;
+            //ToolbarPanel.Visible = !ToolbarPanel.Visible;
+            //ShowToolbarCheckBox.Checked = ToolbarPanel.Visible;
         }
-
-
 
 
         public void ShowSubtitle(string text, float duration)
@@ -6222,10 +6227,10 @@ namespace CodeWalker
                 case MouseButtons.Right: MouseRButtonDown = true; break;
             }
 
-            if (!ToolsPanelShowButton.Focused)
-            {
-                ToolsPanelShowButton.Focus(); //make sure no textboxes etc are focused!
-            }
+            //if (!ToolsPanelShowButton.Focused)
+            //{
+            //    ToolsPanelShowButton.Focus(); //make sure no textboxes etc are focused!
+            //}
 
             MouseDownPoint = e.Location;
             MouseLastPoint = MouseDownPoint;
@@ -6587,6 +6592,20 @@ namespace CodeWalker
                     {
                         SetMouseSelect(!MouseSelectEnabled);
                     }
+                    if (k == Keys.Oemtilde)
+                    {
+                        if (!ToolsPanel.Visible)
+                        {
+                            ToolsPanel.Visible = true;
+                        }
+                    }
+                    else if (k == Keys.Escape)
+                    {
+                        if (ToolsPanel.Visible)
+                        {
+                            ToolsPanel.Visible = false;
+                        }
+                    }
                     if (k == kb.ToggleToolbar)
                     {
                         ToggleToolbar();
@@ -6638,7 +6657,7 @@ namespace CodeWalker
                             PasteItem();
                             break;
                         case Keys.U:
-                            ToolsPanelShowButton.Visible = !ToolsPanelShowButton.Visible;
+                            //ToolsPanelShowButton.Visible = !ToolsPanelShowButton.Visible;
                             break;
                     }
                 }
@@ -6739,16 +6758,16 @@ namespace CodeWalker
             ymaplist = YmapsTextBox.Text.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        private void ToolsPanelHideButton_Click(object sender, EventArgs e)
+        private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            ToolsPanel.Visible = false;
-            ToolsPanelShowButton.Focus();
+            ToolsPanel.Visible = !ToolsPanel.Visible;
+            //ToolsPanelHideButton.Focus();
         }
 
-        private void ToolsPanelShowButton_Click(object sender, EventArgs e)
+        private void toolStripButton4_Click(object sender, EventArgs e)
         {
-            ToolsPanel.Visible = true;
-            ToolsPanelHideButton.Focus();
+            ToolsPanel.Visible = false;
+            //ToolsPanelShowButton.Focus();
         }
 
         private void WireframeCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -7021,23 +7040,30 @@ namespace CodeWalker
             renderaudioouterbounds = AudioOuterBoundsCheckBox.Checked;
         }
 
-        private void ToolsPanelExpandButton_Click(object sender, EventArgs e)
+        private void toolStripMinBtn_Click(object sender, EventArgs e)
         {
-            toolspanelexpanded = !toolspanelexpanded;
+            toolspanelexpanded = false;
+            UpdateToolPanleMinMaxDisplay();
+        }
 
+        private void toolStripMaxBtn_Click(object sender, EventArgs e)
+        {
+            toolspanelexpanded = true;
+            UpdateToolPanleMinMaxDisplay();
+        }
+
+        private void UpdateToolPanleMinMaxDisplay()
+        {
             var oldwidth = ToolsPanel.Width;
-            if (toolspanelexpanded)
-            {
-                ToolsPanelExpandButton.Text = ">>";
-            }
-            else
-            {
-                ToolsPanelExpandButton.Text = "<<";
-            }
+
+            toolStripMaxBtn.Visible = !toolspanelexpanded;
+            toolStripMinBtn.Visible = toolspanelexpanded;
+
             ToolsPanel.Width = toolspanellastwidth; //or extended width
             ToolsPanel.Left -= (toolspanellastwidth - oldwidth);
             toolspanellastwidth = oldwidth;
         }
+
 
         private void ToolsDragPanel_MouseDown(object sender, MouseEventArgs e)
         {
@@ -7091,15 +7117,15 @@ namespace CodeWalker
             SaveSettings();
         }
 
-        private void AboutButton_Click(object sender, EventArgs e)
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            ToolsMenu.Show(toolStrip1, 1, toolStrip1.Height);
+        }
+
+        private void helpToolStripButton_Click(object sender, EventArgs e)
         {
             var f = new AboutForm();
             f.Show(this);
-        }
-
-        private void ToolsButton_Click(object sender, EventArgs e)
-        {
-            ToolsMenu.Show(ToolsButton, 0, ToolsButton.Height);
         }
 
         private void ToolsMenuConfigureGame_Click(object sender, EventArgs e)
@@ -7589,12 +7615,6 @@ namespace CodeWalker
         private void SelectionWidgetCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             ShowWidget = SelectionWidgetCheckBox.Checked;
-        }
-
-        private void ShowToolbarCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ToolbarPanel.Visible = ShowToolbarCheckBox.Checked;
-            Settings.Default.ShowToolbar = ToolbarPanel.Visible;
         }
 
         private void ToolbarNewButton_ButtonClick(object sender, EventArgs e)
@@ -8123,6 +8143,11 @@ namespace CodeWalker
         private void ShowTextureModForm()
         {
             CodeWalker.TexMod.TextureModForm.ShowWindow(this);
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            WorldMaxLodComboBox.SelectedIndex = trackBar1.Value;
         }
     }
 

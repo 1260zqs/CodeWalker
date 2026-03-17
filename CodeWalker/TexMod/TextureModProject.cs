@@ -35,6 +35,12 @@ public class TextureModProject
         return project;
     }
 
+    public void Save(string workingDir)
+    {
+        var filename = Path.Combine(workingDir, "texturemod.xml");
+        TextureModProjectExtension.Save(this, filename);
+    }
+
     private static void MakesureFolder(string folder)
     {
         if (!Directory.Exists(folder))

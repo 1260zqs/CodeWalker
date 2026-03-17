@@ -61,8 +61,6 @@
             this.TextureTabPage = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.SelTextureZoomCombo = new System.Windows.Forms.ComboBox();
-            this.SelTexturePanel = new System.Windows.Forms.Panel();
-            this.SelTexturePictureBox = new System.Windows.Forms.PictureBox();
             this.SelTextureMipLabel = new System.Windows.Forms.Label();
             this.SelTextureDimensionsLabel = new System.Windows.Forms.Label();
             this.SelTextureMipTrackBar = new System.Windows.Forms.TrackBar();
@@ -74,6 +72,7 @@
             this.OpenDDSFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.SaveYTDFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.d2DCanvas1 = new CodeWalker.D2DCanvas();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.MainToolbar.SuspendLayout();
@@ -83,8 +82,6 @@
             this.MainSplitContainer.SuspendLayout();
             this.TextureTabControl.SuspendLayout();
             this.TextureTabPage.SuspendLayout();
-            this.SelTexturePanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SelTexturePictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SelTextureMipTrackBar)).BeginInit();
             this.DetailsTabPage.SuspendLayout();
             this.SuspendLayout();
@@ -377,9 +374,9 @@
             // 
             // TextureTabPage
             // 
+            this.TextureTabPage.Controls.Add(this.d2DCanvas1);
             this.TextureTabPage.Controls.Add(this.label1);
             this.TextureTabPage.Controls.Add(this.SelTextureZoomCombo);
-            this.TextureTabPage.Controls.Add(this.SelTexturePanel);
             this.TextureTabPage.Controls.Add(this.SelTextureMipLabel);
             this.TextureTabPage.Controls.Add(this.SelTextureDimensionsLabel);
             this.TextureTabPage.Controls.Add(this.SelTextureMipTrackBar);
@@ -416,32 +413,6 @@
             this.SelTextureZoomCombo.TabIndex = 53;
             this.SelTextureZoomCombo.Text = "Fill";
             this.SelTextureZoomCombo.TextChanged += new System.EventHandler(this.SelTextureZoomCombo_TextChanged);
-            // 
-            // SelTexturePanel
-            // 
-            this.SelTexturePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelTexturePanel.AutoScroll = true;
-            this.SelTexturePanel.BackColor = System.Drawing.Color.DarkGray;
-            this.SelTexturePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("SelTexturePanel.BackgroundImage")));
-            this.SelTexturePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.SelTexturePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.SelTexturePanel.Controls.Add(this.SelTexturePictureBox);
-            this.SelTexturePanel.Location = new System.Drawing.Point(6, 6);
-            this.SelTexturePanel.Name = "SelTexturePanel";
-            this.SelTexturePanel.Size = new System.Drawing.Size(559, 371);
-            this.SelTexturePanel.TabIndex = 52;
-            // 
-            // SelTexturePictureBox
-            // 
-            this.SelTexturePictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.SelTexturePictureBox.Location = new System.Drawing.Point(0, 0);
-            this.SelTexturePictureBox.Name = "SelTexturePictureBox";
-            this.SelTexturePictureBox.Size = new System.Drawing.Size(133, 96);
-            this.SelTexturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.SelTexturePictureBox.TabIndex = 45;
-            this.SelTexturePictureBox.TabStop = false;
             // 
             // SelTextureMipLabel
             // 
@@ -526,6 +497,17 @@
             // 
             this.vsExtender.DefaultRenderer = null;
             // 
+            // d2DCanvas1
+            // 
+            this.d2DCanvas1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.d2DCanvas1.Location = new System.Drawing.Point(0, 0);
+            this.d2DCanvas1.Name = "d2DCanvas1";
+            this.d2DCanvas1.Size = new System.Drawing.Size(564, 376);
+            this.d2DCanvas1.TabIndex = 46;
+            this.d2DCanvas1.Text = "d2DCanvas1";
+            // 
             // YtdForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -553,9 +535,6 @@
             this.TextureTabControl.ResumeLayout(false);
             this.TextureTabPage.ResumeLayout(false);
             this.TextureTabPage.PerformLayout();
-            this.SelTexturePanel.ResumeLayout(false);
-            this.SelTexturePanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SelTexturePictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SelTextureMipTrackBar)).EndInit();
             this.DetailsTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -584,13 +563,11 @@
         private System.Windows.Forms.Label SelTextureDimensionsLabel;
         private System.Windows.Forms.TrackBar SelTextureMipTrackBar;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.PictureBox SelTexturePictureBox;
         private System.Windows.Forms.TabPage DetailsTabPage;
         private WinForms.PropertyGridFix DetailsPropertyGrid;
         private System.Windows.Forms.ListView TexturesListView;
         private System.Windows.Forms.ColumnHeader TextureNameColumnHeader;
         private System.Windows.Forms.ColumnHeader TextureSizeColumnHeader;
-        private System.Windows.Forms.Panel SelTexturePanel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox SelTextureZoomCombo;
         private System.Windows.Forms.ToolStripMenuItem FileSaveAllTexturesMenu;
@@ -609,5 +586,6 @@
         private System.Windows.Forms.ToolStripMenuItem ToolbarSaveTextureAsMenu;
         private System.Windows.Forms.SaveFileDialog SaveYTDFileDialog;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
+        private D2DCanvas d2DCanvas1;
     }
 }

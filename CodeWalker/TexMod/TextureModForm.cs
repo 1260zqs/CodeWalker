@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CodeWalker.GameFiles;
 using CodeWalker.Utils;
+using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 using WeifenLuo.WinFormsUI.Docking;
@@ -79,34 +80,40 @@ public partial class TextureModForm : Form
         canvas.DrawBitmap(bitmap, 0, 0);
         if (currentMod != null && currentReplacement != null)
         {
-            var tex = textureCanvas.GetImage();
-            if (tex == null)
-            {
-                previewCanvas.Invalidate();
-                return;
-            }
-            var srcRect = currentMod.sourceRect.Convert();
-            var destRect = currentReplacement.targetRect.Convert();
-            var imgBounds = new System.Drawing.Rectangle(0, 0, pixelSize.Width, pixelSize.Height);
-            var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
-
-            if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
-                return;
-
-            var scaleX = (float)srcRect.Width / destRect.Width;
-            var scaleY = (float)srcRect.Height / destRect.Height;
-
-            var dx = clippedDest.X - destRect.X;
-            var dy = clippedDest.Y - destRect.Y;
-
-            srcRect.X += (int)(dx * scaleX);
-            srcRect.Y += (int)(dy * scaleY);
-            srcRect.Width = (int)(clippedDest.Width * scaleX);
-            srcRect.Height = (int)(clippedDest.Height * scaleY);
-
-            canvas.DrawBitmap(tex, clippedDest, srcRect);
+            DrawPreviewOverlay(canvas, target);
         }
         PictureBoxRectTool.Paint(canvas);
+    }
+
+    private void DrawPreviewOverlay(D2DCanvas canvas, WindowRenderTarget target)
+    {
+        var tex = textureCanvas.GetImage();
+        if (tex == null)
+        {
+            previewCanvas.Invalidate();
+            return;
+        }
+        var pixelSize = canvas.GetImageSize();
+        var srcRect = currentMod.sourceRect.Convert();
+        var destRect = currentReplacement.targetRect.Convert();
+        var imgBounds = new System.Drawing.Rectangle(0, 0, pixelSize.Width, pixelSize.Height);
+        var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
+
+        if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
+            return;
+
+        var scaleX = (float)srcRect.Width / destRect.Width;
+        var scaleY = (float)srcRect.Height / destRect.Height;
+
+        var dx = clippedDest.X - destRect.X;
+        var dy = clippedDest.Y - destRect.Y;
+
+        srcRect.X += (int)(dx * scaleX);
+        srcRect.Y += (int)(dy * scaleY);
+        srcRect.Width = (int)(clippedDest.Width * scaleX);
+        srcRect.Height = (int)(clippedDest.Height * scaleY);
+
+        canvas.DrawBitmap(tex, clippedDest, srcRect);
     }
 
     private void OnRectDrawingChange(System.Drawing.Rectangle obj)
@@ -257,7 +264,7 @@ public partial class TextureModForm : Form
 
     private void saveProjectBtn_Click(object sender, EventArgs e)
     {
-        project.Save("x:\\mod.xml");
+        project.Save(Settings.Default.TexModWorkingDir);
     }
 
     private void SetRectBox(System.Drawing.Rectangle rectangle)

@@ -96,7 +96,8 @@ public static class PictureBoxRectTool
                 }
                 else
                 {
-                    canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f);
+                    var scaleVector = stateObject.matrix3x2.ScaleVector;
+                    canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f / scaleVector.X);
                 }
             }
         }
