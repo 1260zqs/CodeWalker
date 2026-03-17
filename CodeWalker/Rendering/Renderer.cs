@@ -173,7 +173,7 @@ namespace CodeWalker.Rendering
         {
             Form = form;
             gameFileCache = cache;
-            renderworldMaxLOD = Settings.Default.MaxLod;
+            renderworldMaxLOD = Settings.Default.LodLevel;
             if (gameFileCache == null)
             {
                 gameFileCache = GameFileCacheFactory.Create();

@@ -2106,6 +2106,7 @@ namespace CodeWalker.GameFiles
             }
             return null;
         }
+
         public YdrFile GetYdr(uint hash)
         {
             if (!IsInited) return null;

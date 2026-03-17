@@ -974,12 +974,12 @@ namespace CodeWalker.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("LODTYPES_DEPTH_ORPHANHD")]
-        public global::CodeWalker.GameFiles.rage__eLodType MaxLod {
+        public global::CodeWalker.GameFiles.rage__eLodType LodLevel {
             get {
-                return ((global::CodeWalker.GameFiles.rage__eLodType)(this["MaxLod"]));
+                return ((global::CodeWalker.GameFiles.rage__eLodType)(this["LodLevel"]));
             }
             set {
-                this["MaxLod"] = value;
+                this["LodLevel"] = value;
             }
         }
         

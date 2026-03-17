@@ -80,6 +80,25 @@ public static class FormExtensions
         }
     }
 
+    public static void SelecetValueDrop<TValue>(this System.Windows.Forms.ComboBox comboBox, TValue[] values, TValue value)
+    {
+        comboBox.SelectedIndex = Array.IndexOf(values, value);
+    }
+
+    public static void SetValueDrop<TValue>(this System.Windows.Forms.ComboBox comboBox, string[] names, TValue[] values, Action<TValue> onValue, TValue defaultValue)
+    {
+        comboBox.Items.Clear();
+        foreach (var name in names) 
+        {
+            comboBox.Items.Add(new { Name = name });
+        }
+        comboBox.SelectedIndex = Array.IndexOf(values, defaultValue);
+        comboBox.SelectedIndexChanged += (sender, e) =>
+        {
+            onValue(values[comboBox.SelectedIndex]);
+        };
+    }
+
     public static void SetEnumDrop<TEnum>(this ToolStripDropDownButton dropDownButton, Action<TEnum> onValue) where TEnum : struct
     {
         dropDownButton.DropDownItems.Clear();

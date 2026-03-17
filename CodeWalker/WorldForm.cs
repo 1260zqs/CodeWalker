@@ -3,6 +3,7 @@ using CodeWalker.Project;
 using CodeWalker.Properties;
 using CodeWalker.Rendering;
 using CodeWalker.Tools;
+using CodeWalker.Utils;
 using CodeWalker.World;
 using SharpDX;
 using SharpDX.XInput;
@@ -321,9 +322,14 @@ namespace CodeWalker
             }
 
             //TextureSamplerComboBox.SelectedIndex = 0; //LoadSettings will handle this
-            //RenderModeComboBox.SelectedIndex = 0; //Default
 
-            WorldMaxLodComboBox.SelectedIndex = 0;//should this be a setting?
+            //RenderModeComboBox.SelectedIndex = 0; //Default
+            WorldMaxLodComboBox.SetValueDrop(Settings.renderLodNames, Settings.renderLodValues, x =>
+            {
+                if (!formopen) return;
+                Renderer.renderworldMaxLOD = x;
+                Settings.Default.LodLevel = x;
+            }, Settings.Default.LodLevel);
 
             WeatherComboBox.SelectedIndex = 0;//show "<Loading...>" until weather types are loaded
 
@@ -7347,32 +7353,32 @@ namespace CodeWalker
         private void WorldMaxLodComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!formopen) return;
-            switch (WorldMaxLodComboBox.Text)
-            {
-                default:
-                case "ORPHANHD":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_ORPHANHD;
-                    break;
-                case "HD":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_HD;
-                    break;
-                case "LOD":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_LOD;
-                    break;
-                case "SLOD1":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD1;
-                    break;
-                case "SLOD2":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD2;
-                    break;
-                case "SLOD3":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD3;
-                    break;
-                case "SLOD4":
-                    Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD4;
-                    break;
-            }
-            Settings.Default.MaxLod = Renderer.renderworldMaxLOD;
+            //switch (WorldMaxLodComboBox.Text)
+            //{
+            //    default:
+            //    case "ORPHANHD":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_ORPHANHD;
+            //        break;
+            //    case "HD":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_HD;
+            //        break;
+            //    case "LOD":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_LOD;
+            //        break;
+            //    case "SLOD1":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD1;
+            //        break;
+            //    case "SLOD2":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD2;
+            //        break;
+            //    case "SLOD3":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD3;
+            //        break;
+            //    case "SLOD4":
+            //        Renderer.renderworldMaxLOD = rage__eLodType.LODTYPES_DEPTH_SLOD4;
+            //        break;
+            //}
+            //Settings.Default.RenderLodLevel = Renderer.renderworldMaxLOD;
         }
 
         private void WorldLodDistTrackBar_Scroll(object sender, EventArgs e)

@@ -239,7 +239,7 @@
     <Setting Name="TextureFilter" Type="SharpDX.Direct3D11.Filter" Scope="User">
       <Value Profile="(Default)">MinMagMipPoint</Value>
     </Setting>
-    <Setting Name="MaxLod" Type="CodeWalker.GameFiles.rage__eLodType" Scope="User">
+    <Setting Name="LodLevel" Type="CodeWalker.GameFiles.rage__eLodType" Scope="User">
       <Value Profile="(Default)">LODTYPES_DEPTH_ORPHANHD</Value>
     </Setting>
     <Setting Name="ShowToolbar" Type="System.Boolean" Scope="User">

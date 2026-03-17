@@ -6,6 +6,7 @@ using SharpDX;
 using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -88,7 +89,7 @@ public partial class TextureModForm
         workingProject.LoadPackageManifest();
         var form = new TextureModForm();
         form.project = workingProject;
-        form.adapter = new CodeWalker.TexMod.GTAVTextureModAdapter(worldForm);
+        form.adapter = new CodeWalker.TexMod.GTAVTextureModAdapter(workingProject, worldForm);
         return form;
     }
 
@@ -118,14 +119,15 @@ public partial class TextureModForm
             textureCanvas.SetImage(currentMod.filename);
             PictureBoxViewer.LoadState(textureCanvas, currentMod.editorState);
         }
-
         ReadPanelDataFromSource();
+        propertyGridFix1.SelectedObject = null;
         replacementListView.SelectedIndices.Clear();
         RefreshReplacementListView(true);
     }
 
     private void SelecteTexReplacement(TextureReplacement replacement)
     {
+        propertyGridFix1.SelectedObject = null;
         if (project.sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
         {
             if (currentReplacement != null)
@@ -138,6 +140,7 @@ public partial class TextureModForm
             PictureBoxViewer.ResetViewer(previewCanvas);
             PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
             previewCanvas.SetImage(new AsyncGameTextureSource(adapter, sourceTexture.sourceFile));
+            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(replacement);
         }
     }
 
@@ -225,5 +228,40 @@ public partial class TextureModForm
         //     if (tex == null) return;
         //     tex.Load(adapter.worldForm.Renderer.Device, bitmap);
         // }
+    }
+
+    public class TextureReplacementPropertyObject
+    {
+        [ReadOnly(true)]
+        public string id { get; set; }
+
+        public string tag { get; set; }
+        public string name { get; set; }
+        public string comment { get; set; }
+
+        [ReadOnly(true)]
+        public string modTexture { get; set; }
+        [ReadOnly(true)]
+        public string sourceTexture { get; set; }
+        public string targetRect { get; set; }
+
+        public bool flipX { get; set; }
+        public bool flipY { get; set; }
+        public float rotation { get; set; }
+
+        public static TextureReplacementPropertyObject From(TextureReplacement replacement)
+        {
+            var propertyObject = new TextureReplacementPropertyObject();
+            propertyObject.id = replacement.id.ToString("N");
+            propertyObject.tag = replacement.tag;
+            propertyObject.name = replacement.name;
+            propertyObject.comment = replacement.comment;
+
+            propertyObject.flipX = replacement.flipX;
+            propertyObject.flipX = replacement.flipX;
+            propertyObject.rotation = replacement.rotation;
+
+            return propertyObject;
+        }
     }
 }
