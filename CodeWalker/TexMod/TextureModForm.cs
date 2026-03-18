@@ -7,16 +7,15 @@ using System.Windows.Forms;
 using CodeWalker.GameFiles;
 using CodeWalker.Utils;
 using SharpDX;
-using SharpDX.Direct2D1;
 using SharpDX.Mathematics.Interop;
 using WeifenLuo.WinFormsUI.Docking;
-using Bitmap = SharpDX.Direct2D1.Bitmap;
-using Image = System.Drawing.Image;
 
 namespace CodeWalker.TexMod;
 
 public partial class TextureModForm : Form
 {
+    private SharpDX.Direct2D1.DeviceContext d2dRenderTarget;
+
     private TextureModForm()
     {
         InitializeComponent();
@@ -53,25 +52,59 @@ public partial class TextureModForm : Form
         InitializeListView();
     }
 
-    private void PaintTexturePicture(D2DCanvas canvas, RenderTarget target, Bitmap bitmap)
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        // dxPreview1.InitDevice();
+        RefreshModListView();
+        RefreshReplacementListView();
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+
+        // D3D11 device
+        var d3dDevice = new SharpDX.Direct3D11.Device(
+            SharpDX.Direct3D.DriverType.Hardware,
+            SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport
+        );
+        using var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device>();
+        using var d2dFactory = new SharpDX.Direct2D1.Factory1();
+        var d2dDevice = new SharpDX.Direct2D1.Device(d2dFactory, dxgiDevice);
+        d2dRenderTarget = new SharpDX.Direct2D1.DeviceContext(
+            d2dDevice,
+            SharpDX.Direct2D1.DeviceContextOptions.None
+        );
+        // EditorApplication.update += RenderUpdate;
+    }
+
+    protected override void OnHandleDestroyed(EventArgs e)
+    {
+        // EditorApplication.update -= RenderUpdate;
+        Utilities.Dispose(ref d2dRenderTarget);
+        base.OnHandleDestroyed(e);
+    }
+
+    private void PaintTexturePicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
     {
         PictureBoxViewer.Paint(canvas, bitmap);
         canvas.DrawBitmap(bitmap, 0, 0);
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void PaintPreviewPicture(D2DCanvas canvas, RenderTarget target, Bitmap bitmap)
+    private void PaintPreviewPicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
     {
         PictureBoxViewer.Paint(canvas, bitmap);
         canvas.DrawBitmap(bitmap, 0, 0);
         if (currentMod != null && currentReplacement != null)
         {
-            DrawPreviewOverlay(canvas, target);
+            DrawPreviewOverlay(canvas, target, false, false, 0f);
         }
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void DrawPreviewOverlay(D2DCanvas canvas, RenderTarget target)
+    private void DrawPreviewOverlay(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, bool flipX, bool flipY, float rotation)
     {
         var tex = textureCanvas.GetImage();
         if (tex == null)
@@ -99,32 +132,20 @@ public partial class TextureModForm : Form
         srcRect.Width = (int)(clippedDest.Width * scaleX);
         srcRect.Height = (int)(clippedDest.Height * scaleY);
 
+        var matrix = target.Transform;
+        var center = new Vector2(
+            (clippedDest.Left + clippedDest.Right) * 0.5f,
+            (clippedDest.Top + clippedDest.Bottom) * 0.5f
+        );
+        target.Transform = Matrix3x2.Scaling(flipX ? -1 : 1, flipY ? -1 : 1, center) *
+                           Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
         canvas.DrawBitmap(tex, clippedDest, srcRect);
+        target.Transform = matrix;
     }
 
     private void OnRectDrawingChange(System.Drawing.Rectangle obj)
     {
         WritePanelDataToSource();
-    }
-
-    protected override void OnLoad(EventArgs e)
-    {
-        base.OnLoad(e);
-        // dxPreview1.InitDevice();
-        RefreshModListView();
-        RefreshReplacementListView();
-    }
-
-    protected override void OnHandleCreated(EventArgs e)
-    {
-        EditorApplication.update += RenderUpdate;
-        base.OnHandleCreated(e);
-    }
-
-    protected override void OnHandleDestroyed(EventArgs e)
-    {
-        EditorApplication.update -= RenderUpdate;
-        base.OnHandleDestroyed(e);
     }
 
     private void InitializeListView()
@@ -491,5 +512,10 @@ public partial class TextureModForm : Form
 
     private void checkBox3_CheckedChanged(object sender, EventArgs e)
     {
+    }
+
+    private void timer1_Tick(object sender, EventArgs e)
+    {
+
     }
 }

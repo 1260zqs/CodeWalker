@@ -45,7 +45,9 @@ namespace CodeWalker.TexMod
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.previewTabPage = new System.Windows.Forms.TabPage();
+            this.previewCanvas = new CodeWalker.D2DCanvas();
             this.textureTabPage = new System.Windows.Forms.TabPage();
+            this.textureCanvas = new CodeWalker.D2DCanvas();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -87,8 +89,7 @@ namespace CodeWalker.TexMod
             this.listView2 = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.previewCanvas = new CodeWalker.D2DCanvas();
-            this.textureCanvas = new CodeWalker.D2DCanvas();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -303,6 +304,15 @@ namespace CodeWalker.TexMod
             this.previewTabPage.Text = "Preview";
             this.previewTabPage.UseVisualStyleBackColor = true;
             // 
+            // previewCanvas
+            // 
+            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
+            this.previewCanvas.Name = "previewCanvas";
+            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
+            this.previewCanvas.TabIndex = 0;
+            this.previewCanvas.Text = "d2DCanvas1";
+            // 
             // textureTabPage
             // 
             this.textureTabPage.Controls.Add(this.textureCanvas);
@@ -313,6 +323,15 @@ namespace CodeWalker.TexMod
             this.textureTabPage.TabIndex = 1;
             this.textureTabPage.Text = "Texture";
             this.textureTabPage.UseVisualStyleBackColor = true;
+            // 
+            // textureCanvas
+            // 
+            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.textureCanvas.Name = "textureCanvas";
+            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.textureCanvas.TabIndex = 0;
+            this.textureCanvas.Text = "d2DCanvas1";
             // 
             // panel1
             // 
@@ -766,23 +785,9 @@ namespace CodeWalker.TexMod
             this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
             this.openFileDialog1.RestoreDirectory = true;
             // 
-            // previewCanvas
+            // timer1
             // 
-            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
-            this.previewCanvas.Name = "previewCanvas";
-            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
-            this.previewCanvas.TabIndex = 0;
-            this.previewCanvas.Text = "d2DCanvas1";
-            // 
-            // textureCanvas
-            // 
-            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
-            this.textureCanvas.Name = "textureCanvas";
-            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
-            this.textureCanvas.TabIndex = 0;
-            this.textureCanvas.Text = "d2DCanvas1";
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // TextureModForm
             // 
@@ -893,5 +898,6 @@ namespace CodeWalker.TexMod
         private Button button7;
         private D2DCanvas previewCanvas;
         private D2DCanvas textureCanvas;
+        private Timer timer1;
     }
 }

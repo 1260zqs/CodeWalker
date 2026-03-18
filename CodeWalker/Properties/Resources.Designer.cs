@@ -111,12 +111,12 @@ namespace CodeWalker.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Bitmap d_CreateAddNew {
+        internal static byte[] transparent {
             get {
-                object obj = ResourceManager.GetObject("d_CreateAddNew", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                object obj = ResourceManager.GetObject("transparent", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }

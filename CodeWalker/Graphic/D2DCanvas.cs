@@ -3,6 +3,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using SharpDX;
 using SharpDX.WIC;
@@ -42,12 +44,12 @@ public abstract class AsyncBitmapSource : IDisposable
     public bool loading => state == AsyncImageState.Loading;
     public bool error => state == AsyncImageState.Error;
 
-
     public Bitmap GetBitmap() => bitmap;
 
     public abstract Bitmap CreateBitmapOnMainThread();
     public abstract void Load(RenderTarget target);
     public abstract bool Equals(AsyncBitmapSource other);
+
     public virtual void Dispose()
     {
         state = AsyncImageState.Disposed;
@@ -196,8 +198,10 @@ public class D2DCanvas : Control
         fontSegoeUI_12 = new TextFormat(dwFactory, "Segoe UI", 12f);
     }
 
-    SolidColorBrush brush;
     WindowRenderTarget target;
+    SolidColorBrush solidBrush;
+    BitmapBrush tileBrush;
+
     AsyncBitmapSource bitmapSource;
     Bitmap safeBitmap;
 
@@ -208,7 +212,31 @@ public class D2DCanvas : Control
     {
         SetStyle(ControlStyles.AllPaintingInWmPaint
                  | ControlStyles.UserPaint
-                 | ControlStyles.Opaque, true);
+                 | ControlStyles.SupportsTransparentBackColor, true);
+    }
+
+    static Bitmap LoadEmbeddedBitmap(WindowRenderTarget target, byte[] bytes)
+    {
+        using var stream = new MemoryStream(bytes);
+        using var wicStream = new WICStream(wic, stream);
+        using var decoder = new BitmapDecoder(
+            wic,
+            wicStream,
+            DecodeOptions.CacheOnLoad
+        );
+
+        using var frame = decoder.GetFrame(0);
+        using var converter = new FormatConverter(wic);
+        converter.Initialize(
+            frame,
+            SharpDX.WIC.PixelFormat.Format32bppRGB,
+            BitmapDitherType.None,
+            null,
+            0,
+            BitmapPaletteType.Custom
+        );
+
+        return Bitmap.FromWicBitmap(target, converter);
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -232,7 +260,16 @@ public class D2DCanvas : Control
             FeatureLevel.Level_DEFAULT
         );
         target = new WindowRenderTarget(factory, rtProps, props);
-        brush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
+
+        solidBrush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
+        var transparent = LoadEmbeddedBitmap(target, Properties.Resources.transparent);
+        tileBrush = new BitmapBrush(target, transparent, new BitmapBrushProperties()
+        {
+            ExtendModeX = ExtendMode.Wrap,
+            ExtendModeY = ExtendMode.Wrap,
+            InterpolationMode = BitmapInterpolationMode.NearestNeighbor
+        });
+
         if (bitmapSource != null)
         {
             bitmapSource.Load(target);
@@ -242,9 +279,10 @@ public class D2DCanvas : Control
     protected override void OnHandleDestroyed(EventArgs e)
     {
         safeBitmap = null;
-        Utilities.Dispose(ref brush);
-        Utilities.Dispose(ref target);
+        Utilities.Dispose(ref tileBrush);
+        Utilities.Dispose(ref solidBrush);
         Utilities.Dispose(ref bitmapSource);
+        Utilities.Dispose(ref target);
         base.OnHandleDestroyed(e);
     }
 
@@ -317,8 +355,12 @@ public class D2DCanvas : Control
 
         target.BeginDraw();
         target.Clear(new RawColor4(1, 1, 1, 1));
-
         target.Transform = Matrix3x2.Identity;
+        target.FillRectangle(
+            new RawRectangleF(0, 0, Width, Height),
+            tileBrush
+        );
+
         if (bitmapSource != null)
         {
             if (bitmapSource.error)
@@ -333,6 +375,7 @@ public class D2DCanvas : Control
             else if (bitmapSource.state == AsyncImageState.Ready)
             {
                 safeBitmap = bitmapSource.CreateBitmapOnMainThread();
+                if (bitmapSource.error) Invalidate();
             }
             if (bitmapSource.state == AsyncImageState.Loaded)
             {
@@ -340,12 +383,7 @@ public class D2DCanvas : Control
                 {
                     if (onPaint == null)
                     {
-                        target.DrawBitmap(
-                            bitmap,
-                            new RawRectangleF(0, 0, bitmap.Size.Width, bitmap.Size.Height),
-                            1f,
-                            BitmapInterpolationMode.NearestNeighbor
-                        );
+                        target.DrawBitmap(bitmap, 1f, BitmapInterpolationMode.NearestNeighbor);
                     }
                     else
                     {
@@ -360,24 +398,20 @@ public class D2DCanvas : Control
                     }
                 }
             }
-            else
-            {
-                Invalidate();
-            }
         }
         target.EndDraw();
     }
 
-    public void FillRectangle(in System.Drawing.Rectangle rectangle, RawColor4 color)
+    public void FillRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color)
     {
-        brush.Color = color;
-        target.FillRectangle(rectangle.Convert2(), brush);
+        solidBrush.Color = color;
+        target.FillRectangle(rectangle.Convert2(), solidBrush);
     }
 
     public void DrawRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color, float thickness)
     {
-        brush.Color = color;
-        target.DrawRectangle(rectangle.Convert2(), brush, thickness);
+        solidBrush.Color = color;
+        target.DrawRectangle(rectangle.Convert2(), solidBrush, thickness);
     }
 
     public void DrawBitmap(Bitmap bitmap, int x, int y)
@@ -419,12 +453,12 @@ public class D2DCanvas : Control
 
     public void DrawText(string text, int x, int y, in Color color, TextFormat font = null)
     {
-        brush.Color = color;
+        solidBrush.Color = color;
         target.DrawText(
             text,
             font ?? fontSegoeUI_12,
             new RawRectangleF(x, y, Width, Height),
-            brush,
+            solidBrush,
             DrawTextOptions.None,
             MeasuringMode.Natural
         );

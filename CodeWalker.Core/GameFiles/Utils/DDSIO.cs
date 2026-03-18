@@ -129,11 +129,44 @@ namespace CodeWalker.Utils
             height = i0.height;
             dataSize = i0.slicePitch; // h * i0.rowPitch;
             DXTex.ComputePitch(meta.format, i0.width, i0.height, out ddsRowPitch, out ddsSlicePitch, 0);
-
-            var data = new SharpDX.DataStream(dataSize, true, true);
-            data.Write(img.Data, i0.pixels, dataSize);
-            data.Position = 0;
-            return data;
+            if (format == DXGI_FORMAT.DXGI_FORMAT_A8_UNORM)
+            {
+                ddsRowPitch *= 4;
+                dataSize = width * height * 4;
+                format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM;
+                var data = new SharpDX.DataStream(dataSize, true, true);
+                var buffer = new byte[] { 0, 0, 0, 255 };
+                for (var i = 0; i < i0.slicePitch; i++)
+                {
+                    var v = img.Data[i + i0.pixels];
+                    buffer[0] = buffer[1] = buffer[2] = v;
+                    data.Write(buffer, 0, 4);
+                }
+                data.Position = 0;
+                return data;
+            }
+            else if (format == DXGI_FORMAT.DXGI_FORMAT_R8_UNORM)
+            {
+                ddsRowPitch *= 4;
+                dataSize = width * height * 4;
+                format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM;
+                var data = new SharpDX.DataStream(dataSize, true, true);
+                var buffer = new byte[] { 0, 0, 0, 255 };
+                for (var i = 0; i < i0.slicePitch; i++)
+                {
+                    buffer[0] = img.Data[i + i0.pixels];
+                    data.Write(buffer, 0, 4);
+                }
+                data.Position = 0;
+                return data;
+            }
+            else
+            {
+                var data = new SharpDX.DataStream(dataSize, true, true);
+                data.Write(img.Data, i0.pixels, dataSize);
+                data.Position = 0;
+                return data;
+            }
         }
 
         public static byte[] GetPixels(Texture texture, int mip)

@@ -10,7 +10,9 @@ using Buffer = SharpDX.Direct3D11.Buffer;
 using CodeWalker.World;
 using SharpDX.Direct3D;
 using SharpDX;
+using SharpDX.Direct2D1;
 using SharpDX.DXGI;
+using DeviceContext = SharpDX.Direct3D11.DeviceContext;
 
 namespace CodeWalker.Rendering
 {
@@ -1332,6 +1334,61 @@ namespace CodeWalker.Rendering
             IsLoaded = true;
         }
 
+        public void Load(Device device, SharpDX.Direct2D1.Bitmap1 bitmap)
+        {
+            UnloadRes();
+            // using var surface = bitmap.QueryInterface<SharpDX.DXGI.Surface>();
+            // var d3dTex = surface.QueryInterface<SharpDX.Direct3D11.Texture2D>();
+            // ShaderResourceView = new ShaderResourceView(device, d3dTex);
+            var stagingDesc = new Texture2DDescription
+            {
+                ArraySize = 1,
+                MipLevels = 1,
+                BindFlags = BindFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
+                Width = bitmap.PixelSize.Width,
+                Height = bitmap.PixelSize.Height,
+                OptionFlags = ResourceOptionFlags.None,
+                CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
+                SampleDescription = new SampleDescription(1, 0),
+            };
+            var stagingTexture = new Texture2D(device, stagingDesc);
+            
+            var desc = new Texture2DDescription()
+            {
+                ArraySize = 1,
+                BindFlags = BindFlags.ShaderResource,
+                CpuAccessFlags = CpuAccessFlags.None,
+                Format = Format.B8G8R8A8_UNorm,
+                Height = bitmap.PixelSize.Height,
+                MipLevels = 1,//Texture.Levels,
+                OptionFlags = ResourceOptionFlags.None,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                Width = bitmap.PixelSize.Width
+            };
+            Texture2D = new Texture2D(device, desc);
+            
+            var d2dData = bitmap.Map(MapOptions.Read);
+            
+            var dataPointer = d2dData.DataPointer;
+            var dataSize = d2dData.Pitch * stagingDesc.Height;
+            
+            using var dataStream = new DataStream(dataSize, true, true);
+            dataStream.WriteRange(dataPointer, dataSize);
+            
+            device.ImmediateContext.UpdateSubresource(new DataBox(
+                dataStream.DataPointer,
+                d2dData.Pitch, stagingDesc.Height
+                ), stagingTexture, 0);
+            
+            device.ImmediateContext.CopyResource(stagingTexture, Texture2D);
+            stagingTexture.Dispose();
+            bitmap.Unmap();
+            
+            ShaderResourceView = new ShaderResourceView(device, Texture2D);
+        }
+        
         public void Load(Device device, System.Drawing.Bitmap bitmap)
         {
             UnloadRes();

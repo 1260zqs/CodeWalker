@@ -108,7 +108,7 @@ public static class PictureBoxViewer
             canvas.DrawText(
                 $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%{infoStr}",
                 6, 0,
-                new SharpDX.Color(0, 0, 0, 0.5f)
+                new SharpDX.Color(0, 0, 0, 0.8f)
             );
             canvas.SetTransformation(pan.X, pan.Y, zoom);
         }
