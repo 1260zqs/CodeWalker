@@ -92,6 +92,28 @@ public static class PictureBoxViewer
         stateObject.maxZoom = Math.Max((float)control.Width / width, (float)control.Height / height) * 100;
     }
 
+    internal static void Paint(D2DCanvas canvas, SharpDX.Direct2D1.Bitmap bitmap)
+    {
+        if (stateObjects.TryGetValue(GetHandle(canvas), out var stateObject))
+        {
+            var pan = stateObject.pan;
+            var zoom = stateObject.zoom;
+
+            var infoStr = string.Empty;
+            if (bitmap != null)
+            {
+                var pixelSize = bitmap.PixelSize;
+                infoStr = $"\npixelSize: {pixelSize.Width} x {pixelSize.Height}";
+            }
+            canvas.DrawText(
+                $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%{infoStr}",
+                6, 0,
+                new SharpDX.Color(0, 0, 0, 0.5f)
+            );
+            canvas.SetTransformation(pan.X, pan.Y, zoom);
+        }
+    }
+
     internal static void Paint(PictureBox pictureBox, Graphics graphics)
     {
         if (stateObjects.TryGetValue(GetHandle(pictureBox), out var stateObject))

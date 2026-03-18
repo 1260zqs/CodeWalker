@@ -53,30 +53,16 @@ public partial class TextureModForm : Form
         InitializeListView();
     }
 
-    private void PaintTexturePicture(D2DCanvas canvas, WindowRenderTarget target, Bitmap bitmap)
+    private void PaintTexturePicture(D2DCanvas canvas, RenderTarget target, Bitmap bitmap)
     {
-        var pixelSize = bitmap.PixelSize;
-        PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
-        canvas.DrawText(
-            $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
-            6, 0,
-            new SharpDX.Color(0, 0, 0, 0.5f)
-        );
-        canvas.SetTransformation(pan.X, pan.Y, zoom);
+        PictureBoxViewer.Paint(canvas, bitmap);
         canvas.DrawBitmap(bitmap, 0, 0);
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void PaintPreviewPicture(D2DCanvas canvas, WindowRenderTarget target, Bitmap bitmap)
+    private void PaintPreviewPicture(D2DCanvas canvas, RenderTarget target, Bitmap bitmap)
     {
-        var pixelSize = bitmap.PixelSize;
-        PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
-        canvas.DrawText(
-            $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
-            6, 0,
-            new SharpDX.Color(0, 0, 0, 0.5f)
-        );
-        canvas.SetTransformation(pan.X, pan.Y, zoom);
+        PictureBoxViewer.Paint(canvas, bitmap);
         canvas.DrawBitmap(bitmap, 0, 0);
         if (currentMod != null && currentReplacement != null)
         {
@@ -85,7 +71,7 @@ public partial class TextureModForm : Form
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void DrawPreviewOverlay(D2DCanvas canvas, WindowRenderTarget target)
+    private void DrawPreviewOverlay(D2DCanvas canvas, RenderTarget target)
     {
         var tex = textureCanvas.GetImage();
         if (tex == null)

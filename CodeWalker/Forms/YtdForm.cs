@@ -50,16 +50,9 @@ namespace CodeWalker.Forms
             vsExtender.SetStyle(menuStrip1, version, theme);
         }
 
-        private void OnDrawTexture(D2DCanvas canvas, WindowRenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
+        private void OnDrawTexture(D2DCanvas canvas, RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
         {
-            var pixelSize = bitmap.PixelSize;
-            PictureBoxViewer.GetState(canvas, out var zoom, out var pan);
-            canvas.DrawText(
-                $"pan: {pan.X:F0}, {pan.Y:F0}\nzoom: {zoom * 100:F1}%\npixelSize: {pixelSize.Width} x {pixelSize.Height}",
-                6, 0,
-                new SharpDX.Color(0, 0, 0, 0.5f)
-            );
-            canvas.SetTransformation(pan.X, pan.Y, zoom);
+            PictureBoxViewer.Paint(canvas, bitmap);
             canvas.DrawBitmap(bitmap, 0, 0);
         }
 
