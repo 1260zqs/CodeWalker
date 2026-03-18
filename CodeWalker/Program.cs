@@ -21,6 +21,9 @@ namespace CodeWalker
         [STAThread]
         static void Main(string[] args)
         {
+            var file = CodeWalker.Utils.GameFileUtils.LoadFile("D:\\minimap_0_0.ytd");
+
+
             bool menumode = false;
             bool explorermode = false;
             bool projectmode = false;

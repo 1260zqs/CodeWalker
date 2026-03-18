@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeWalker.GameFiles;
+using CodeWalker.Utils;
 
 namespace CodeWalker.TexMod;
 
@@ -54,7 +55,11 @@ public class GTAVTextureModAdapter : TextureModAdapter
                     var filename = Path.Combine(path, "content", modEntryPath);
                     if (File.Exists(filename))
                     {
-                        var bytes = File.ReadAllBytes(filename);
+                        var file = GameFileUtils.LoadFile(filename);
+                        if (file == null)
+                        {
+                            return file;
+                        }
                     }
                 }
             }
@@ -88,31 +93,6 @@ public class GTAVTextureModAdapter : TextureModAdapter
 
     public override Texture GetSourceTexture(GameFile gameFile, string texName)
     {
-        Texture texture = null;
-        var hash = JenkHash.GenHash(texName.ToLowerInvariant());
-        if (gameFile is YtdFile ytd)
-        {
-            texture = ytd.TextureDict?.Lookup(hash);
-        }
-        else if (gameFile is YddFile ydd)
-        {
-            foreach (var drawable in ydd.Drawables)
-            {
-                var tex = drawable.ShaderGroup.TextureDictionary.Lookup(hash);
-                if (tex != null)
-                {
-                    texture = tex;
-                    break;
-                }
-            }
-        }
-        else if (gameFile is YdrFile ydr)
-        {
-            texture = ydr.Drawable.ShaderGroup.TextureDictionary.Lookup(hash);
-        }
-        else if (gameFile is YftFile yft)
-        {
-        }
-        return texture;
+        return GameFileUtils.FindTexture(gameFile, texName);
     }
 }
