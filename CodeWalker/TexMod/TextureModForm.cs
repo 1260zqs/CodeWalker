@@ -14,8 +14,6 @@ namespace CodeWalker.TexMod;
 
 public partial class TextureModForm : Form
 {
-    private SharpDX.Direct2D1.DeviceContext d2dRenderTarget;
-
     private TextureModForm()
     {
         InitializeComponent();
@@ -63,25 +61,11 @@ public partial class TextureModForm : Form
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-
-        // D3D11 device
-        var d3dDevice = new SharpDX.Direct3D11.Device(
-            SharpDX.Direct3D.DriverType.Hardware,
-            SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport
-        );
-        using var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device>();
-        using var d2dFactory = new SharpDX.Direct2D1.Factory1();
-        var d2dDevice = new SharpDX.Direct2D1.Device(d2dFactory, dxgiDevice);
-        d2dRenderTarget = new SharpDX.Direct2D1.DeviceContext(
-            d2dDevice,
-            SharpDX.Direct2D1.DeviceContextOptions.None
-        );
-        // EditorApplication.update += RenderUpdate;
+        d2dRenderTarget = new D2DRenderTarget();
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
-        // EditorApplication.update -= RenderUpdate;
         Utilities.Dispose(ref d2dRenderTarget);
         base.OnHandleDestroyed(e);
     }
