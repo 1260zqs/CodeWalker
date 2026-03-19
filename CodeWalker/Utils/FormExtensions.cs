@@ -21,6 +21,16 @@ public static class FormExtensions
         );
     }
 
+    public static SharpDX.Mathematics.Interop.RawRectangleF Convert2(this SharpDX.Rectangle rectangle)
+    {
+        return new SharpDX.Mathematics.Interop.RawRectangleF(
+            rectangle.Left,
+            rectangle.Top,
+            rectangle.Right,
+            rectangle.Bottom
+        );
+    }
+
     public static SharpDX.Rectangle Convert(this System.Drawing.Rectangle rectangle)
     {
         return new SharpDX.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
@@ -88,7 +98,7 @@ public static class FormExtensions
     public static void SetValueDrop<TValue>(this System.Windows.Forms.ComboBox comboBox, string[] names, TValue[] values, Action<TValue> onValue, TValue defaultValue)
     {
         comboBox.Items.Clear();
-        foreach (var name in names) 
+        foreach (var name in names)
         {
             comboBox.Items.Add(new { Name = name });
         }

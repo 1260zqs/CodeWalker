@@ -496,6 +496,7 @@ public partial class TextureModForm : Form
 
     private void checkBox3_CheckedChanged(object sender, EventArgs e)
     {
+        ApplyDrawing();
     }
 
     private void timer1_Tick(object sender, EventArgs e)

@@ -806,6 +806,7 @@ namespace CodeWalker.World
         {
             if (currentTexOwner != null)
             {
+                var position = this.WorldForm.Renderer.camera.Position;
                 TexMod.TextureModForm.ShowAddModSource(WorldForm, currentTexOwner, currentTex.Name);
             }
         }

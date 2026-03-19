@@ -1,14 +1,9 @@
-﻿using CodeWalker.GameFiles;
+﻿using System;
+using CodeWalker.GameFiles;
 using CodeWalker.Properties;
 using CodeWalker.TexMod;
 using CodeWalker.Utils;
-using SharpDX;
-using SharpDX.Direct2D1;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -226,18 +221,26 @@ public partial class TextureModForm
         {
             return;
         }
-        d2dRenderTarget.BeginDraw();
-
-        //d2dRenderTarget.DrawBitmap(sourceTex, 1, BitmapInterpolationMode.NearestNeighbor);
-        //d2dRenderTarget.FillRectangle(new RawRectangleF(targetRect.X, targetRect.Top, targetRect.Right, targetRect.Bottom));
-
-        d2dRenderTarget.EndDraw();
-
-        var tex = worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
-            x.Key.NameHash == nameHash);
-        if (tex != null && tex.Texture2D != null)
+        try
         {
-            d2dRenderTarget.CopyTo(worldForm.Renderer.Device, tex.Texture2D);
+            d2dRenderTarget.SetTargetSize(worldForm.Renderer.Device, sourceTex.PixelSize);
+            d2dRenderTarget.BeginDraw();
+
+            //d2dRenderTarget.target.DrawBitmap(sourceTex, 1, BitmapInterpolationMode.NearestNeighbor);
+            if (checkBox3.Checked)
+            {
+                d2dRenderTarget.FillRectangle(targetRect.Convert2());
+            }
+
+            d2dRenderTarget.EndDraw();
+
+            var texture = worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
+                x.Key.NameHash == nameHash);
+            d2dRenderTarget.CopyTo(worldForm.Renderer.Device, texture);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
         Monitor.Exit(worldForm.Renderer.DXMan.syncroot);
     }
@@ -277,242 +280,5 @@ public partial class TextureModForm
 
             return propertyObject;
         }
-    }
-}
-
-public class D3DRenderTarget : IDisposable
-{
-    static D3DRenderTarget()
-    {
-
-    }
-
-    static SharpDX.Direct3D11.Device gDevice;
-    static SharpDX.Direct3D11.VertexShader vertexShader;
-    static SharpDX.Direct3D11.PixelShader pixelShader;
-    static SharpDX.Direct3D11.VertexBufferBinding vertexBuffer;
-    static SharpDX.Direct3D11.SamplerState sampler;
-    static SharpDX.Direct3D11.InputLayout layout;
-
-    public static void Init(SharpDX.Direct3D11.Device device)
-    {
-        var shaderCode = new byte[10];
-        var vsByteCode = SharpDX.D3DCompiler.ShaderBytecode.Compile(shaderCode, "VSMain", "vs_5_0");
-        var psByteCode = SharpDX.D3DCompiler.ShaderBytecode.Compile(shaderCode, "PSMain", "ps_5_0");
-
-        vertexShader = new SharpDX.Direct3D11.VertexShader(device, vsByteCode);
-        pixelShader = new SharpDX.Direct3D11.PixelShader(device, psByteCode);
-
-        layout = new SharpDX.Direct3D11.InputLayout(device, vsByteCode, new[]
-        {
-            new SharpDX.Direct3D11.InputElement("POSITION", 0, Format.R32G32_Float, 0, 0),
-            new SharpDX.Direct3D11.InputElement("TEXCOORD", 0, Format.R32G32_Float, 8, 0),
-        });
-
-        var vertices = new[]
-        {
-            // pos      uv
-            -1f, -1f,   0f, 1f,
-            -1f,  1f,   0f, 0f,
-             1f, -1f,   1f, 1f,
-             1f,  1f,   1f, 0f,
-        };
-        var vb = SharpDX.Direct3D11.Buffer.Create(device, BindFlags.VertexBuffer, vertices);
-        vertexBuffer = new VertexBufferBinding(vb, sizeof(float) * 4, 0);
-        sampler = new SharpDX.Direct3D11.SamplerState(device, new SamplerStateDescription()
-        {
-            Filter = SharpDX.Direct3D11.Filter.MinMagMipPoint,
-            AddressU = TextureAddressMode.Clamp,
-            AddressV = TextureAddressMode.Clamp,
-            AddressW = TextureAddressMode.Clamp,
-            ComparisonFunction = Comparison.Never,
-            MinimumLod = 0,
-            MaximumLod = float.MaxValue
-        });
-    }
-
-    public static SharpDX.Direct3D11.RenderTargetView CreateRenderTarget(int width, int height, SharpDX.DXGI.Format format = SharpDX.DXGI.Format.B8G8R8X8_UNorm)
-    {
-        return CreateRenderTarget(gDevice, width, height, format);
-    }
-
-    public static SharpDX.Direct3D11.RenderTargetView CreateRenderTarget(SharpDX.Direct3D11.Device device, int width, int height, SharpDX.DXGI.Format format = SharpDX.DXGI.Format.B8G8R8X8_UNorm)
-    {
-        var stagingDesc = new Texture2DDescription
-        {
-            Width = width,
-            Height = height,
-            Format = format,
-            ArraySize = 1,
-            MipLevels = 1,
-            BindFlags = BindFlags.RenderTarget,
-            OptionFlags = ResourceOptionFlags.None,
-            CpuAccessFlags = CpuAccessFlags.None,
-            SampleDescription = new SampleDescription(1, 0),
-            Usage = ResourceUsage.Default,
-        };
-        var texture = new SharpDX.Direct3D11.Texture2D(device, stagingDesc);
-        return new SharpDX.Direct3D11.RenderTargetView(device, texture);
-    }
-
-    public static void Blit()
-    {
-        //Blit(gDevice);
-    }
-
-    public static void Draw(
-        SharpDX.Direct3D11.Device device,
-        SharpDX.Direct3D11.RenderTargetView rtv,
-        int width, int height,
-        SharpDX.Direct3D11.ShaderResourceView mainTex,
-        SharpDX.Direct3D11.ShaderResourceView overlayTex
-        )
-    {
-        var ctx = device.ImmediateContext;
-        ctx.OutputMerger.SetRenderTargets(rtv);
-        ctx.Rasterizer.SetViewport(0, 0, width, height);
-
-        ctx.InputAssembler.InputLayout = layout;
-        ctx.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleStrip;
-        ctx.InputAssembler.SetVertexBuffers(0, vertexBuffer);
-
-        ctx.VertexShader.Set(vertexShader);
-        ctx.PixelShader.Set(pixelShader);
-
-        //using var srv = new ShaderResourceView(device, sourceTex);
-        ctx.PixelShader.SetShaderResource(0, mainTex);
-        ctx.PixelShader.SetSampler(0, sampler);
-
-        ctx.Draw(4, 0);
-    }
-
-    public void Dispose()
-    {
-
-    }
-}
-
-public class D2DRenderTarget : IDisposable
-{
-    private SharpDX.Direct3D11.Device d3dDevice;
-    private SharpDX.Direct2D1.Device d2dDevice;
-    private SharpDX.Direct2D1.DeviceContext target;
-
-    private SolidColorBrush solidBrush;
-    private SharpDX.Direct2D1.Bitmap1 rt;
-    private SharpDX.Direct2D1.Bitmap1 bitmap;
-    private SharpDX.Direct3D11.Texture2D stagingTexture;
-
-    private SharpDX.Size2 pixelSize;
-    private SharpDX.DXGI.Format format;
-
-    public D2DRenderTarget()
-    {
-        format = SharpDX.DXGI.Format.B8G8R8A8_UNorm;
-        d3dDevice = new SharpDX.Direct3D11.Device(
-            SharpDX.Direct3D.DriverType.Hardware,
-            SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport
-        );
-        using var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device>();
-        using var d2dFactory = new SharpDX.Direct2D1.Factory1();
-        d2dDevice = new SharpDX.Direct2D1.Device(d2dFactory, dxgiDevice);
-        target = new SharpDX.Direct2D1.DeviceContext(
-            d2dDevice,
-            SharpDX.Direct2D1.DeviceContextOptions.None
-        );
-
-        solidBrush = new SolidColorBrush(target, new RawColor4(0f, 1f, 0, 1f));
-    }
-
-    public void BeginDraw()
-    {
-        target.Target = rt;
-        target.BeginDraw();
-        target.Clear(new RawColor4(0f, 0, 0, 0));
-    }
-
-    public void EndDraw()
-    {
-        target.EndDraw();
-        target.Target = null;
-    }
-
-    public void CopyTo(SharpDX.Direct3D11.Device device, SharpDX.Direct3D11.Texture2D texture)
-    {
-        if (texture == null) return;
-        bitmap.CopyFromBitmap(rt);
-        var d2dData = bitmap.Map(MapOptions.Read);
-        device.ImmediateContext.UpdateSubresource(
-            new DataBox(
-                d2dData.DataPointer,
-                d2dData.Pitch,
-                pixelSize.Height
-            ),
-            stagingTexture, 0
-        );
-        bitmap.Unmap();
-        //device.ImmediateContext.CopyResource(stagingTexture, texture);
-        device.ImmediateContext.CopySubresourceRegion(
-            stagingTexture, 0, null,
-            texture, 0
-        );
-    }
-
-    public void SetTargetSize(SharpDX.Direct3D11.Device device, SharpDX.Size2 pixelSize)
-    {
-        if (this.pixelSize == pixelSize)
-        {
-            return;
-        }
-        this.Release();
-        this.pixelSize = pixelSize;
-        var stagingDesc = new Texture2DDescription
-        {
-            Width = pixelSize.Width,
-            Height = pixelSize.Height,
-            ArraySize = 1,
-            MipLevels = 1,
-            BindFlags = BindFlags.None,
-            Format = format,
-            OptionFlags = ResourceOptionFlags.None,
-            CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
-            SampleDescription = new SampleDescription(1, 0),
-        };
-
-        var bmpProps = new BitmapProperties1(
-            new SharpDX.Direct2D1.PixelFormat(
-                format,
-                SharpDX.Direct2D1.AlphaMode.Premultiplied
-            ),
-            96, 96,
-            BitmapOptions.Target | BitmapOptions.CannotDraw
-        );
-        var bitmapProperties = new BitmapProperties1
-        {
-            PixelFormat = rt.PixelFormat,
-            BitmapOptions = BitmapOptions.CannotDraw | BitmapOptions.CpuRead,
-        };
-
-        rt = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bmpProps);
-        bitmap = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bitmapProperties);
-        stagingTexture = new SharpDX.Direct3D11.Texture2D(device, stagingDesc);
-    }
-
-    private void Release()
-    {
-        Utilities.Dispose(ref rt);
-        Utilities.Dispose(ref bitmap);
-        Utilities.Dispose(ref stagingTexture);
-    }
-
-    public void Dispose()
-    {
-        Utilities.Dispose(ref rt);
-        Utilities.Dispose(ref bitmap);
-        Utilities.Dispose(ref stagingTexture);
-
-        Utilities.Dispose(ref target);
-        Utilities.Dispose(ref d2dDevice);
-        Utilities.Dispose(ref d3dDevice);
     }
 }

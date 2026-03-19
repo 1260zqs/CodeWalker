@@ -38,7 +38,6 @@ public abstract class AsyncBitmapSource : IDisposable
     public AsyncImageState state;
 
     protected Bitmap bitmap;
-    protected object stateObject;
 
     public bool disposed => state == AsyncImageState.Disposed;
     public bool loading => state == AsyncImageState.Loading;
@@ -46,8 +45,8 @@ public abstract class AsyncBitmapSource : IDisposable
 
     public Bitmap GetBitmap() => bitmap;
 
-    public abstract Bitmap CreateBitmapOnMainThread();
-    public abstract void Load(RenderTarget target);
+    public abstract Bitmap CreateBitmap(RenderTarget target);
+    public abstract void Load();
     public abstract bool Equals(AsyncBitmapSource other);
 
     public virtual void Dispose()
@@ -60,28 +59,27 @@ public abstract class AsyncBitmapSource : IDisposable
 public class AsyncImageFileSource : AsyncBitmapSource
 {
     private string filename;
-    private RenderTarget target;
+    private DataStream stateObject;
 
     public AsyncImageFileSource(string filename)
     {
         this.filename = filename;
     }
 
-    public override void Load(RenderTarget target)
+    public override void Load()
     {
         if (state == AsyncImageState.None)
         {
-            this.target = target;
             state = AsyncImageState.Loading;
             Task.Run(Run);
         }
     }
 
-    public override Bitmap CreateBitmapOnMainThread()
+    public override Bitmap CreateBitmap(RenderTarget target)
     {
         if (stateObject != null)
         {
-            bitmap = CreateBitmap((DataStream)stateObject);
+            bitmap = CreateBitmap(target, stateObject);
             stateObject = null;
         }
         return bitmap;
@@ -130,7 +128,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
         }
     }
 
-    private Bitmap CreateBitmap(DataStream data)
+    private Bitmap CreateBitmap(RenderTarget target, DataStream data)
     {
         try
         {
@@ -272,7 +270,7 @@ public class D2DCanvas : Control
 
         if (bitmapSource != null)
         {
-            bitmapSource.Load(target);
+            bitmapSource.Load();
         }
     }
 
@@ -340,7 +338,7 @@ public class D2DCanvas : Control
         bitmapSource = source;
         if (target != null)
         {
-            bitmapSource?.Load(target);
+            bitmapSource?.Load();
             Invalidate();
         }
     }
@@ -374,7 +372,7 @@ public class D2DCanvas : Control
             }
             else if (bitmapSource.state == AsyncImageState.Ready)
             {
-                safeBitmap = bitmapSource.CreateBitmapOnMainThread();
+                safeBitmap = bitmapSource.CreateBitmap(target);
                 if (bitmapSource.error) Invalidate();
             }
             if (bitmapSource.state == AsyncImageState.Loaded)

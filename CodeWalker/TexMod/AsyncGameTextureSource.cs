@@ -13,9 +13,9 @@ namespace CodeWalker;
 
 public class AsyncTextureSource : AsyncBitmapSource
 {
-    protected RenderTarget target;
-    protected Texture texture;
     protected int mip;
+    protected Texture texture;
+    protected object stateObject;
 
     protected AsyncTextureSource()
     {
@@ -27,21 +27,20 @@ public class AsyncTextureSource : AsyncBitmapSource
         this.texture = texture;
     }
 
-    public override void Load(RenderTarget target)
+    public override void Load()
     {
         if (state == AsyncImageState.None)
         {
-            this.target = target;
             state = AsyncImageState.Loading;
             Task.Run(LoadTexture);
         }
     }
 
-    public override Bitmap CreateBitmapOnMainThread()
+    public override Bitmap CreateBitmap(RenderTarget target)
     {
         if (stateObject != null)
         {
-            bitmap = CreateBitmap((StateObject)stateObject);
+            bitmap = CreateBitmap(target, (StateObject)stateObject);
             stateObject = null;
         }
         return bitmap;
@@ -85,7 +84,7 @@ public class AsyncTextureSource : AsyncBitmapSource
         }
     }
 
-    private Bitmap CreateBitmap(StateObject stateObject)
+    private Bitmap CreateBitmap(RenderTarget target, StateObject stateObject)
     {
         try
         {
@@ -179,11 +178,10 @@ public class AsyncGameTextureSource : AsyncTextureSource
         this.sourceFile = sourceFile;
     }
 
-    public override void Load(RenderTarget target)
+    public override void Load()
     {
         if (state == AsyncImageState.None)
         {
-            this.target = target;
             state = AsyncImageState.Loading;
             Task.Run(Run);
         }
@@ -198,11 +196,11 @@ public class AsyncGameTextureSource : AsyncTextureSource
             return;
         }
         gameFile.Use();
-        var texName = adapter.GetSourceTextureName(sourceFile);
         while (loading)
         {
             if (gameFile.Loaded)
             {
+                var texName = adapter.GetSourceTextureName(sourceFile);
                 texture = adapter.GetSourceTexture(gameFile, texName);
                 if (texture == null)
                 {
