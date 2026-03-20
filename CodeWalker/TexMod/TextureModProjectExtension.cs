@@ -1,8 +1,9 @@
-﻿using System;
+﻿using SharpDX;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Xml;
-using SharpDX;
 
 // ReSharper disable AssignNullToNotNullAttribute
 
@@ -24,6 +25,7 @@ public static class TextureModProjectExtension
             writer.WriteStartDocument();
             writer.WriteStartElement("TextureModProject");
             writer.WriteElementString("manifestFile", project.manifestFile);
+            WriteProjectDirectory(writer, project.directory);
 
             writer.WriteStartElement("Replacements");
             foreach (var replacement in project.replacements)
@@ -73,6 +75,34 @@ public static class TextureModProjectExtension
 
             writer.WriteEndElement();
             writer.WriteEndDocument();
+        }
+    }
+
+    public static void WriteProjectDirectory(XmlWriter writer, ProjectDirectory root)
+    {
+        var allDirs = new List<ProjectDirectory>();
+        CollectDirectories(root, allDirs);
+
+        writer.WriteStartElement("ProjectDirectory");
+        foreach (var dir in allDirs)
+        {
+            writer.WriteStartElement("Directory");
+            writer.WriteAttributeString("path", dir.path);
+            foreach (var file in dir.files)
+            {
+                writer.WriteElementString("File", $"{file:N}");
+            }
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
+    }
+
+    private static void CollectDirectories(ProjectDirectory dir, List<ProjectDirectory> list)
+    {
+        list.Add(dir);
+        foreach (var child in dir.directories)
+        {
+            CollectDirectories(child, list);
         }
     }
 

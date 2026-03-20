@@ -1,23 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Windows.Forms;
+﻿using CodeWalker.Utils;
 using SharpDX;
-using SharpDX.WIC;
-using SharpDX.DXGI;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
+using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using CodeWalker.Utils;
+using SharpDX.WIC;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Markup;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 using Factory = SharpDX.Direct2D1.Factory;
-using WicFactory = SharpDX.WIC.ImagingFactory;
 using FactoryType = SharpDX.Direct2D1.FactoryType;
-using BitmapInterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode;
+using WicFactory = SharpDX.WIC.ImagingFactory;
 
 namespace CodeWalker;
 
@@ -33,17 +33,19 @@ public enum AsyncImageState : byte
 
 public abstract class AsyncBitmapSource : IDisposable
 {
-    public int width;
-    public int height;
-    public AsyncImageState state;
+    public abstract class Factory : IDisposable
+    {
+        public abstract Bitmap CreateBitmap(RenderTarget target);
+        public abstract void Dispose();
+    }
 
-    protected Bitmap bitmap;
+    public bool shared;
+    public Factory factory;
+    public AsyncImageState state;
 
     public bool disposed => state == AsyncImageState.Disposed;
     public bool loading => state == AsyncImageState.Loading;
     public bool error => state == AsyncImageState.Error;
-
-    public Bitmap GetBitmap() => bitmap;
 
     public abstract Bitmap CreateBitmap(RenderTarget target);
     public abstract void Load();
@@ -52,14 +54,56 @@ public abstract class AsyncBitmapSource : IDisposable
     public virtual void Dispose()
     {
         state = AsyncImageState.Disposed;
-        Utilities.Dispose(ref bitmap);
+        Utilities.Dispose(ref factory);
     }
 }
 
 public class AsyncImageFileSource : AsyncBitmapSource
 {
+    class ImageFactory : Factory
+    {
+        public int width;
+        public int height;
+        public DataStream dataStream;
+
+        public ImageFactory(DataStream data, int width, int height)
+        {
+            this.width = width;
+            this.height = height;
+            this.dataStream = data;
+        }
+
+        public override Bitmap CreateBitmap(RenderTarget target)
+        {
+            try
+            {
+                var pixelFormat = new SharpDX.Direct2D1.
+                    PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore);
+                var bmpProps = new BitmapProperties(pixelFormat);
+
+                var stride = width * 4;
+                return new Bitmap(
+                    target,
+                    new Size2(width, height),
+                    new DataPointer(dataStream.DataPointer, stride * height),
+                    stride,
+                    bmpProps
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return null;
+        }
+
+        public override void Dispose()
+        {
+            Utilities.Dispose(ref dataStream);
+        }
+    }
+
     private string filename;
-    private DataStream stateObject;
 
     public AsyncImageFileSource(string filename)
     {
@@ -77,11 +121,8 @@ public class AsyncImageFileSource : AsyncBitmapSource
 
     public override Bitmap CreateBitmap(RenderTarget target)
     {
-        if (stateObject != null)
-        {
-            bitmap = CreateBitmap(target, stateObject);
-            stateObject = null;
-        }
+        var bitmap = factory?.CreateBitmap(target);
+        if (!shared) Utilities.Dispose(ref factory);
         return bitmap;
     }
 
@@ -102,8 +143,8 @@ public class AsyncImageFileSource : AsyncBitmapSource
                 BitmapPaletteType.Custom
             );
 
-            width = converter.Size.Width;
-            height = converter.Size.Height;
+            var width = converter.Size.Width;
+            var height = converter.Size.Height;
 
             var stride = width * 4;
             var pixels = new byte[stride * height];
@@ -118,52 +159,13 @@ public class AsyncImageFileSource : AsyncBitmapSource
                 data.Dispose();
                 return;
             }
-            stateObject = data;
+            factory = new ImageFactory(data, width, height);
             state = AsyncImageState.Ready;
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
             state = AsyncImageState.Error;
-        }
-    }
-
-    private Bitmap CreateBitmap(RenderTarget target, DataStream data)
-    {
-        try
-        {
-            var pixelFormat = new SharpDX.Direct2D1.
-                PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore);
-            var bmpProps = new BitmapProperties(pixelFormat);
-
-            var stride = width * 4;
-            bitmap = new Bitmap(
-                target,
-                new Size2(width, height),
-                new DataPointer(data.DataPointer, stride * height),
-                stride,
-                bmpProps
-            );
-            Utilities.Dispose(ref data);
-            state = AsyncImageState.Loaded;
-        }
-        catch (Exception ex)
-        {
-            state = AsyncImageState.Error;
-            Utilities.Dispose(ref bitmap);
-            Utilities.Dispose(ref data);
-            Console.WriteLine(ex);
-        }
-        return bitmap;
-    }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        if (stateObject is IDisposable disposable)
-        {
-            stateObject = null;
-            Utilities.Dispose(ref disposable);
         }
     }
 
@@ -177,6 +179,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
     }
 }
 
+public delegate void D2DCanvasBitmapLoadedHandler(D2DCanvas canvas);
 public delegate void D2DCanvasPaintHandler(D2DCanvas canvas, RenderTarget target, Bitmap bitmap);
 
 public class D2DCanvas : Control
@@ -200,11 +203,13 @@ public class D2DCanvas : Control
     SolidColorBrush solidBrush;
     BitmapBrush tileBrush;
 
+    Bitmap bitmap;
+    Size2 imageSize;
     AsyncBitmapSource bitmapSource;
-    Bitmap safeBitmap;
 
     public RawMatrix3x2 transform => target.Transform;
     public D2DCanvasPaintHandler onPaint;
+    public D2DCanvasBitmapLoadedHandler onBitmapLoaded;
 
     public D2DCanvas()
     {
@@ -265,7 +270,7 @@ public class D2DCanvas : Control
         {
             ExtendModeX = ExtendMode.Wrap,
             ExtendModeY = ExtendMode.Wrap,
-            InterpolationMode = BitmapInterpolationMode.NearestNeighbor
+            InterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor
         });
 
         if (bitmapSource != null)
@@ -276,7 +281,7 @@ public class D2DCanvas : Control
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
-        safeBitmap = null;
+        Utilities.Dispose(ref bitmap);
         Utilities.Dispose(ref tileBrush);
         Utilities.Dispose(ref solidBrush);
         Utilities.Dispose(ref bitmapSource);
@@ -296,30 +301,23 @@ public class D2DCanvas : Control
 
     public bool HasImage()
     {
-        if (bitmapSource != null)
-        {
-            return bitmapSource.state == AsyncImageState.Loaded;
-        }
-        return false;
+        return bitmap != null;
     }
 
     public Size2 GetImageSize()
     {
-        if (bitmapSource != null)
-        {
-            return new Size2(bitmapSource.width, bitmapSource.height);
-        }
-        return Size2.Zero;
+        return imageSize;
     }
 
     public Bitmap GetImage()
     {
-        return safeBitmap;
+        return bitmap;
     }
 
     public void ClearImage()
     {
-        safeBitmap = null;
+        imageSize = Size2.Zero;
+        Utilities.Dispose(ref bitmap);
         Utilities.Dispose(ref bitmapSource);
     }
 
@@ -372,27 +370,28 @@ public class D2DCanvas : Control
             }
             else if (bitmapSource.state == AsyncImageState.Ready)
             {
-                safeBitmap = bitmapSource.CreateBitmap(target);
-                if (bitmapSource.error) Invalidate();
-            }
-            if (bitmapSource.state == AsyncImageState.Loaded)
-            {
-                if (bitmapSource.GetBitmap() is { } bitmap)
+                bitmap = bitmapSource.CreateBitmap(target);
+                if (bitmap != null)
                 {
-                    if (onPaint == null)
+                    imageSize = bitmap.PixelSize;
+                    onBitmapLoaded?.Invoke(this);
+                }
+            }
+            if (bitmap != null)
+            {
+                if (onPaint == null)
+                {
+                    target.DrawBitmap(bitmap, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+                }
+                else
+                {
+                    try
                     {
-                        target.DrawBitmap(bitmap, 1f, BitmapInterpolationMode.NearestNeighbor);
+                        onPaint(this, target, bitmap);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            onPaint(this, target, bitmap);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex);
-                        }
+                        Console.WriteLine(ex);
                     }
                 }
             }
@@ -419,7 +418,7 @@ public class D2DCanvas : Control
 
     public void DrawBitmap(Bitmap bitmap, in RawRectangleF rectangle)
     {
-        target.DrawBitmap(bitmap, rectangle, 1f, BitmapInterpolationMode.NearestNeighbor);
+        target.DrawBitmap(bitmap, rectangle, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
     }
 
     public void DrawBitmap(Bitmap bitmap, in System.Drawing.Rectangle destinationRectangle, in System.Drawing.Rectangle sourceRectangle)
@@ -428,7 +427,7 @@ public class D2DCanvas : Control
             bitmap,
             destinationRectangle.Convert2(),
             1f,
-            BitmapInterpolationMode.NearestNeighbor,
+            SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
             sourceRectangle.Convert2()
         );
     }
@@ -439,7 +438,7 @@ public class D2DCanvas : Control
             bitmap,
             destinationRectangle,
             1f,
-            BitmapInterpolationMode.NearestNeighbor,
+            SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
             sourceRectangle
         );
     }

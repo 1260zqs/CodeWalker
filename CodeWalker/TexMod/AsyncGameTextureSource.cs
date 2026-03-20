@@ -13,9 +13,47 @@ namespace CodeWalker;
 
 public class AsyncTextureSource : AsyncBitmapSource
 {
+    class TextureFactory : Factory
+    {
+        public int width;
+        public int height;
+
+        public int dataSize;
+        public DataStream dataStream;
+        public Format format;
+        public int ddsRowPitch;
+        public int ddsSlicePitch;
+
+        public override Bitmap CreateBitmap(RenderTarget target)
+        {
+            try
+            {
+                var ptr = new DataPointer(dataStream.DataPointer, dataSize);
+                var pixelFormat = new PixelFormat(format, AlphaMode.Ignore);
+                var bmpProps = new BitmapProperties(pixelFormat);
+                return new Bitmap(
+                    target,
+                    new Size2(width, height),
+                    ptr,
+                    ddsRowPitch,
+                    bmpProps
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return null;
+        }
+
+        public override void Dispose()
+        {
+            Utilities.Dispose(ref dataStream);
+        }
+    }
+
     protected int mip;
     protected Texture texture;
-    protected object stateObject;
 
     protected AsyncTextureSource()
     {
@@ -38,11 +76,8 @@ public class AsyncTextureSource : AsyncBitmapSource
 
     public override Bitmap CreateBitmap(RenderTarget target)
     {
-        if (stateObject != null)
-        {
-            bitmap = CreateBitmap(target, (StateObject)stateObject);
-            stateObject = null;
-        }
+        var bitmap = factory?.CreateBitmap(target);
+        if (!shared) Utilities.Dispose(ref factory);
         return bitmap;
     }
 
@@ -54,8 +89,8 @@ public class AsyncTextureSource : AsyncBitmapSource
                 texture,
                 mip,
                 out var dataSize,
-                out width,
-                out height,
+                out var width,
+                out var height,
                 out var ddsRowPitch,
                 out var ddsSlicePitch,
                 out var format
@@ -67,9 +102,11 @@ public class AsyncTextureSource : AsyncBitmapSource
                 state = AsyncImageState.Error;
                 return;
             }
-            stateObject = new StateObject()
+            factory = new TextureFactory()
             {
-                data = data,
+                width = width,
+                height = height,
+                dataStream = data,
                 dataSize = dataSize,
                 format = pixelFormat,
                 ddsRowPitch = ddsRowPitch,
@@ -84,34 +121,7 @@ public class AsyncTextureSource : AsyncBitmapSource
         }
     }
 
-    private Bitmap CreateBitmap(RenderTarget target, StateObject stateObject)
-    {
-        try
-        {
-            var ptr = new DataPointer(stateObject.data.DataPointer, stateObject.dataSize);
-            var pixelFormat = new PixelFormat(stateObject.format, AlphaMode.Ignore);
-            var bmpProps = new BitmapProperties(pixelFormat);
-            bitmap = new Bitmap(
-                target,
-                new Size2(width, height),
-                ptr,
-                stateObject.ddsRowPitch,
-                bmpProps
-            );
-            Utilities.Dispose(ref stateObject.data);
-            state = AsyncImageState.Loaded;
-        }
-        catch (Exception ex)
-        {
-            state = AsyncImageState.Error;
-            Utilities.Dispose(ref stateObject.data);
-            Utilities.Dispose(ref bitmap);
-            Console.WriteLine(ex);
-        }
-        return bitmap;
-    }
-
-    public static Format GetPixelFormat(DDSIO.DXGI_FORMAT format)
+    static Format GetPixelFormat(DDSIO.DXGI_FORMAT format)
     {
         switch (format)
         {
@@ -146,23 +156,9 @@ public class AsyncTextureSource : AsyncBitmapSource
         }
     }
 
-    public override void Dispose()
-    {
-        base.Dispose();
-    }
-
     public override bool Equals(AsyncBitmapSource other)
     {
         return ReferenceEquals(this, other);
-    }
-
-    class StateObject
-    {
-        public DataStream data;
-        public int dataSize;
-        public Format format;
-        public int ddsRowPitch;
-        public int ddsSlicePitch;
     }
 }
 

@@ -45,17 +45,26 @@ public partial class TextureModForm : Form
         PictureBoxRectTool.AddFeature(textureCanvas, OnRectDrawingChange);
         previewCanvas.onPaint = PaintPreviewPicture;
         textureCanvas.onPaint = PaintTexturePicture;
+
+        previewCanvas.onBitmapLoaded = ResetImageViewer;
+        textureCanvas.onBitmapLoaded = ResetImageViewer;
         UpdateGroupBoxVisibility();
 
         InitializeListView();
     }
 
+    private void ResetImageViewer(D2DCanvas canvas)
+    {
+        var imageSize = canvas.GetImageSize();
+        PictureBoxViewer.FitViewer(canvas, imageSize.Width, imageSize.Height);
+        CheckImageUnload();
+    }
+
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        // dxPreview1.InitDevice();
         RefreshModListView();
-        RefreshReplacementListView();
+        RefreshReplacementListView(true);
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -138,7 +147,8 @@ public partial class TextureModForm : Form
         modListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
         replacementListView.Columns.Add("reference");
-        replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+        replacementListView.Columns.Add("size");
+        replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 
         repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
         repViewModeBtn.SelectEnum(modListView.View);
@@ -202,20 +212,6 @@ public partial class TextureModForm : Form
                 exception.ShowDialog();
             }
         }
-    }
-
-    private void DisplayPicture(AsyncPictureBox pictureBox, string fileName)
-    {
-        var source = new ImageFilePictureSource(fileName);
-        source.loader = adapter;
-        DisplayPicture(pictureBox, source);
-    }
-
-    private void DisplayPicture(AsyncPictureBox pictureBox, AsyncPictureSource source)
-    {
-        if (pictureBox.pictureSource is { } x && x.Equals(source)) return;
-        pictureBox.DisplayPicture(source);
-        source.Load();
     }
 
     private void modListView_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -501,6 +497,29 @@ public partial class TextureModForm : Form
 
     private void timer1_Tick(object sender, EventArgs e)
     {
+        if (workingState == null) return;
+        if (workingState.gameTextureSource != null && workingState.gameTexture == null)
+        {
+            workingState.gameTexture = workingState.gameTextureSource.CreateBitmap(d2dRenderTarget.target);
+            CheckImageUnload();
+        }
+        if (workingState.replaceTextureSource != null && workingState.replaceTexture == null)
+        {
+            workingState.replaceTexture = workingState.replaceTextureSource.CreateBitmap(d2dRenderTarget.target);
+            CheckImageUnload();
+        }
+    }
 
+    private void CheckImageUnload()
+    {
+        if (workingState == null) return;
+        if (previewCanvas.HasImage() && workingState.gameTexture != null)
+        {
+            Utilities.Dispose(ref workingState.gameTextureSource);
+        }
+        if (textureCanvas.HasImage() && workingState.replaceTexture != null)
+        {
+            Utilities.Dispose(ref workingState.replaceTextureSource);
+        }
     }
 }

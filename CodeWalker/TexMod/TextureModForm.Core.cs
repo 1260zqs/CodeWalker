@@ -14,9 +14,22 @@ namespace CodeWalker.TexMod;
 
 public partial class TextureModForm
 {
+    class WorkingState
+    {
+        public ModTexture currentMod;
+        public TextureReplacement replacement;
+
+        public AsyncBitmapSource gameTextureSource;
+        public AsyncBitmapSource replaceTextureSource;
+
+        public SharpDX.Direct2D1.Bitmap gameTexture;
+        public SharpDX.Direct2D1.Bitmap replaceTexture;
+    }
+
     static TextureModForm instance;
     static TextureModProject workingProject;
     private D2DRenderTarget d2dRenderTarget;
+    private WorkingState workingState;
 
     public static void ShowWindow(WorldForm worldForm)
     {

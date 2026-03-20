@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CodeWalker.Utils;
+using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using CodeWalker.Utils;
-using SharpDX;
+using System.Xml;
 using Rectangle = SharpDX.Rectangle;
 
 namespace CodeWalker.TexMod;
@@ -11,6 +12,7 @@ public class TextureModProject
 {
     public string manifestFile;
     public PackageManifest manifest;
+    public ProjectDirectory directory = new();
     public List<TextureReplacement> replacements = new();
     public SortedList<Guid, ModTexture> modTextures = new();
     public SortedList<Guid, SourceTexture> sourceTextures = new();
@@ -139,6 +141,31 @@ public class TextureModProject
             }
         }
         return list;
+    }
+}
+
+public class ProjectDirectory
+{
+    public string name;
+    public ProjectDirectory parent;
+    public List<ProjectDirectory> directories = new();
+    public HashSet<Guid> files = new();
+
+    public bool isRoot => parent == null;
+
+    public string path
+    {
+        get
+        {
+            if (parent == null) return "/";
+            if (parent.isRoot) return parent.path + name;
+            return $"{parent.path}/{name}";
+        }
+    }
+
+    private void Rebuild()
+    {
+
     }
 }
 
