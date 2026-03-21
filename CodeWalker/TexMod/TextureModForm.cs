@@ -94,6 +94,7 @@ public partial class TextureModForm : Form
                 target,
                 previewCanvas.GetImage(),
                 textureCanvas.GetImage(),
+                previewCanvas.GetImageSize(),
                 working.modTexture.sourceRect.Convert(),
                 working.replacement.targetRect.Convert(),
                 working.replacement.flipX,
@@ -108,6 +109,7 @@ public partial class TextureModForm : Form
         SharpDX.Direct2D1.RenderTarget target,
         SharpDX.Direct2D1.Bitmap baseImage,
         SharpDX.Direct2D1.Bitmap overlay,
+        SharpDX.Size2 baseImageSize,
         System.Drawing.Rectangle srcRect,
         System.Drawing.Rectangle destRect,
         bool flipX,
@@ -115,11 +117,12 @@ public partial class TextureModForm : Form
         float rotation
     )
     {
-        if (baseImage == null) return;
-        target.DrawBitmap(baseImage, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+        if (baseImage != null)
+        {
+            target.DrawBitmap(baseImage, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+        }
         if (overlay == null) return;
 
-        var baseImageSize = baseImage.PixelSize;
         var imgBounds = new System.Drawing.Rectangle(0, 0, baseImageSize.Width, baseImageSize.Height);
         var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
 
@@ -149,7 +152,7 @@ public partial class TextureModForm : Form
             overlay,
             clippedDest.Convert2(),
             1f,
-            SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
+            SharpDX.Direct2D1.BitmapInterpolationMode.Linear,
             srcRect.Convert2()
         );
         target.Transform = matrix;

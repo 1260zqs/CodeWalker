@@ -68,6 +68,11 @@ namespace CodeWalker.GameFiles
 
             Loaded = true;
         }
+
+        public byte[] Save()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     [TC(typeof(EXP))] public class CVehicleModColours

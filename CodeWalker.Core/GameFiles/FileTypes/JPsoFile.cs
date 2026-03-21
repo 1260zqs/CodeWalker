@@ -44,5 +44,9 @@ namespace CodeWalker.GameFiles
 
         }
 
+        public byte[] Save()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

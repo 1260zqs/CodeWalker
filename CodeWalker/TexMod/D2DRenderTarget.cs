@@ -117,6 +117,7 @@ public class D2DRenderTarget : IDisposable
             renderableTexture.ShaderResourceView = new(device, targetTexture);
         }
         bitmap.CopyFromBitmap(rt);
+        CheckCreateStagingTexture(device);
 
         var d2dData = bitmap.Map(MapOptions.Read);
         device.ImmediateContext.UpdateSubresource(new(d2dData.DataPointer,
@@ -138,19 +139,7 @@ public class D2DRenderTarget : IDisposable
         }
         this.Release();
         this.pixelSize = pixelSize;
-        var texDesc = new Texture2DDescription
-        {
-            Width = pixelSize.Width,
-            Height = pixelSize.Height,
-            ArraySize = 1,
-            MipLevels = 1,
-            BindFlags = BindFlags.None,
-            Format = format,
-            OptionFlags = ResourceOptionFlags.None,
-            CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
-            SampleDescription = new SampleDescription(1, 0),
-        };
-
+        CheckCreateStagingTexture(device);
         var bmpProps = new BitmapProperties1(
             new SharpDX.Direct2D1.PixelFormat(
                 format,
@@ -167,8 +156,25 @@ public class D2DRenderTarget : IDisposable
 
         rt = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bmpProps);
         bitmap = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bitmapProperties);
-        stagingTexture = new SharpDX.Direct3D11.Texture2D(device, texDesc);
         Utilities.Dispose(ref targetTexture);
+    }
+
+    private void CheckCreateStagingTexture(SharpDX.Direct3D11.Device device)
+    {
+        if (device == null || stagingTexture != null) return;
+        var texDesc = new Texture2DDescription
+        {
+            Width = pixelSize.Width,
+            Height = pixelSize.Height,
+            ArraySize = 1,
+            MipLevels = 1,
+            BindFlags = BindFlags.None,
+            Format = format,
+            OptionFlags = ResourceOptionFlags.None,
+            CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
+            SampleDescription = new SampleDescription(1, 0),
+        };
+        stagingTexture = new SharpDX.Direct3D11.Texture2D(device, texDesc);
     }
 
     public void FillRectangle(in RawRectangleF rectangle)
@@ -178,6 +184,7 @@ public class D2DRenderTarget : IDisposable
 
     private void Release()
     {
+        pixelSize = Size2.Zero;
         Utilities.Dispose(ref rt);
         Utilities.Dispose(ref bitmap);
         Utilities.Dispose(ref stagingTexture);

@@ -53,6 +53,10 @@ namespace CodeWalker.GameFiles
             }
         }
 
+        public byte[] Save()
+        {
+            throw new NotImplementedException();
+        }
 
         private void LoadInitDatas(XmlDocument xmldoc)
         {

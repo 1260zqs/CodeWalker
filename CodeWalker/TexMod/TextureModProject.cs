@@ -102,6 +102,19 @@ public class TextureModProject
         }
     }
 
+    public List<TextureReplacement> FindSourceTextureReplacements(Guid sourceTexId)
+    {
+        var list = new List<TextureReplacement>();
+        foreach (var replacement in replacements)
+        {
+            if (replacement.sourceTexture == sourceTexId)
+            {
+                list.Add(replacement);
+            }
+        }
+        return list;
+    }
+
     public SourceTexture FindSourceTexture(string sourceFile)
     {
         foreach (var texture in sourceTextures.Values)
@@ -165,7 +178,6 @@ public class ProjectDirectory
 
     private void Rebuild()
     {
-
     }
 }
 

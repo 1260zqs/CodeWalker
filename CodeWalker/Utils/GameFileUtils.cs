@@ -16,7 +16,7 @@ internal static class GameFileUtils
         var hash = JenkHash.GenHash(texName.ToLowerInvariant());
         if (file is YtdFile ytd)
         {
-            texture = ytd.TextureDict?.Lookup(hash);
+            texture = ytd.TextureDict.Lookup(hash);
         }
         else if (file is YddFile ydd)
         {
@@ -36,8 +36,153 @@ internal static class GameFileUtils
         }
         else if (file is YftFile yft)
         {
+            texture = yft.Fragment.Drawable.ShaderGroup.TextureDictionary.Lookup(hash);
         }
         return texture;
+    }
+
+    public static void ReplaceTexture(GameFile gameFile, Texture texture)
+    {
+        if (gameFile is YtdFile ytd)
+        {
+            ReplaceTexture(ytd.TextureDict, texture);
+            UpdateEmbeddedTextures(gameFile);
+        }
+        else if (gameFile is YddFile ydd)
+        {
+            foreach (var drawable in ydd.Drawables)
+            {
+                ReplaceTexture(drawable.ShaderGroup.TextureDictionary, texture);
+            }
+            UpdateEmbeddedTextures(gameFile);
+        }
+        else if (gameFile is YdrFile ydr)
+        {
+            ReplaceTexture(ydr.Drawable.ShaderGroup.TextureDictionary, texture);
+            UpdateEmbeddedTextures(gameFile);
+        }
+        else if (gameFile is YftFile yft)
+        {
+            ReplaceTexture(yft.Fragment.Drawable.ShaderGroup.TextureDictionary, texture);
+            UpdateEmbeddedTextures(gameFile);
+        }
+    }
+
+    public static void UpdateEmbeddedTextures(GameFile file)
+    {
+        if (!file.Loaded) return;
+        switch (file)
+        {
+            case YdrFile ydr:
+            {
+                UpdateEmbeddedTextures(ydr.Drawable);
+                break;
+            }
+            case YddFile ydd:
+            {
+                foreach (var kvp in ydd.Dict)
+                {
+                    UpdateEmbeddedTextures(kvp.Value);
+                }
+                break;
+            }
+            case YptFile ypt:
+            {
+                if (ypt.DrawableDict != null)
+                {
+                    foreach (var kvp in ypt.DrawableDict)
+                    {
+                        UpdateEmbeddedTextures(kvp.Value);
+                    }
+                }
+                break;
+            }
+            case YftFile yft:
+            {
+                if (yft.Fragment != null)
+                {
+                    var f = yft.Fragment;
+                    UpdateEmbeddedTextures(f.Drawable);
+                    UpdateEmbeddedTextures(f.DrawableCloth);
+
+                    if (f.DrawableArray?.data_items != null)
+                    {
+                        foreach (var d in f.DrawableArray.data_items)
+                        {
+                            UpdateEmbeddedTextures(d);
+                        }
+                    }
+                    var c = f.PhysicsLODGroup?.PhysicsLOD1?.Children?.data_items;
+                    if (c != null)
+                    {
+                        foreach (var child in c)
+                        {
+                            if (child != null)
+                            {
+                                UpdateEmbeddedTextures(child.Drawable1);
+                                UpdateEmbeddedTextures(child.Drawable2);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public static bool ReplaceTexture(TextureDictionary dictionary, Texture texture)
+    {
+        var textures = dictionary.Textures.data_items;
+        for (var i = textures.Length - 1; i >= 0; i--)
+        {
+            if (textures[i].NameHash == texture.NameHash)
+            {
+                textures[i] = texture;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void UpdateEmbeddedTextures(DrawableBase dwbl)
+    {
+        if (dwbl == null) return;
+
+        var sg = dwbl.ShaderGroup;
+        var td = sg?.TextureDictionary;
+        var sd = sg?.Shaders?.data_items;
+
+        if (td == null) return;
+        if (sd == null) return;
+
+        var updated = false;
+        foreach (var s in sd)
+        {
+            if (s?.ParametersList == null) continue;
+            foreach (var p in s.ParametersList.Parameters)
+            {
+                if (p.Data is TextureBase tex)
+                {
+                    var tex2 = td.Lookup(tex.NameHash);
+                    if (tex2 != null && tex != tex2)
+                    {
+                        p.Data = tex2; //swap the parameter out for the new embedded texture
+                        updated = true;
+                    }
+                }
+            }
+        }
+
+        if (!updated) return;
+
+        foreach (var model in dwbl.AllModels)
+        {
+            if (model?.Geometries == null) continue;
+            foreach (var geom in model.Geometries)
+            {
+                geom.UpdateRenderableParameters = true;
+            }
+        }
     }
 
     public static GameFileType GetFileTypeByExtension(string extension)
@@ -169,7 +314,7 @@ internal static class GameFileUtils
         uint rsc7 = (data?.Length > 4) ? BitConverter.ToUInt32(data, 0) : 0;
         if (rsc7 == 0x37435352) //RSC7 header present! create RpfResourceFileEntry and decompress data...
         {
-            e = RpfFile.CreateResourceFileEntry(ref data, 0);//"version" should be loadable from the header in the data..
+            e = RpfFile.CreateResourceFileEntry(ref data, 0); //"version" should be loadable from the header in the data..
             data = ResourceBuilder.Decompress(data);
         }
         else

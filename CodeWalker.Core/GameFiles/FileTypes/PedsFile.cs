@@ -72,6 +72,11 @@ namespace CodeWalker.GameFiles
 
             Loaded = true;
         }
+
+        public byte[] Save()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

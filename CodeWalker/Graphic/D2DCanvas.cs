@@ -6,14 +6,9 @@ using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using SharpDX.WIC;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Markup;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 using Factory = SharpDX.Direct2D1.Factory;
 using FactoryType = SharpDX.Direct2D1.FactoryType;
@@ -48,7 +43,7 @@ public abstract class AsyncBitmapSource : IDisposable
     public bool error => state == AsyncImageState.Error;
 
     public abstract Bitmap CreateBitmap(RenderTarget target);
-    public abstract void Load();
+    public abstract Task LoadAsync();
     public abstract bool Equals(AsyncBitmapSource other);
 
     public virtual void Dispose()
@@ -110,13 +105,14 @@ public class AsyncImageFileSource : AsyncBitmapSource
         this.filename = filename;
     }
 
-    public override void Load()
+    public override Task LoadAsync()
     {
         if (state == AsyncImageState.None)
         {
             state = AsyncImageState.Loading;
-            Task.Run(Run);
+            return Task.Run(Run);
         }
+        return Task.CompletedTask;
     }
 
     public override Bitmap CreateBitmap(RenderTarget target)
@@ -164,8 +160,8 @@ public class AsyncImageFileSource : AsyncBitmapSource
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
             state = AsyncImageState.Error;
+            Console.WriteLine(ex);
         }
     }
 
@@ -180,6 +176,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
 }
 
 public delegate void D2DCanvasBitmapLoadedHandler(D2DCanvas canvas);
+
 public delegate void D2DCanvasPaintHandler(D2DCanvas canvas, RenderTarget target, Bitmap bitmap);
 
 public class D2DCanvas : Control
@@ -275,7 +272,7 @@ public class D2DCanvas : Control
 
         if (bitmapSource != null)
         {
-            bitmapSource.Load();
+            bitmapSource.LoadAsync();
         }
     }
 
@@ -336,7 +333,7 @@ public class D2DCanvas : Control
         bitmapSource = source;
         if (target != null)
         {
-            bitmapSource?.Load();
+            bitmapSource?.LoadAsync();
             Invalidate();
         }
     }
@@ -350,7 +347,6 @@ public class D2DCanvas : Control
         if (target == null) return;
 
         target.BeginDraw();
-        target.Clear(new RawColor4(1, 1, 1, 1));
         target.Transform = Matrix3x2.Identity;
         target.FillRectangle(
             new RawRectangleF(0, 0, Width, Height),

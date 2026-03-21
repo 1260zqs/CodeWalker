@@ -345,7 +345,7 @@ namespace CodeWalker.GameFiles
             }
             return file;
         }
-        public bool LoadFile<T>(T file, RpfEntry e) where T : class, PackedFile
+        public bool LoadFile(PackedFile file, RpfEntry e)
         {
             byte[] data = null;
             RpfFileEntry entry = e as RpfFileEntry;

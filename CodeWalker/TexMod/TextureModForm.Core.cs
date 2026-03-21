@@ -148,7 +148,7 @@ public partial class TextureModForm
         {
             working.modTextureSource = new AsyncImageFileSource(working.modTexture.filename);
             working.modTextureSource.shared = true;
-            working.modTextureSource.Load();
+            working.modTextureSource.LoadAsync();
             textureCanvas.SetImage(working.modTextureSource);
             PictureBoxViewer.LoadState(textureCanvas, modTexture.editorState);
         }
@@ -178,7 +178,7 @@ public partial class TextureModForm
             ReadPanelDataFromSource();
             working.replaceTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
             working.replaceTextureSource.shared = true;
-            working.replaceTextureSource.Load();
+            working.replaceTextureSource.LoadAsync();
             previewCanvas.SetImage(working.replaceTextureSource);
             PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
             propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(replacement, OnPropertyGridChanged);
@@ -260,6 +260,7 @@ public partial class TextureModForm
                 d2dRenderTarget.target,
                 working.replaceTextureBitmap,
                 working.modTextureBitmap,
+                working.replaceTextureBitmap.PixelSize,
                 working.modTexture.sourceRect.Convert(),
                 working.replacement.targetRect.Convert(),
                 working.replacement.flipX,

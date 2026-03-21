@@ -65,13 +65,14 @@ public class AsyncTextureSource : AsyncBitmapSource
         this.texture = texture;
     }
 
-    public override void Load()
+    public override Task LoadAsync()
     {
         if (state == AsyncImageState.None)
         {
             state = AsyncImageState.Loading;
-            Task.Run(LoadTexture);
+            return Task.Run(LoadTexture);
         }
+        return Task.CompletedTask;
     }
 
     public override Bitmap CreateBitmap(RenderTarget target)
@@ -174,13 +175,14 @@ public class AsyncGameTextureSource : AsyncTextureSource
         this.sourceFile = sourceFile;
     }
 
-    public override void Load()
+    public override Task LoadAsync()
     {
         if (state == AsyncImageState.None)
         {
             state = AsyncImageState.Loading;
-            Task.Run(Run);
+            return Task.Run(Run);
         }
+        return Task.CompletedTask;
     }
 
     private void Run()

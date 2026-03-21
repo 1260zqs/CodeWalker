@@ -2869,6 +2869,7 @@ namespace CodeWalker.GameFiles
     public interface PackedFile //interface for the different file types to use
     {
         void Load(byte[] data, RpfFileEntry entry);
+        byte[] Save();
     }
 
 
