@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using SharpDX;
 
 namespace CodeWalker.TexMod;
 
@@ -16,20 +17,18 @@ public partial class TextureModForm
 {
     class WorkingState
     {
-        public ModTexture currentMod;
+        public ModTexture modTexture;
         public TextureReplacement replacement;
 
-        public AsyncBitmapSource gameTextureSource;
+        public AsyncBitmapSource modTextureSource;
         public AsyncBitmapSource replaceTextureSource;
 
-        public SharpDX.Direct2D1.Bitmap gameTexture;
-        public SharpDX.Direct2D1.Bitmap replaceTexture;
+        public SharpDX.Direct2D1.Bitmap modTextureBitmap;
+        public SharpDX.Direct2D1.Bitmap replaceTextureBitmap;
     }
 
     static TextureModForm instance;
     static TextureModProject workingProject;
-    private D2DRenderTarget d2dRenderTarget;
-    private WorkingState workingState;
 
     public static void ShowWindow(WorldForm worldForm)
     {
@@ -110,7 +109,7 @@ public partial class TextureModForm
         var form = new TextureModForm();
         form.project = workingProject;
         form.worldForm = worldForm;
-        form.adapter = new GTAVTextureModAdapter(workingProject, worldForm);
+        form.adapter = new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache);
         return form;
     }
 
@@ -118,31 +117,45 @@ public partial class TextureModForm
     public TextureModAdapter adapter;
     public WorldForm worldForm;
 
-    private ModTexture currentMod;
-    private TextureReplacement currentReplacement;
+    private D2DRenderTarget d2dRenderTarget;
+    private WorkingState working = new();
+
+    // private ModTexture currentMod;
+    // private TextureReplacement currentReplacement;
     private List<TextureReplacement> replacements = new();
     private bool applyDrawing;
 
     private void SelectTexMod(ModTexture modTexture)
     {
-        if (currentMod != null)
+        if (working.modTexture != null)
         {
-            currentMod.editorState = PictureBoxViewer.SaveState(textureCanvas);
+            working.modTexture.editorState = PictureBoxViewer.SaveState(textureCanvas);
         }
         replacements.Clear();
-        currentMod = modTexture;
-        currentReplacement = null;
+        working.modTexture = modTexture;
+        working.replacement = null;
+
+        Utilities.Dispose(ref working.modTextureSource);
+        Utilities.Dispose(ref working.modTextureBitmap);
+        Utilities.Dispose(ref working.replaceTextureBitmap);
+        Utilities.Dispose(ref working.replaceTextureSource);
+
         textureCanvas.ClearImage();
         previewCanvas.ClearImage();
         PictureBoxViewer.ResetViewer(textureCanvas);
         PictureBoxViewer.ResetViewer(previewCanvas);
-        if (currentMod != null)
+        if (modTexture != null)
         {
-            textureCanvas.SetImage(currentMod.filename);
-            PictureBoxViewer.LoadState(textureCanvas, currentMod.editorState);
+            working.modTextureSource = new AsyncImageFileSource(working.modTexture.filename);
+            working.modTextureSource.shared = true;
+            working.modTextureSource.Load();
+            textureCanvas.SetImage(working.modTextureSource);
+            PictureBoxViewer.LoadState(textureCanvas, modTexture.editorState);
         }
+
         ReadPanelDataFromSource();
         propertyGridFix1.SelectedObject = null;
+        replacementListView.VirtualListSize = 0;
         replacementListView.SelectedIndices.Clear();
         RefreshReplacementListView(true);
     }
@@ -150,19 +163,26 @@ public partial class TextureModForm
     private void SelecteTexReplacement(TextureReplacement replacement)
     {
         propertyGridFix1.SelectedObject = null;
+        if (working.replacement != null)
+        {
+            working.replacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
+        }
+        working.replacement = replacement;
+        Utilities.Dispose(ref working.replaceTextureBitmap);
+        Utilities.Dispose(ref working.replaceTextureSource);
+        PictureBoxViewer.ResetViewer(previewCanvas);
+        previewCanvas.ClearImage();
+
         if (project.sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
         {
-            if (currentReplacement != null)
-            {
-                currentReplacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
-            }
-            currentReplacement = replacement;
             ReadPanelDataFromSource();
-
-            PictureBoxViewer.ResetViewer(previewCanvas);
+            working.replaceTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
+            working.replaceTextureSource.shared = true;
+            working.replaceTextureSource.Load();
+            previewCanvas.SetImage(working.replaceTextureSource);
             PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
-            previewCanvas.SetImage(new AsyncGameTextureSource(adapter, sourceTexture.sourceFile));
-            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(replacement);
+            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(replacement, OnPropertyGridChanged);
+            propertyGridFix1.Refresh();
         }
     }
 
@@ -198,11 +218,7 @@ public partial class TextureModForm
 
     private void RenderUpdate()
     {
-        if (applyDrawing)
-        {
-            applyDrawing = false;
-            RenderDrawing();
-        }
+
     }
 
     private void RenderDrawing()
@@ -212,18 +228,19 @@ public partial class TextureModForm
 
     private void ApplyDrawing()
     {
+#if true
         // return;
         // var targetImage = pictureBox1Async.GetImage();
         // var sourceImage = previewPictureBoxAsync.GetImage();
         // if (sourceImage == null || targetImage == null) return;
-        if (currentMod == null || currentReplacement == null) return;
+        if (working.modTexture == null || working.replacement == null) return;
         //
         // var image = (Image)targetImage;
         // var sourceTex = (Image)sourceImage;
         //
         // var sourceRect = currentMod.sourceRect;
-        var targetRect = currentReplacement.targetRect;
-        var sourceTexture = project.sourceTextures[currentReplacement.sourceTexture];
+        var targetRect = working.replacement.targetRect;
+        var sourceTexture = project.sourceTextures[working.replacement.sourceTexture];
         var textureName = adapter.GetSourceTextureName(sourceTexture.sourceFile);
         var nameHash = JenkHash.GenHash(textureName.ToLowerInvariant());
 
@@ -239,14 +256,31 @@ public partial class TextureModForm
             d2dRenderTarget.SetTargetSize(worldForm.Renderer.Device, sourceTex.PixelSize);
             d2dRenderTarget.BeginDraw();
 
-            //d2dRenderTarget.target.DrawBitmap(sourceTex, 1, BitmapInterpolationMode.NearestNeighbor);
+            DrawPreviewOverlay(
+                d2dRenderTarget.target,
+                working.replaceTextureBitmap,
+                working.modTextureBitmap,
+                working.modTexture.sourceRect.Convert(),
+                working.replacement.targetRect.Convert(),
+                working.replacement.flipX,
+                working.replacement.flipY,
+                working.replacement.rotation
+            );
             if (checkBox3.Checked)
             {
                 d2dRenderTarget.FillRectangle(targetRect.Convert2());
             }
 
             d2dRenderTarget.EndDraw();
-
+            if (checkBox3.Checked)
+            {
+                // checkBox3.Checked = false;
+                // var bytes = d2dRenderTarget.Encode(Utils.NVTT.Format.Format_DXT1, Utils.NVTT.Quality.Quality_Normal);
+                // if (bytes != null)
+                // {
+                //     File.WriteAllBytes("C:\\xx.dds", bytes);
+                // }
+            }
             var texture = worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
                 x.Key.NameHash == nameHash);
             d2dRenderTarget.CopyTo(worldForm.Renderer.Device, texture);
@@ -256,6 +290,7 @@ public partial class TextureModForm
             Console.WriteLine(e);
         }
         Monitor.Exit(worldForm.Renderer.DXMan.syncroot);
+#endif
     }
 
     public class TextureReplacementPropertyObject
@@ -263,9 +298,35 @@ public partial class TextureModForm
         [ReadOnly(true)]
         public string id { get; set; }
 
-        public string tag { get; set; }
-        public string name { get; set; }
-        public string comment { get; set; }
+        public string tag
+        {
+            get => sourceObject.tag;
+            set
+            {
+                sourceObject.tag = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
+
+        public string name
+        {
+            get => sourceObject.name;
+            set
+            {
+                sourceObject.name = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
+
+        public string comment
+        {
+            get => sourceObject.comment;
+            set
+            {
+                sourceObject.comment = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
 
         [ReadOnly(true)]
         public string modTexture { get; set; }
@@ -275,22 +336,45 @@ public partial class TextureModForm
 
         public string targetRect { get; set; }
 
-        public bool flipX { get; set; }
-        public bool flipY { get; set; }
-        public float rotation { get; set; }
+        public bool flipX
+        {
+            get => sourceObject.flipX;
+            set
+            {
+                sourceObject.flipX = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
 
-        public static TextureReplacementPropertyObject From(TextureReplacement replacement)
+        public bool flipY
+        {
+            get => sourceObject.flipY;
+            set
+            {
+                sourceObject.flipY = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
+
+        public float rotation
+        {
+            get => sourceObject.rotation;
+            set
+            {
+                sourceObject.rotation = value;
+                onPropertyGridChanged?.Invoke();
+            }
+        }
+
+        private TextureReplacement sourceObject;
+        private Action onPropertyGridChanged;
+
+        public static TextureReplacementPropertyObject From(TextureReplacement replacement, Action onPropertyGridChanged)
         {
             var propertyObject = new TextureReplacementPropertyObject();
             propertyObject.id = replacement.id.ToString("N");
-            propertyObject.tag = replacement.tag;
-            propertyObject.name = replacement.name;
-            propertyObject.comment = replacement.comment;
-
-            propertyObject.flipX = replacement.flipX;
-            propertyObject.flipX = replacement.flipX;
-            propertyObject.rotation = replacement.rotation;
-
+            propertyObject.sourceObject = replacement;
+            propertyObject.onPropertyGridChanged = onPropertyGridChanged;
             return propertyObject;
         }
     }

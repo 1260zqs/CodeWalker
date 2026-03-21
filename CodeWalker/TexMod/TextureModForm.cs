@@ -63,8 +63,7 @@ public partial class TextureModForm : Form
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-        RefreshModListView();
-        RefreshReplacementListView(true);
+        modListView.VirtualListSize = project.modTextures.Count;
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -89,26 +88,39 @@ public partial class TextureModForm : Form
     private void PaintPreviewPicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
     {
         PictureBoxViewer.Paint(canvas, bitmap);
-        canvas.DrawBitmap(bitmap, 0, 0);
-        if (currentMod != null && currentReplacement != null)
+        if (working.replacement != null && working.modTexture != null)
         {
-            DrawPreviewOverlay(canvas, target, false, false, 0f);
+            DrawPreviewOverlay(
+                target,
+                previewCanvas.GetImage(),
+                textureCanvas.GetImage(),
+                working.modTexture.sourceRect.Convert(),
+                working.replacement.targetRect.Convert(),
+                working.replacement.flipX,
+                working.replacement.flipY,
+                working.replacement.rotation
+            );
         }
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void DrawPreviewOverlay(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, bool flipX, bool flipY, float rotation)
+    private static void DrawPreviewOverlay(
+        SharpDX.Direct2D1.RenderTarget target,
+        SharpDX.Direct2D1.Bitmap baseImage,
+        SharpDX.Direct2D1.Bitmap overlay,
+        System.Drawing.Rectangle srcRect,
+        System.Drawing.Rectangle destRect,
+        bool flipX,
+        bool flipY,
+        float rotation
+    )
     {
-        var tex = textureCanvas.GetImage();
-        if (tex == null)
-        {
-            previewCanvas.Invalidate();
-            return;
-        }
-        var pixelSize = canvas.GetImageSize();
-        var srcRect = currentMod.sourceRect.Convert();
-        var destRect = currentReplacement.targetRect.Convert();
-        var imgBounds = new System.Drawing.Rectangle(0, 0, pixelSize.Width, pixelSize.Height);
+        if (baseImage == null) return;
+        target.DrawBitmap(baseImage, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+        if (overlay == null) return;
+
+        var baseImageSize = baseImage.PixelSize;
+        var imgBounds = new System.Drawing.Rectangle(0, 0, baseImageSize.Width, baseImageSize.Height);
         var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
 
         if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
@@ -132,7 +144,14 @@ public partial class TextureModForm : Form
         );
         target.Transform = Matrix3x2.Scaling(flipX ? -1 : 1, flipY ? -1 : 1, center) *
                            Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
-        canvas.DrawBitmap(tex, clippedDest, srcRect);
+
+        target.DrawBitmap(
+            overlay,
+            clippedDest.Convert2(),
+            1f,
+            SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
+            srcRect.Convert2()
+        );
         target.Transform = matrix;
     }
 
@@ -143,13 +162,6 @@ public partial class TextureModForm : Form
 
     private void InitializeListView()
     {
-        modListView.Columns.Add("project");
-        modListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-        replacementListView.Columns.Add("reference");
-        replacementListView.Columns.Add("size");
-        replacementListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
         repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
         repViewModeBtn.SelectEnum(modListView.View);
 
@@ -164,27 +176,29 @@ public partial class TextureModForm : Form
         {
             modListView.SelectedIndices.Add(0);
         }
-        modListView.Invalidate();
+        modListView.Refresh();
     }
 
     private void RefreshReplacementListView(bool reload = false)
     {
-        if (reload && currentMod != null)
+        if (reload && working.modTexture != null)
         {
-            project.FindTextureReplacements(currentMod.id, replacements);
+            project.FindTextureReplacements(working.modTexture.id, replacements);
         }
         replacementListView.VirtualListSize = replacements.Count;
         if (replacementListView.VirtualListSize > 0 && replacementListView.SelectedIndices.Count == 0)
         {
             replacementListView.SelectedIndices.Add(0);
         }
-        replacementListView.Invalidate();
+        replacementListView.Refresh();
     }
 
     private void replacementListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
     {
-        var replacement = project.replacements[e.ItemIndex];
+        var replacement = replacements[e.ItemIndex];
         e.Item = new ListViewItem(replacement.name);
+        e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.tag));
+        e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.comment));
     }
 
     private void modListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -205,6 +219,7 @@ public partial class TextureModForm : Form
                 using var image = Image.FromStream(stream, false, false);
                 var modTexture = project.CreateTextureMod(fileName);
                 modTexture.sourceRect = new SharpDX.Rectangle(0, 0, image.Width, image.Height);
+
                 RefreshModListView();
             }
             catch (Exception exception)
@@ -223,11 +238,7 @@ public partial class TextureModForm : Form
 
     private void toolStripButton2_Click(object sender, EventArgs e)
     {
-        // foreach (ListViewItem selectedItem in replacementListView.SelectedIndices)
-        // {
-        //     selectedItem.BeginEdit();
-        //     break;
-        // }
+        PackMod();
     }
 
     private void modListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -243,8 +254,7 @@ public partial class TextureModForm : Form
     {
         foreach (int index in replacementListView.SelectedIndices)
         {
-            var replacement = replacements[index];
-            SelecteTexReplacement(replacement);
+            SelecteTexReplacement(replacements[index]);
             return;
         }
     }
@@ -348,18 +358,18 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == previewTabPage)
         {
             PictureBoxRectTool.GetRect(previewCanvas, out var rect);
-            if (currentReplacement != null)
+            if (working.replacement != null)
             {
-                currentReplacement.targetRect = rect.Convert();
+                working.replacement.targetRect = rect.Convert();
             }
             SetRectBox(rect);
         }
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
             PictureBoxRectTool.GetRect(textureCanvas, out var rect);
-            if (currentMod != null)
+            if (working.modTexture != null)
             {
-                currentMod.sourceRect = rect.Convert();
+                working.modTexture.sourceRect = rect.Convert();
             }
             SetRectBox(rect);
         }
@@ -371,9 +381,9 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == previewTabPage)
         {
             var rect = new System.Drawing.Rectangle();
-            if (currentReplacement != null)
+            if (working.replacement != null)
             {
-                rect = currentReplacement.targetRect.Convert();
+                rect = working.replacement.targetRect.Convert();
             }
             PictureBoxRectTool.SetRect(previewCanvas, rect);
             checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(previewCanvas);
@@ -383,17 +393,17 @@ public partial class TextureModForm : Form
         else if (imageTabControl.SelectedTab == textureTabPage)
         {
             var rect = new System.Drawing.Rectangle();
-            if (currentMod != null)
+            if (working.modTexture != null)
             {
-                rect = currentMod.sourceRect.Convert();
+                rect = working.modTexture.sourceRect.Convert();
             }
             PictureBoxRectTool.SetRect(textureCanvas, rect);
             checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(textureCanvas);
             checkBox2.Checked = PictureBoxRectTool.GetSolid(textureCanvas);
             SetRectBox(rect);
 
-            numericUpDown1.Value = currentReplacement?.targetRect.Width ?? 0;
-            numericUpDown2.Value = currentReplacement?.targetRect.Height ?? 0;
+            numericUpDown1.Value = working.replacement?.targetRect.Width ?? 0;
+            numericUpDown2.Value = working.replacement?.targetRect.Height ?? 0;
         }
     }
 
@@ -497,29 +507,42 @@ public partial class TextureModForm : Form
 
     private void timer1_Tick(object sender, EventArgs e)
     {
-        if (workingState == null) return;
-        if (workingState.gameTextureSource != null && workingState.gameTexture == null)
+        if (working == null) return;
+        if (applyDrawing)
         {
-            workingState.gameTexture = workingState.gameTextureSource.CreateBitmap(d2dRenderTarget.target);
-            CheckImageUnload();
+            applyDrawing = false;
+            ApplyDrawing();
         }
-        if (workingState.replaceTextureSource != null && workingState.replaceTexture == null)
+        if (working.modTextureSource != null && working.modTextureBitmap == null)
         {
-            workingState.replaceTexture = workingState.replaceTextureSource.CreateBitmap(d2dRenderTarget.target);
+            working.modTextureBitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
             CheckImageUnload();
+            previewCanvas.Invalidate();
+        }
+        if (working.replaceTextureSource != null && working.replaceTextureBitmap == null)
+        {
+            working.replaceTextureBitmap = working.replaceTextureSource.CreateBitmap(d2dRenderTarget.target);
+            CheckImageUnload();
+            previewCanvas.Invalidate();
         }
     }
 
     private void CheckImageUnload()
     {
-        if (workingState == null) return;
-        if (previewCanvas.HasImage() && workingState.gameTexture != null)
+        if (working == null) return;
+        if (textureCanvas.HasImage() && working.modTextureBitmap != null)
         {
-            Utilities.Dispose(ref workingState.gameTextureSource);
+            Utilities.Dispose(ref working.modTextureSource);
         }
-        if (textureCanvas.HasImage() && workingState.replaceTexture != null)
+        if (previewCanvas.HasImage() && working.replaceTextureBitmap != null)
         {
-            Utilities.Dispose(ref workingState.replaceTextureSource);
+            Utilities.Dispose(ref working.replaceTextureSource);
         }
+    }
+
+    private void OnPropertyGridChanged()
+    {
+        previewCanvas.Invalidate();
+        RenderDrawing();
     }
 }

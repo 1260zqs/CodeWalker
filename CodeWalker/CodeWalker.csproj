@@ -49,18 +49,31 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="TexMod\TextureModForm.Core.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
     <Compile Update="Graphic\D2DCanvas.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="Graphic\DxImageControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="TexMod\TextureModForm.Packing.cs">
+      <SubType>Form</SubType>
+      <DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModForm.Core.cs">
+      <DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="NVTT.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="nvtt30205.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="nvtt_compress.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

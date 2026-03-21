@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
@@ -51,6 +52,42 @@ public class D2DRenderTarget : IDisposable
     {
         target.EndDraw();
         target.Target = null;
+    }
+
+    public byte[] Encode(CodeWalker.Utils.NVTT.Format texFormat, CodeWalker.Utils.NVTT.Quality quality)
+    {
+        byte[] bytes = null;
+        bitmap.CopyFromBitmap(rt);
+        var map = bitmap.Map(MapOptions.Read);
+        try
+        {
+            var success = CodeWalker.Utils.NVTT.Compress(
+                map.DataPointer,
+                pixelSize.Width,
+                pixelSize.Height,
+                Utils.NVTT.InputFormat.InputFormat_BGRA_8UB,
+                texFormat,
+                quality,
+                out var ptr,
+                out var size
+            );
+            if (success)
+            {
+                var dataSize = (int)size;
+                bytes = new byte[dataSize];
+                Marshal.Copy(ptr, bytes, 0, dataSize);
+                CodeWalker.Utils.NVTT.FreeBuffer(ptr);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        finally
+        {
+            bitmap.Unmap();
+        }
+        return bytes;
     }
 
     public void CopyTo(SharpDX.Direct3D11.Device device, CodeWalker.Rendering.RenderableTexture renderableTexture)

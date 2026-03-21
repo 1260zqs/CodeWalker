@@ -1,0 +1,4 @@
+LIBRARY NVTT
+EXPORTS
+    Compress
+    FreeBuffer

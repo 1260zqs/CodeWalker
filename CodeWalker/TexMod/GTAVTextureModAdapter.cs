@@ -12,13 +12,13 @@ namespace CodeWalker.TexMod;
 
 public class GTAVTextureModAdapter : TextureModAdapter
 {
-    public WorldForm worldForm;
+    public GameFileCache fileCache;
     public TextureModProject project;
 
-    public GTAVTextureModAdapter(TextureModProject project, WorldForm form)
+    public GTAVTextureModAdapter(TextureModProject project, GameFileCache fileCache)
     {
         this.project = project;
-        this.worldForm = form;
+        this.fileCache = fileCache;
     }
 
     public override string MakeSourcePath(GameFile gameFile, string texName)
@@ -30,12 +30,38 @@ public class GTAVTextureModAdapter : TextureModAdapter
         return $"{gameFile.RpfFileEntry.Path}:{texName}";
     }
 
+    public override string GetSourceFileName(string sourcePath)
+    {
+        var indexOf = sourcePath.IndexOf(':');
+        if (indexOf > 0)
+        {
+            return sourcePath.Substring(0, indexOf);
+        }
+        return null;
+    }
+
     public override string GetSourceTextureName(string sourcePath)
     {
         var indexOf = sourcePath.IndexOf(':');
         if (indexOf > 0)
         {
             return sourcePath.Substring(indexOf + 1);
+        }
+        return null;
+    }
+
+    public override byte[] ExtractSourceFile(string sourceFileName)
+    {
+        var entry = fileCache.RpfMan.GetEntry(sourceFileName);
+        if (entry is RpfFileEntry rpfFileEntry)
+        {
+            var bytes = entry.File.ExtractFile(rpfFileEntry);
+            if (entry is RpfResourceFileEntry rrfe) //add resource header if this is a resource file.
+            {
+                bytes = ResourceBuilder.Compress(bytes); //not completely ideal to recompress it...
+                bytes = ResourceBuilder.AddResourceHeader(rrfe, bytes);
+            }
+            return bytes;
         }
         return null;
     }
@@ -63,10 +89,10 @@ public class GTAVTextureModAdapter : TextureModAdapter
                     }
                 }
             }
-            var entry = worldForm.GameFileCache.RpfMan.GetEntry(entryPath);
+            var entry = fileCache.RpfMan.GetEntry(entryPath);
             if (entry != null)
             {
-                var gameFile = worldForm.GameFileCache.GetFile(entry);
+                var gameFile = fileCache.GetFile(entry);
                 if (gameFile != null)
                 {
                     if (gameFile.Loaded)

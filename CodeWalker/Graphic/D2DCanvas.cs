@@ -368,16 +368,7 @@ public class D2DCanvas : Control
                 DrawText("loading...", 6, 0, Color.Orange, fontSegoeUI_16);
                 Invalidate();
             }
-            else if (bitmapSource.state == AsyncImageState.Ready)
-            {
-                bitmap = bitmapSource.CreateBitmap(target);
-                if (bitmap != null)
-                {
-                    imageSize = bitmap.PixelSize;
-                    onBitmapLoaded?.Invoke(this);
-                }
-            }
-            if (bitmap != null)
+            else if (bitmap != null)
             {
                 if (onPaint == null)
                 {
@@ -394,6 +385,17 @@ public class D2DCanvas : Control
                         Console.WriteLine(ex);
                     }
                 }
+            }
+            else if (bitmapSource.state == AsyncImageState.Ready)
+            {
+                Utilities.Dispose(ref bitmap);
+                bitmap = bitmapSource.CreateBitmap(target);
+                if (bitmap != null)
+                {
+                    imageSize = bitmap.PixelSize;
+                    onBitmapLoaded?.Invoke(this);
+                }
+                Invalidate();
             }
         }
         target.EndDraw();

@@ -31,23 +31,21 @@ namespace CodeWalker.TexMod
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ColumnHeader Texture;
+            System.Windows.Forms.ColumnHeader Tag;
+            System.Windows.Forms.ColumnHeader Comment;
+            System.Windows.Forms.ColumnHeader columnHeader1;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModForm));
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.topSplitContainer = new System.Windows.Forms.SplitContainer();
             this.projectListPanel = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
-            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this.modListView = new System.Windows.Forms.ListView();
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.previewTabPage = new System.Windows.Forms.TabPage();
-            this.previewCanvas = new CodeWalker.D2DCanvas();
             this.textureTabPage = new System.Windows.Forms.TabPage();
-            this.textureCanvas = new CodeWalker.D2DCanvas();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -80,16 +78,27 @@ namespace CodeWalker.TexMod
             this.panel2 = new System.Windows.Forms.Panel();
             this.replacementListView = new System.Windows.Forms.ListView();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.listView2 = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.previewCanvas = new CodeWalker.D2DCanvas();
+            this.textureCanvas = new CodeWalker.D2DCanvas();
+            Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            Tag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            Comment = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -125,6 +134,26 @@ namespace CodeWalker.TexMod
             this.tabPage2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // Texture
+            // 
+            Texture.Text = "Texture";
+            Texture.Width = 200;
+            // 
+            // Tag
+            // 
+            Tag.Text = "Tag";
+            Tag.Width = 80;
+            // 
+            // Comment
+            // 
+            Comment.Text = "Comment";
+            Comment.Width = 320;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "Project";
+            columnHeader1.Width = 312;
             // 
             // vsExtender
             // 
@@ -191,57 +220,16 @@ namespace CodeWalker.TexMod
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
-            this.toolStripButton2,
+            this.toolStripButton3,
             this.saveProjectBtn,
+            this.toolStripButton2,
             this.repViewModeBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.toolStrip1.Size = new System.Drawing.Size(312, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
-            this.toolStripButton1.ToolTipText = "New Texture mod";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.Text = "toolStripButton2";
-            this.toolStripButton2.ToolTipText = "Rename";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
-            // saveProjectBtn
-            // 
-            this.saveProjectBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.saveProjectBtn.Image = ((System.Drawing.Image)(resources.GetObject("saveProjectBtn.Image")));
-            this.saveProjectBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveProjectBtn.Name = "saveProjectBtn";
-            this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
-            this.saveProjectBtn.Text = "Save";
-            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
-            // 
-            // repViewModeBtn
-            // 
-            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
-            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.repViewModeBtn.Name = "repViewModeBtn";
-            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
-            this.repViewModeBtn.Text = "toolStripButton8";
-            this.repViewModeBtn.ToolTipText = "View mode";
             // 
             // modListView
             // 
@@ -249,6 +237,8 @@ namespace CodeWalker.TexMod
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.modListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.modListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            columnHeader1});
             this.modListView.FullRowSelect = true;
             this.modListView.GridLines = true;
             this.modListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
@@ -304,15 +294,6 @@ namespace CodeWalker.TexMod
             this.previewTabPage.Text = "Preview";
             this.previewTabPage.UseVisualStyleBackColor = true;
             // 
-            // previewCanvas
-            // 
-            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
-            this.previewCanvas.Name = "previewCanvas";
-            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
-            this.previewCanvas.TabIndex = 0;
-            this.previewCanvas.Text = "d2DCanvas1";
-            // 
             // textureTabPage
             // 
             this.textureTabPage.Controls.Add(this.textureCanvas);
@@ -323,15 +304,6 @@ namespace CodeWalker.TexMod
             this.textureTabPage.TabIndex = 1;
             this.textureTabPage.Text = "Texture";
             this.textureTabPage.UseVisualStyleBackColor = true;
-            // 
-            // textureCanvas
-            // 
-            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
-            this.textureCanvas.Name = "textureCanvas";
-            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
-            this.textureCanvas.TabIndex = 0;
-            this.textureCanvas.Text = "d2DCanvas1";
             // 
             // panel1
             // 
@@ -662,9 +634,13 @@ namespace CodeWalker.TexMod
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.replacementListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.replacementListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            Texture,
+            Tag,
+            Comment});
             this.replacementListView.FullRowSelect = true;
             this.replacementListView.GridLines = true;
-            this.replacementListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.replacementListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.replacementListView.HideSelection = false;
             this.replacementListView.Location = new System.Drawing.Point(0, 25);
             this.replacementListView.Name = "replacementListView";
@@ -687,50 +663,14 @@ namespace CodeWalker.TexMod
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton4,
             this.toolStripButton5,
-            this.toolStripButton6,
-            this.toolStripButton7});
+            this.toolStripButton7,
+            this.toolStripButton6});
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Padding = new System.Windows.Forms.Padding(0);
+            this.toolStrip2.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.toolStrip2.Size = new System.Drawing.Size(615, 25);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton4.Text = "toolStripButton4";
-            // 
-            // toolStripButton5
-            // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton5.Text = "toolStripButton5";
-            // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton6.Text = "toolStripButton6";
-            // 
-            // toolStripButton7
-            // 
-            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
-            this.toolStripButton7.Text = "toolStripButton7";
             // 
             // tabPage2
             // 
@@ -787,7 +727,110 @@ namespace CodeWalker.TexMod
             // 
             // timer1
             // 
+            this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::CodeWalker.Properties.Resources._103;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.ToolTipText = "New";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // saveProjectBtn
+            // 
+            this.saveProjectBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveProjectBtn.Image = ((System.Drawing.Image)(resources.GetObject("saveProjectBtn.Image")));
+            this.saveProjectBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveProjectBtn.Name = "saveProjectBtn";
+            this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
+            this.saveProjectBtn.ToolTipText = "Save";
+            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.ToolTipText = "PackMod";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // repViewModeBtn
+            // 
+            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
+            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.repViewModeBtn.Name = "repViewModeBtn";
+            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
+            this.repViewModeBtn.ToolTipText = "View Mode";
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton3.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton3.ToolTipText = "Delete";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = global::CodeWalker.Properties.Resources._103;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.ToolTipText = "New";
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.ToolTipText = "Delete";
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton6.Text = "toolStripButton6";
+            // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
+            this.toolStripButton7.ToolTipText = "View Mode";
+            // 
+            // previewCanvas
+            // 
+            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
+            this.previewCanvas.Name = "previewCanvas";
+            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
+            this.previewCanvas.TabIndex = 0;
+            this.previewCanvas.Text = "d2DCanvas1";
+            // 
+            // textureCanvas
+            // 
+            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.textureCanvas.Name = "textureCanvas";
+            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.textureCanvas.TabIndex = 0;
+            this.textureCanvas.Text = "d2DCanvas1";
             // 
             // TextureModForm
             // 
@@ -899,5 +942,6 @@ namespace CodeWalker.TexMod
         private D2DCanvas previewCanvas;
         private D2DCanvas textureCanvas;
         private Timer timer1;
+        private ToolStripButton toolStripButton3;
     }
 }

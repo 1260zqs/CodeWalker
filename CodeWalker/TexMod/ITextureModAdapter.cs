@@ -121,6 +121,8 @@ public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
 
     public abstract string MakeSourcePath(GameFile gameFile, string texName);
     public abstract GameFile GetSourceFile(string sourcePath);
+    public abstract string GetSourceFileName(string sourcePath);
+    public abstract byte[] ExtractSourceFile(string sourcePath);
     public abstract string GetSourceTextureName(string sourcePath);
     public abstract Texture GetSourceTexture(GameFile gameFile, string texName);
 }
