@@ -271,6 +271,7 @@ public partial class TextureModForm : Form
     private void toolStripButton2_Click(object sender, EventArgs e)
     {
         var result = MessageBox.Show(
+            this,
             Resources.Msg_BuildModConfirm,
             "Build",
             MessageBoxButtons.OKCancel,
@@ -390,6 +391,7 @@ public partial class TextureModForm : Form
     {
         var tabPage = imageTabControl.SelectedTab;
         groupBox1.Visible = tabPage == modTextureTabPage;
+        groupBox3.Visible = tabPage == gameTextureTabPage;
     }
 
     private void WritePanelDataToSource()
@@ -551,6 +553,13 @@ public partial class TextureModForm : Form
         {
             applyDrawing = false;
             ApplyDrawing();
+        }
+        if (working.modTextureSource != null && (!modTextureCanvas.IsHandleCreated || !modTextureCanvas.Visible))
+        {
+            if (modTextureCanvas.GetImage() == null && working.modTextureSource.state == AsyncImageState.Ready)
+            {
+                modTextureCanvas.CreateImageFromExtern(gameTextureCanvas.GetRenderTargetInternal());
+            }
         }
         if (working.modTextureSource != null && working.modTextureBitmap == null)
         {

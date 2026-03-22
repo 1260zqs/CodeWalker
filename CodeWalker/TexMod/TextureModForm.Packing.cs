@@ -40,21 +40,7 @@ public partial class TextureModForm
             cts.Dispose();
         }, cts.Token);
         progressForm.ShowDialog(this);
-        result.ShowMessageBox();
-        // try
-        // {
-        //     Task.Run(BuildModAsync).Wait();
-        //     MessageBox.Show(
-        //         "texture pack completed.",
-        //         "Information",
-        //         MessageBoxButtons.OK,
-        //         MessageBoxIcon.Information
-        //     );
-        // }
-        // catch (Exception e)
-        // {
-        //     e.ShowDialog();
-        // }
+        result.ShowMessageBox(this);
     }
 
     class ModPack
@@ -84,11 +70,12 @@ public partial class TextureModForm
         public string message;
         public Exception exception;
 
-        public void ShowMessageBox()
+        public void ShowMessageBox(IWin32Window owner = null)
         {
             if (success)
             {
                 MessageBox.Show(
+                    owner,
                     message ?? "success",
                     "Information",
                     MessageBoxButtons.OK,
@@ -281,18 +268,16 @@ public partial class TextureModForm
         {
             if (modPack.localFile is PackedFile packedFile)
             {
-                try
-                {
-                    progressForm.IncreaseValue($"write file {modPack.localFilePath}");
-                    var bytes = packedFile.Save();
-                    File.WriteAllBytes(modPack.localSavePath, bytes);
-                }
-                catch (Exception e)
-                {
-                    e.ShowDialog();
-                }
+                progressForm.IncreaseValue($"write file {modPack.localFilePath}");
+                var bytes = packedFile.Save();
+                File.WriteAllBytes(modPack.localSavePath, bytes);
             }
         }
+        foreach (var modPack in modPacks)
+        {
+            project.manifest.SetPatchFile(modPack.sourcePath, modPack.localFilePath);
+        }
+        project.SaveManifest();
         result.success = true;
         progressForm.ClearProgress();
         Console.WriteLine("mod pack ok");
@@ -319,7 +304,7 @@ public partial class TextureModForm
                 cts.Dispose();
             }, cts.Token);
             progressForm.ShowDialog(this);
-            result.ShowMessageBox();
+            result.ShowMessageBox(this);
         }
     }
 

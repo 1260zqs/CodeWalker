@@ -77,23 +77,23 @@ public class GTAVTextureModAdapter : TextureModAdapter
         if (indexOf > 0)
         {
             var entryPath = sourcePath.Substring(0, indexOf);
-            if (project.manifest != null)
-            {
-                var modEntryPath = project.manifest.FindArchiveFileSource(entryPath);
-                if (!string.IsNullOrEmpty(modEntryPath))
-                {
-                    var path = Path.GetDirectoryName(project.manifestFile);
-                    var filename = Path.Combine(path, "content", modEntryPath);
-                    if (File.Exists(filename))
-                    {
-                        var file = GameFileUtils.LoadFile(filename);
-                        if (file == null)
-                        {
-                            return file;
-                        }
-                    }
-                }
-            }
+            //if (project.manifest != null)
+            //{
+            //    var modEntryPath = project.manifest.FindArchiveFileSource(entryPath);
+            //    if (!string.IsNullOrEmpty(modEntryPath))
+            //    {
+            //        var path = Path.GetDirectoryName(project.manifestFile);
+            //        var filename = Path.Combine(path, "content", modEntryPath);
+            //        if (File.Exists(filename))
+            //        {
+            //            var file = GameFileUtils.LoadFile(filename);
+            //            if (file != null)
+            //            {
+            //                return file;
+            //            }
+            //        }
+            //    }
+            //}
             var entry = fileCache.RpfMan.GetEntry(entryPath);
             if (entry != null)
             {

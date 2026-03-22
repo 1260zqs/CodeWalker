@@ -3,6 +3,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 using Rectangle = SharpDX.Rectangle;
 
@@ -41,6 +42,20 @@ public class TextureModProject
     {
         var filename = Path.Combine(workingDir, "texturemod.xml");
         TextureModProjectExtension.Save(this, filename);
+    }
+
+    public void SaveManifest()
+    {
+        var settings = new XmlWriterSettings
+        {
+            Indent = true,
+            Encoding = Encoding.UTF8
+        };
+        using (var writer = XmlWriter.Create(manifestFile, settings))
+        {
+            manifest.WriteTo(writer);
+            writer.Flush();
+        }
     }
 
     private static void MakesureFolder(string folder)

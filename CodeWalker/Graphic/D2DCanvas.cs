@@ -337,6 +337,20 @@ public class D2DCanvas : Control
         }
     }
 
+    internal RenderTarget GetRenderTargetInternal() => target;
+    internal void CreateImageFromExtern(RenderTarget target) => CreateBitmap(target);
+
+    private void CreateBitmap(RenderTarget target)
+    {
+        Utilities.Dispose(ref bitmap);
+        bitmap = bitmapSource.CreateBitmap(target);
+        if (!(isError = bitmap == null))
+        {
+            imageSize = bitmap.PixelSize;
+            onBitmapLoaded?.Invoke(this);
+        }
+    }
+
     protected override void OnPaintBackground(PaintEventArgs e)
     {
     }
@@ -383,13 +397,7 @@ public class D2DCanvas : Control
             }
             else if (bitmapSource.state == AsyncImageState.Ready)
             {
-                Utilities.Dispose(ref bitmap);
-                bitmap = bitmapSource.CreateBitmap(target);
-                if (!(isError = bitmap == null))
-                {
-                    imageSize = bitmap.PixelSize;
-                    onBitmapLoaded?.Invoke(this);
-                }
+                CreateBitmap(target);
                 Invalidate();
             }
         }
