@@ -185,8 +185,13 @@ public class AsyncGameTextureSource : AsyncTextureSource
         return Task.CompletedTask;
     }
 
-    private void Run()
+    private async void Run()
     {
+        while (!adapter.IsIsInited())
+        {
+            await Task.Delay(100);
+            if (disposed) return;
+        }
         gameFile = adapter.GetSourceFile(sourceFile);
         if (gameFile == null)
         {

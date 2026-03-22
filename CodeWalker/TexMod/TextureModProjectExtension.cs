@@ -28,7 +28,7 @@ public static class TextureModProjectExtension
             WriteProjectDirectory(writer, project.directory);
 
             writer.WriteStartElement("Replacements");
-            foreach (var replacement in project.replacements)
+            foreach (var replacement in project.textureMappings)
             {
                 writer.WriteStartElement("TextureReplacement");
                 writer.WriteAttributeString("Id", $"{replacement.id:N}");
@@ -121,12 +121,12 @@ public static class TextureModProjectExtension
         var root = (XmlElement)xmlDoc.SelectSingleNode("/TextureModProject");
         project.manifestFile = root["manifestFile"].InnerText;
 
-        project.replacements.Clear();
+        project.textureMappings.Clear();
         if (root["Replacements"] is XmlElement replacements)
         {
             foreach (XmlElement xmlElement in replacements.GetElementsByTagName("TextureReplacement"))
             {
-                var replacement = new TextureReplacement();
+                var replacement = new TextureMapping();
                 replacement.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
                 replacement.tag = xmlElement["Tag"].InnerText;
                 replacement.name = xmlElement["Name"].InnerText;
@@ -139,7 +139,7 @@ public static class TextureModProjectExtension
                 replacement.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
                 replacement.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
                 replacement.rotation = int.Parse(xmlElement["Rotation"].InnerText);
-                project.replacements.Add(replacement);
+                project.textureMappings.Add(replacement);
             }
         }
         project.modTextures.Clear();

@@ -41,11 +41,17 @@ namespace CodeWalker.TexMod
             this.topSplitContainer = new System.Windows.Forms.SplitContainer();
             this.projectListPanel = new System.Windows.Forms.Panel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
+            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this.modListView = new System.Windows.Forms.ListView();
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
-            this.previewTabPage = new System.Windows.Forms.TabPage();
-            this.textureTabPage = new System.Windows.Forms.TabPage();
+            this.gameTextureTabPage = new System.Windows.Forms.TabPage();
+            this.modTextureTabPage = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -76,25 +82,21 @@ namespace CodeWalker.TexMod
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.replacementListView = new System.Windows.Forms.ListView();
+            this.textureMappingView = new System.Windows.Forms.ListView();
             this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel3 = new System.Windows.Forms.Panel();
             this.listView2 = new System.Windows.Forms.ListView();
-            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.treeView = new System.Windows.Forms.TreeView();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.previewCanvas = new CodeWalker.D2DCanvas();
-            this.textureCanvas = new CodeWalker.D2DCanvas();
+            this.gameTextureCanvas = new CodeWalker.D2DCanvas();
+            this.modTextureCanvas = new CodeWalker.D2DCanvas();
+            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Tag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Comment = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -111,8 +113,8 @@ namespace CodeWalker.TexMod
             this.toolStrip1.SuspendLayout();
             this.imageContainer.SuspendLayout();
             this.imageTabControl.SuspendLayout();
-            this.previewTabPage.SuspendLayout();
-            this.textureTabPage.SuspendLayout();
+            this.gameTextureTabPage.SuspendLayout();
+            this.modTextureTabPage.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -133,6 +135,7 @@ namespace CodeWalker.TexMod
             this.toolStrip2.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.panel3.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // Texture
@@ -223,6 +226,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton3,
             this.saveProjectBtn,
             this.toolStripButton2,
+            this.toolStripButton8,
             this.repViewModeBtn});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -230,6 +234,65 @@ namespace CodeWalker.TexMod
             this.toolStrip1.Size = new System.Drawing.Size(312, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = global::CodeWalker.Properties.Resources._103;
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.ToolTipText = "New";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            // 
+            // toolStripButton3
+            // 
+            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton3.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton3.Name = "toolStripButton3";
+            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton3.ToolTipText = "Delete";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // saveProjectBtn
+            // 
+            this.saveProjectBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveProjectBtn.Image = ((System.Drawing.Image)(resources.GetObject("saveProjectBtn.Image")));
+            this.saveProjectBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveProjectBtn.Name = "saveProjectBtn";
+            this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
+            this.saveProjectBtn.ToolTipText = "Save";
+            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
+            // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.ToolTipText = "Build Mod";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
+            // toolStripButton8
+            // 
+            this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton8.Image = global::CodeWalker.Properties.Resources.box_zipper;
+            this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton8.Name = "toolStripButton8";
+            this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton8.ToolTipText = "Pack OIV";
+            this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
+            // 
+            // repViewModeBtn
+            // 
+            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
+            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.repViewModeBtn.Name = "repViewModeBtn";
+            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
+            this.repViewModeBtn.ToolTipText = "View Mode";
             // 
             // modListView
             // 
@@ -271,11 +334,12 @@ namespace CodeWalker.TexMod
             // 
             // imageTabControl
             // 
-            this.imageTabControl.Controls.Add(this.previewTabPage);
-            this.imageTabControl.Controls.Add(this.textureTabPage);
+            this.imageTabControl.Controls.Add(this.gameTextureTabPage);
+            this.imageTabControl.Controls.Add(this.modTextureTabPage);
             this.imageTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.imageTabControl.Location = new System.Drawing.Point(0, 0);
             this.imageTabControl.Margin = new System.Windows.Forms.Padding(0);
+            this.imageTabControl.Multiline = true;
             this.imageTabControl.Name = "imageTabControl";
             this.imageTabControl.Padding = new System.Drawing.Point(6, 6);
             this.imageTabControl.SelectedIndex = 0;
@@ -283,27 +347,27 @@ namespace CodeWalker.TexMod
             this.imageTabControl.TabIndex = 0;
             this.imageTabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.imageTabControl_Selected);
             // 
-            // previewTabPage
+            // gameTextureTabPage
             // 
-            this.previewTabPage.Controls.Add(this.previewCanvas);
-            this.previewTabPage.Location = new System.Drawing.Point(4, 28);
-            this.previewTabPage.Name = "previewTabPage";
-            this.previewTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.previewTabPage.Size = new System.Drawing.Size(397, 306);
-            this.previewTabPage.TabIndex = 0;
-            this.previewTabPage.Text = "Preview";
-            this.previewTabPage.UseVisualStyleBackColor = true;
+            this.gameTextureTabPage.Controls.Add(this.gameTextureCanvas);
+            this.gameTextureTabPage.Location = new System.Drawing.Point(4, 28);
+            this.gameTextureTabPage.Name = "gameTextureTabPage";
+            this.gameTextureTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.gameTextureTabPage.Size = new System.Drawing.Size(397, 306);
+            this.gameTextureTabPage.TabIndex = 0;
+            this.gameTextureTabPage.Text = "Preview";
+            this.gameTextureTabPage.UseVisualStyleBackColor = true;
             // 
-            // textureTabPage
+            // modTextureTabPage
             // 
-            this.textureTabPage.Controls.Add(this.textureCanvas);
-            this.textureTabPage.Location = new System.Drawing.Point(4, 28);
-            this.textureTabPage.Name = "textureTabPage";
-            this.textureTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.textureTabPage.Size = new System.Drawing.Size(397, 306);
-            this.textureTabPage.TabIndex = 1;
-            this.textureTabPage.Text = "Texture";
-            this.textureTabPage.UseVisualStyleBackColor = true;
+            this.modTextureTabPage.Controls.Add(this.modTextureCanvas);
+            this.modTextureTabPage.Location = new System.Drawing.Point(4, 28);
+            this.modTextureTabPage.Name = "modTextureTabPage";
+            this.modTextureTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.modTextureTabPage.Size = new System.Drawing.Size(397, 306);
+            this.modTextureTabPage.TabIndex = 1;
+            this.modTextureTabPage.Text = "Texture";
+            this.modTextureTabPage.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -599,6 +663,7 @@ namespace CodeWalker.TexMod
             // 
             this.tabControl2.Controls.Add(this.tabPage1);
             this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Controls.Add(this.tabPage3);
             this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl2.Location = new System.Drawing.Point(6, 0);
             this.tabControl2.Name = "tabControl2";
@@ -620,7 +685,7 @@ namespace CodeWalker.TexMod
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel2.Controls.Add(this.replacementListView);
+            this.panel2.Controls.Add(this.textureMappingView);
             this.panel2.Controls.Add(this.toolStrip2);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(3, 3);
@@ -628,29 +693,29 @@ namespace CodeWalker.TexMod
             this.panel2.Size = new System.Drawing.Size(617, 219);
             this.panel2.TabIndex = 0;
             // 
-            // replacementListView
+            // textureMappingView
             // 
-            this.replacementListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textureMappingView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.replacementListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.replacementListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.textureMappingView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textureMappingView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             Texture,
             Tag,
             Comment});
-            this.replacementListView.FullRowSelect = true;
-            this.replacementListView.GridLines = true;
-            this.replacementListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.replacementListView.HideSelection = false;
-            this.replacementListView.Location = new System.Drawing.Point(0, 25);
-            this.replacementListView.Name = "replacementListView";
-            this.replacementListView.Size = new System.Drawing.Size(615, 192);
-            this.replacementListView.TabIndex = 1;
-            this.replacementListView.UseCompatibleStateImageBehavior = false;
-            this.replacementListView.View = System.Windows.Forms.View.Details;
-            this.replacementListView.VirtualMode = true;
-            this.replacementListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.replacementListView_RetrieveVirtualItem);
-            this.replacementListView.SelectedIndexChanged += new System.EventHandler(this.replacementListView_SelectedIndexChanged);
+            this.textureMappingView.FullRowSelect = true;
+            this.textureMappingView.GridLines = true;
+            this.textureMappingView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.textureMappingView.HideSelection = false;
+            this.textureMappingView.Location = new System.Drawing.Point(0, 25);
+            this.textureMappingView.Name = "textureMappingView";
+            this.textureMappingView.Size = new System.Drawing.Size(615, 192);
+            this.textureMappingView.TabIndex = 1;
+            this.textureMappingView.UseCompatibleStateImageBehavior = false;
+            this.textureMappingView.View = System.Windows.Forms.View.Details;
+            this.textureMappingView.VirtualMode = true;
+            this.textureMappingView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.replacementListView_RetrieveVirtualItem);
+            this.textureMappingView.SelectedIndexChanged += new System.EventHandler(this.replacementListView_SelectedIndexChanged);
             // 
             // toolStrip2
             // 
@@ -663,14 +728,41 @@ namespace CodeWalker.TexMod
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton4,
             this.toolStripButton5,
-            this.toolStripButton7,
-            this.toolStripButton6});
+            this.toolStripButton7});
             this.toolStrip2.Location = new System.Drawing.Point(0, 0);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Padding = new System.Windows.Forms.Padding(1, 0, 0, 0);
             this.toolStrip2.Size = new System.Drawing.Size(615, 25);
             this.toolStrip2.TabIndex = 0;
             this.toolStrip2.Text = "toolStrip2";
+            // 
+            // toolStripButton4
+            // 
+            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton4.Image = global::CodeWalker.Properties.Resources._103;
+            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton4.Name = "toolStripButton4";
+            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton4.ToolTipText = "New";
+            // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.ToolTipText = "Delete";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
+            // toolStripButton7
+            // 
+            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
+            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton7.Name = "toolStripButton7";
+            this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
+            this.toolStripButton7.ToolTipText = "View Mode";
             // 
             // tabPage2
             // 
@@ -708,6 +800,59 @@ namespace CodeWalker.TexMod
             this.listView2.UseCompatibleStateImageBehavior = false;
             this.listView2.View = System.Windows.Forms.View.Details;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.treeView);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(623, 225);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // treeView
+            // 
+            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView.FullRowSelect = true;
+            this.treeView.HideSelection = false;
+            this.treeView.Indent = 20;
+            this.treeView.ItemHeight = 20;
+            this.treeView.Location = new System.Drawing.Point(3, 3);
+            this.treeView.Name = "treeView";
+            this.treeView.ShowLines = false;
+            this.treeView.Size = new System.Drawing.Size(617, 219);
+            this.treeView.TabIndex = 0;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
+            this.openFileDialog1.RestoreDirectory = true;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // gameTextureCanvas
+            // 
+            this.gameTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gameTextureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.gameTextureCanvas.Name = "gameTextureCanvas";
+            this.gameTextureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.gameTextureCanvas.TabIndex = 0;
+            this.gameTextureCanvas.Text = "d2DCanvas1";
+            // 
+            // modTextureCanvas
+            // 
+            this.modTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modTextureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.modTextureCanvas.Name = "modTextureCanvas";
+            this.modTextureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.modTextureCanvas.TabIndex = 0;
+            this.modTextureCanvas.Text = "d2DCanvas1";
+            // 
             // propertyGridFix1
             // 
             this.propertyGridFix1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -718,119 +863,6 @@ namespace CodeWalker.TexMod
             this.propertyGridFix1.Size = new System.Drawing.Size(318, 251);
             this.propertyGridFix1.TabIndex = 0;
             this.propertyGridFix1.ToolbarVisible = false;
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            this.openFileDialog1.RestoreDirectory = true;
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::CodeWalker.Properties.Resources._103;
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.ToolTipText = "New";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // saveProjectBtn
-            // 
-            this.saveProjectBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.saveProjectBtn.Image = ((System.Drawing.Image)(resources.GetObject("saveProjectBtn.Image")));
-            this.saveProjectBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveProjectBtn.Name = "saveProjectBtn";
-            this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
-            this.saveProjectBtn.ToolTipText = "Save";
-            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.ToolTipText = "PackMod";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
-            // repViewModeBtn
-            // 
-            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
-            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.repViewModeBtn.Name = "repViewModeBtn";
-            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
-            this.repViewModeBtn.ToolTipText = "View Mode";
-            // 
-            // toolStripButton3
-            // 
-            this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = global::CodeWalker.Properties.Resources._104;
-            this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton3.ToolTipText = "Delete";
-            // 
-            // toolStripButton4
-            // 
-            this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton4.Image = global::CodeWalker.Properties.Resources._103;
-            this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton4.ToolTipText = "New";
-            // 
-            // toolStripButton5
-            // 
-            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton5.Image = global::CodeWalker.Properties.Resources._104;
-            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton5.Name = "toolStripButton5";
-            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton5.ToolTipText = "Delete";
-            // 
-            // toolStripButton6
-            // 
-            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
-            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton6.Text = "toolStripButton6";
-            // 
-            // toolStripButton7
-            // 
-            this.toolStripButton7.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton7.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton7.Image")));
-            this.toolStripButton7.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton7.Name = "toolStripButton7";
-            this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
-            this.toolStripButton7.ToolTipText = "View Mode";
-            // 
-            // previewCanvas
-            // 
-            this.previewCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.previewCanvas.Location = new System.Drawing.Point(3, 3);
-            this.previewCanvas.Name = "previewCanvas";
-            this.previewCanvas.Size = new System.Drawing.Size(391, 300);
-            this.previewCanvas.TabIndex = 0;
-            this.previewCanvas.Text = "d2DCanvas1";
-            // 
-            // textureCanvas
-            // 
-            this.textureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textureCanvas.Location = new System.Drawing.Point(3, 3);
-            this.textureCanvas.Name = "textureCanvas";
-            this.textureCanvas.Size = new System.Drawing.Size(391, 300);
-            this.textureCanvas.TabIndex = 0;
-            this.textureCanvas.Text = "d2DCanvas1";
             // 
             // TextureModForm
             // 
@@ -853,8 +885,8 @@ namespace CodeWalker.TexMod
             this.toolStrip1.PerformLayout();
             this.imageContainer.ResumeLayout(false);
             this.imageTabControl.ResumeLayout(false);
-            this.previewTabPage.ResumeLayout(false);
-            this.textureTabPage.ResumeLayout(false);
+            this.gameTextureTabPage.ResumeLayout(false);
+            this.modTextureTabPage.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -879,6 +911,7 @@ namespace CodeWalker.TexMod
             this.toolStrip2.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -893,8 +926,8 @@ namespace CodeWalker.TexMod
         private WinForms.PropertyGridFix propertyGridFix1;
         private ListView modListView;
         private TabControl imageTabControl;
-        private TabPage previewTabPage;
-        private TabPage textureTabPage;
+        private TabPage gameTextureTabPage;
+        private TabPage modTextureTabPage;
         private ToolStrip toolStrip1;
         private ToolStripButton toolStripButton1;
         private ToolStripButton toolStripButton2;
@@ -907,9 +940,8 @@ namespace CodeWalker.TexMod
         private ToolStrip toolStrip2;
         private ToolStripButton toolStripButton4;
         private ToolStripButton toolStripButton5;
-        private ToolStripButton toolStripButton6;
         private Panel panel3;
-        private ListView replacementListView;
+        private ListView textureMappingView;
         private ListView listView2;
         private ToolStripDropDownButton repViewModeBtn;
         private ToolStripDropDownButton toolStripButton7;
@@ -939,9 +971,12 @@ namespace CodeWalker.TexMod
         private GroupBox groupBox3;
         private CheckBox checkBox3;
         private Button button7;
-        private D2DCanvas previewCanvas;
-        private D2DCanvas textureCanvas;
+        private D2DCanvas gameTextureCanvas;
+        private D2DCanvas modTextureCanvas;
         private Timer timer1;
         private ToolStripButton toolStripButton3;
+        private ToolStripButton toolStripButton8;
+        private TabPage tabPage3;
+        private TreeView treeView;
     }
 }

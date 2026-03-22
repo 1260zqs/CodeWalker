@@ -1,13 +1,10 @@
 ﻿using CodeWalker.Properties;
+using CodeWalker.Utils;
+using SharpDX;
 using System;
 using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using CodeWalker.GameFiles;
-using CodeWalker.Utils;
-using SharpDX;
-using SharpDX.Mathematics.Interop;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -38,19 +35,54 @@ public partial class TextureModForm : Form
         numericUpDown2.Maximum = int.MaxValue;
         numericUpDown2.Minimum = int.MinValue;
 
-        PictureBoxViewer.AddFeature(previewCanvas);
-        PictureBoxViewer.AddFeature(textureCanvas);
+        PictureBoxViewer.AddFeature(gameTextureCanvas);
+        PictureBoxViewer.AddFeature(modTextureCanvas);
 
-        PictureBoxRectTool.AddFeature(previewCanvas, OnRectDrawingChange);
-        PictureBoxRectTool.AddFeature(textureCanvas, OnRectDrawingChange);
-        previewCanvas.onPaint = PaintPreviewPicture;
-        textureCanvas.onPaint = PaintTexturePicture;
+        PictureBoxRectTool.AddFeature(gameTextureCanvas, OnRectDrawingChange);
+        PictureBoxRectTool.AddFeature(modTextureCanvas, OnRectDrawingChange);
+        gameTextureCanvas.onPaint = PaintPreviewPicture;
+        modTextureCanvas.onPaint = PaintTexturePicture;
 
-        previewCanvas.onBitmapLoaded = ResetImageViewer;
-        textureCanvas.onBitmapLoaded = ResetImageViewer;
+        gameTextureCanvas.onBitmapLoaded = ResetImageViewer;
+        modTextureCanvas.onBitmapLoaded = ResetImageViewer;
         UpdateGroupBoxVisibility();
 
-        InitializeListView();
+        repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
+        repViewModeBtn.SelectEnum(modListView.View);
+
+        toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
+        toolStripButton7.SelectEnum(textureMappingView.View);
+    }
+
+    static class TreeViewIcon
+    {
+        public const string folder = "folder";
+        public const string folder_open = "folder_open";
+        public const string document = "document";
+    }
+
+    private void LoadTreeView()
+    {
+        var imageList = new ImageList();
+        imageList.Images.Add("folder", Resources.folder);
+        imageList.Images.Add("folder-open", Resources.folder_open);
+        imageList.Images.Add("document", Resources.document);
+        treeView.ImageList = imageList;
+        var root = new TreeNode("/");
+        root.ImageKey = TreeViewIcon.folder;
+        root.SelectedImageKey = TreeViewIcon.folder;
+
+        var file = new TreeNode("texture.png");
+        file.ImageKey = TreeViewIcon.document;
+        file.SelectedImageKey = TreeViewIcon.document;
+
+        root.Nodes.Add(file);
+
+        var stateImageList = new ImageList();
+        treeView.StateImageList = stateImageList;
+
+        treeView.Nodes.Add(root);
+        treeView.Refresh();
     }
 
     private void ResetImageViewer(D2DCanvas canvas)
@@ -64,6 +96,12 @@ public partial class TextureModForm : Form
     {
         base.OnLoad(e);
         modListView.VirtualListSize = project.modTextures.Count;
+        if (modListView.VirtualListSize > 0 && modListView.SelectedIndices.Count == 0)
+        {
+            modListView.SelectedIndices.Add(0);
+        }
+        modListView.Refresh();
+        LoadTreeView();
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -88,18 +126,18 @@ public partial class TextureModForm : Form
     private void PaintPreviewPicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
     {
         PictureBoxViewer.Paint(canvas, bitmap);
-        if (working.replacement != null && working.modTexture != null)
+        if (working.mapping != null && working.modTexture != null)
         {
             DrawPreviewOverlay(
                 target,
-                previewCanvas.GetImage(),
-                textureCanvas.GetImage(),
-                previewCanvas.GetImageSize(),
+                gameTextureCanvas.GetImage(),
+                modTextureCanvas.GetImage(),
+                gameTextureCanvas.GetImageSize(),
                 working.modTexture.sourceRect.Convert(),
-                working.replacement.targetRect.Convert(),
-                working.replacement.flipX,
-                working.replacement.flipY,
-                working.replacement.rotation
+                working.mapping.targetRect.Convert(),
+                working.mapping.flipX,
+                working.mapping.flipY,
+                working.mapping.rotation
             );
         }
         PictureBoxRectTool.Paint(canvas);
@@ -163,15 +201,6 @@ public partial class TextureModForm : Form
         WritePanelDataToSource();
     }
 
-    private void InitializeListView()
-    {
-        repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
-        repViewModeBtn.SelectEnum(modListView.View);
-
-        toolStripButton7.SetEnumDrop<View>(x => replacementListView.View = x);
-        toolStripButton7.SelectEnum(replacementListView.View);
-    }
-
     private void RefreshModListView()
     {
         modListView.VirtualListSize = project.modTextures.Count;
@@ -182,18 +211,18 @@ public partial class TextureModForm : Form
         modListView.Refresh();
     }
 
-    private void RefreshReplacementListView(bool reload = false)
+    private void RefreshTextureMappingView(bool reload = false)
     {
         if (reload && working.modTexture != null)
         {
-            project.FindTextureReplacements(working.modTexture.id, replacements);
+            project.FindTextureMapping(working.modTexture.id, replacements);
         }
-        replacementListView.VirtualListSize = replacements.Count;
-        if (replacementListView.VirtualListSize > 0 && replacementListView.SelectedIndices.Count == 0)
+        textureMappingView.VirtualListSize = replacements.Count;
+        if (textureMappingView.VirtualListSize > 0 && textureMappingView.SelectedIndices.Count == 0)
         {
-            replacementListView.SelectedIndices.Add(0);
+            textureMappingView.SelectedIndices.Add(0);
         }
-        replacementListView.Refresh();
+        textureMappingView.Refresh();
     }
 
     private void replacementListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -241,7 +270,15 @@ public partial class TextureModForm : Form
 
     private void toolStripButton2_Click(object sender, EventArgs e)
     {
-        PackMod();
+        var result = MessageBox.Show(
+            Resources.Msg_BuildModConfirm,
+            "Build",
+            MessageBoxButtons.OKCancel,
+            MessageBoxIcon.Question);
+        if (result == DialogResult.OK)
+        {
+            BuildMod();
+        }
     }
 
     private void modListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -255,9 +292,9 @@ public partial class TextureModForm : Form
 
     private void replacementListView_SelectedIndexChanged(object sender, EventArgs e)
     {
-        foreach (int index in replacementListView.SelectedIndices)
+        foreach (int index in textureMappingView.SelectedIndices)
         {
-            SelecteTexReplacement(replacements[index]);
+            SelectTextureMapping(replacements[index]);
             return;
         }
     }
@@ -277,68 +314,68 @@ public partial class TextureModForm : Form
 
     private void rectBoxX_ValueChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
+            PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
             rect.X = (int)rectBoxX.Value;
-            PictureBoxRectTool.SetRect(previewCanvas, rect);
+            PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
+            PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             rect.X = (int)rectBoxX.Value;
-            PictureBoxRectTool.SetRect(textureCanvas, rect);
+            PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
     }
 
     private void rectBoxY_ValueChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
+            PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
             rect.Y = (int)rectBoxY.Value;
-            PictureBoxRectTool.SetRect(previewCanvas, rect);
+            PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
+            PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             rect.Y = (int)rectBoxY.Value;
-            PictureBoxRectTool.SetRect(textureCanvas, rect);
+            PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
     }
 
     private void rectBoxW_ValueChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
+            PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
             rect.Width = (int)rectBoxW.Value;
-            PictureBoxRectTool.SetRect(previewCanvas, rect);
+            PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
+            PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             rect.Width = (int)rectBoxW.Value;
-            PictureBoxRectTool.SetRect(textureCanvas, rect);
+            PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
     }
 
     private void rectBoxH_ValueChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
+            PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
             rect.Height = (int)rectBoxH.Value;
-            PictureBoxRectTool.SetRect(previewCanvas, rect);
+            PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
+            PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             rect.Height = (int)rectBoxH.Value;
-            PictureBoxRectTool.SetRect(textureCanvas, rect);
+            PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
     }
@@ -352,24 +389,23 @@ public partial class TextureModForm : Form
     private void UpdateGroupBoxVisibility()
     {
         var tabPage = imageTabControl.SelectedTab;
-        groupBox1.Visible = tabPage == textureTabPage;
-        groupBox2.Visible = tabPage == previewTabPage;
+        groupBox1.Visible = tabPage == modTextureTabPage;
     }
 
     private void WritePanelDataToSource()
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(previewCanvas, out var rect);
-            if (working.replacement != null)
+            PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
+            if (working.mapping != null)
             {
-                working.replacement.targetRect = rect.Convert();
+                working.mapping.targetRect = rect.Convert();
             }
             SetRectBox(rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.GetRect(textureCanvas, out var rect);
+            PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             if (working.modTexture != null)
             {
                 working.modTexture.sourceRect = rect.Convert();
@@ -381,60 +417,60 @@ public partial class TextureModForm : Form
 
     private void ReadPanelDataFromSource()
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
             var rect = new System.Drawing.Rectangle();
-            if (working.replacement != null)
+            if (working.mapping != null)
             {
-                rect = working.replacement.targetRect.Convert();
+                rect = working.mapping.targetRect.Convert();
             }
-            PictureBoxRectTool.SetRect(previewCanvas, rect);
-            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(previewCanvas);
-            checkBox2.Checked = PictureBoxRectTool.GetSolid(previewCanvas);
+            PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
+            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(gameTextureCanvas);
+            checkBox2.Checked = PictureBoxRectTool.GetSolid(gameTextureCanvas);
             SetRectBox(rect);
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
             var rect = new System.Drawing.Rectangle();
             if (working.modTexture != null)
             {
                 rect = working.modTexture.sourceRect.Convert();
             }
-            PictureBoxRectTool.SetRect(textureCanvas, rect);
-            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(textureCanvas);
-            checkBox2.Checked = PictureBoxRectTool.GetSolid(textureCanvas);
+            PictureBoxRectTool.SetRect(modTextureCanvas, rect);
+            checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(modTextureCanvas);
+            checkBox2.Checked = PictureBoxRectTool.GetSolid(modTextureCanvas);
             SetRectBox(rect);
 
-            numericUpDown1.Value = working.replacement?.targetRect.Width ?? 0;
-            numericUpDown2.Value = working.replacement?.targetRect.Height ?? 0;
+            numericUpDown1.Value = working.mapping?.targetRect.Width ?? 0;
+            numericUpDown2.Value = working.mapping?.targetRect.Height ?? 0;
         }
     }
 
     private void checkBox2_CheckedChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.SetSolid(previewCanvas, checkBox2.Checked);
-            previewCanvas.Invalidate();
+            PictureBoxRectTool.SetSolid(gameTextureCanvas, checkBox2.Checked);
+            gameTextureCanvas.Invalidate();
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.SetSolid(textureCanvas, checkBox2.Checked);
-            textureCanvas.Invalidate();
+            PictureBoxRectTool.SetSolid(modTextureCanvas, checkBox2.Checked);
+            modTextureCanvas.Invalidate();
         }
     }
 
     private void checkBox1_CheckedChanged(object sender, EventArgs e)
     {
-        if (imageTabControl.SelectedTab == previewTabPage)
+        if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            PictureBoxRectTool.SetPaintEnable(previewCanvas, checkBox1.Checked);
-            previewCanvas.Invalidate();
+            PictureBoxRectTool.SetPaintEnable(gameTextureCanvas, checkBox1.Checked);
+            gameTextureCanvas.Invalidate();
         }
-        else if (imageTabControl.SelectedTab == textureTabPage)
+        else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            PictureBoxRectTool.SetPaintEnable(textureCanvas, checkBox1.Checked);
-            textureCanvas.Invalidate();
+            PictureBoxRectTool.SetPaintEnable(modTextureCanvas, checkBox1.Checked);
+            modTextureCanvas.Invalidate();
         }
     }
 
@@ -450,8 +486,8 @@ public partial class TextureModForm : Form
 
     private void button3_Click(object sender, EventArgs e)
     {
-        if (!textureCanvas.HasImage()) return;
-        var imageSize = textureCanvas.GetImageSize();
+        if (!modTextureCanvas.HasImage()) return;
+        var imageSize = modTextureCanvas.GetImageSize();
 
         var width = numericUpDown1.Value;
         var height = numericUpDown2.Value;
@@ -464,8 +500,8 @@ public partial class TextureModForm : Form
 
     private void button4_Click(object sender, EventArgs e)
     {
-        if (!textureCanvas.HasImage()) return;
-        var imageSize = textureCanvas.GetImageSize();
+        if (!modTextureCanvas.HasImage()) return;
+        var imageSize = modTextureCanvas.GetImageSize();
 
         var width = numericUpDown1.Value;
         var height = numericUpDown2.Value;
@@ -520,32 +556,80 @@ public partial class TextureModForm : Form
         {
             working.modTextureBitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
             CheckImageUnload();
-            previewCanvas.Invalidate();
+            gameTextureCanvas.Invalidate();
         }
-        if (working.replaceTextureSource != null && working.replaceTextureBitmap == null)
+        if (working.gameTextureSource != null && working.gameTextureBitmap == null)
         {
-            working.replaceTextureBitmap = working.replaceTextureSource.CreateBitmap(d2dRenderTarget.target);
+            working.gameTextureBitmap = working.gameTextureSource.CreateBitmap(d2dRenderTarget.target);
             CheckImageUnload();
-            previewCanvas.Invalidate();
+            gameTextureCanvas.Invalidate();
         }
     }
 
     private void CheckImageUnload()
     {
         if (working == null) return;
-        if (textureCanvas.HasImage() && working.modTextureBitmap != null)
+        if (modTextureCanvas.HasImage() && working.modTextureBitmap != null)
         {
             Utilities.Dispose(ref working.modTextureSource);
         }
-        if (previewCanvas.HasImage() && working.replaceTextureBitmap != null)
+        if (gameTextureCanvas.HasImage() && working.gameTextureBitmap != null)
         {
-            Utilities.Dispose(ref working.replaceTextureSource);
+            Utilities.Dispose(ref working.gameTextureSource);
         }
     }
 
     private void OnPropertyGridChanged()
     {
-        previewCanvas.Invalidate();
+        gameTextureCanvas.Invalidate();
         RenderDrawing();
+    }
+
+    private void toolStripButton5_Click(object sender, EventArgs e)
+    {
+        // delete replacement
+        foreach (int selectedIndex in textureMappingView.SelectedIndices)
+        {
+            var textureMapping = replacements[selectedIndex];
+            if (MessageBox.Show($"Delete {textureMapping.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            project.DeleteTextureMapping(textureMapping);
+        }
+        gameTextureCanvas.ClearImage();
+        working.mapping = null;
+        Utilities.Dispose(ref working.gameTextureBitmap);
+        Utilities.Dispose(ref working.gameTextureSource);
+
+        textureMappingView.VirtualListSize = 0;
+        textureMappingView.SelectedIndices.Clear();
+        RefreshTextureMappingView(true);
+    }
+
+    private void toolStripButton3_Click(object sender, EventArgs e)
+    {
+        // delete tex mod
+        foreach (int selectedIndex in modListView.SelectedIndices)
+        {
+            var modTexture = project.modTextures.Values[selectedIndex];
+            if (MessageBox.Show($"Delete {modTexture.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            project.DeleteModTexture(modTexture);
+        }
+        modListView.VirtualListSize = 0;
+        modListView.SelectedIndices.Clear();
+        RefreshModListView();
+        if (modListView.SelectedIndices.Count == 0)
+        {
+            SelectTexMod(null);
+        }
+    }
+
+    private void toolStripButton8_Click(object sender, EventArgs e)
+    {
+        PackMod();
     }
 }

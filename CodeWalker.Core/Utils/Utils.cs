@@ -180,6 +180,10 @@ namespace CodeWalker
         {
             return ToString(v.X) + d + ToString(v.Y) + d + ToString(v.Z) + d + ToString(v.W);
         }
+        public static string GetQuaternionString(Quaternion q, string d = ", ")
+        {
+            return ToString(q.X) + d + ToString(q.Y) + d + ToString(q.Z) + d + ToString(q.W);
+        }
         public static string GetVector4XmlString(Vector4 v)
         {
             return string.Format("x=\"{0}\" y=\"{1}\" z=\"{2}\" w=\"{3}\"", ToString(v.X), ToString(v.Y), ToString(v.Z), ToString(v.W));
@@ -258,6 +262,12 @@ namespace CodeWalker
                 TryParse(ss[3].Trim(), out p.W);
             }
             return p;
+        }
+
+        public static Quaternion ParseQuaternionString(string s)
+        {
+            var vector4 = ParseVector4String(s);
+            return new Quaternion(vector4.X, vector4.Y, vector4.Z, vector4.W);
         }
 
 

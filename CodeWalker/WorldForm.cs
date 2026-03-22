@@ -62,7 +62,7 @@ namespace CodeWalker
         string modelname = "dt1_tc_dufo_core";//"dt1_11_fount_decal";//"v_22_overlays";//
         string[] ymaplist;
 
-        Vector3 prevworldpos = FloatUtil.ParseVector3String(Settings.Default.StartPosition);
+        Vector3 prevworldpos;
 
 
         public GameFileCache GameFileCache => gameFileCache;
@@ -398,7 +398,9 @@ namespace CodeWalker
                 }
             }
 
+            prevworldpos = FloatUtil.ParseVector3String(Settings.Default.StartPosition);
             camera.FollowEntity = camEntity;
+            camera.CurrentRotation = camera.TargetRotation = FloatUtil.ParseVector3String(Settings.Default.StartRotation);
             camEntity.Position = (startupviewmode != 2) ? prevworldpos : Vector3.Zero;
             camEntity.Orientation = Quaternion.LookAtLH(Vector3.Zero, Vector3.Up, Vector3.ForwardLH);
 
@@ -4968,6 +4970,7 @@ namespace CodeWalker
             if (s.SavePosition)
             {
                 s.StartPosition = FloatUtil.GetVector3String(camEntity?.Position ?? camera.Position);
+                s.StartRotation = FloatUtil.GetVector3String(camera.TargetRotation);
             }
             if (s.SaveTimeOfDay)
             {

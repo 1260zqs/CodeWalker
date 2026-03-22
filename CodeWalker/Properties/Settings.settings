@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CodeWalker.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
@@ -227,6 +227,9 @@
     <Setting Name="StartPosition" Type="System.String" Scope="User">
       <Value Profile="(Default)">0, 0, 100</Value>
     </Setting>
+    <Setting Name="StartRotation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">0, 0, 0</Value>
+    </Setting>
     <Setting Name="SavePosition" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -246,8 +249,8 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="KeyBindings" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+      <Value Profile="(Default)">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;
+&lt;ArrayOfString xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
   &lt;string&gt;Move Forwards: W&lt;/string&gt;
   &lt;string&gt;Move Backwards: S&lt;/string&gt;
   &lt;string&gt;Move Left: A&lt;/string&gt;
@@ -269,3 +272,4 @@
     </Setting>
   </Settings>
 </SettingsFile>
+

@@ -117,50 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="195" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\195.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="086" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\086.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="104" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\104.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="transparent" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\transparent.bmp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="041" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\041.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="101" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\101.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="196" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\196.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="103" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\103.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Msg_BuildModConfirm" xml:space="preserve">
-    <value>Build the texture mod?
-
-This will:
-• Extract textures from the source game files
-• Redraw them using the current mod settings
-
-Continue?</value>
-  </data>
-  <data name="box-zipper" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\box-zipper.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-horizontal.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="folder-open" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder-horizontal-open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="document" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\document.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAAAGABoAwAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAA
+        AAD/////////////////////////////////////////////////////////////////////////////
+        ///////////////r7/3y9f7///////////////////////////////////////////////////////+P
+        lce/xeb///////////////////////////////////////////////////////+Ah7a0utv/////////
+        ///////////////////////////x9P73+v7///////////+Mk8K6weH////s8Pu6wOj9/f//////////
+        //////////+epdgZHILl6/z///////+NlMPIzuj///8rL41larT////////////////////////w9P9I
+        T6bAxuv///////+stNne5PP///96gMfv8/3////////////////////////////////////////M0/Fe
+        Z7NUXK3c4fX////////////////////////////////////////+/v+osd55gcRbYbZncLtPVqmwueP7
+        /f/6/P/4+v/9/f/////////////o7fx+iNBSXLJKUqhxfsETGoRWYbOIk9QLDXNaYK5udr9kbLjv8/7/
+        ///////////y9v3Cye66w+uPleA2PqM1PpmJlNF9h8tYX7LO1fLq7/zz9v7////////////j6fnf5Pf/
+        ///////j6f+Lkd8rMplteMWDjNHw9Pz////l6vq4v+j4+v/////q7/4+Q520u+T////////////1+P/v
+        9P7m6/v6+//////////a4foYGYShqNn////w8/3i5/n////4+v9jarba4Pf////h5/j9/v/9/v9YXrHC
+        yev////y9v3q7vz////////////////K0e9LUaf9/v/7/P82OozT2O////9PVqlqcLv/////////////
+        ///////////////2+P76+//////7/P+VndXh5vj////7/P/09////////////////////wAA/D8AAPw/
+        AAD8AwAAgAMAAIADAACABwAAwAcAAMABAADAAQAAAAEAAAABAAAAAQAAAAEAAMAHAADgDwAA
+</value>
   </data>
 </root>

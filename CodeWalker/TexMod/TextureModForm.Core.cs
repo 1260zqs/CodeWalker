@@ -18,13 +18,13 @@ public partial class TextureModForm
     class WorkingState
     {
         public ModTexture modTexture;
-        public TextureReplacement replacement;
+        public TextureMapping mapping;
+
+        public AsyncBitmapSource gameTextureSource;
+        public SharpDX.Direct2D1.Bitmap gameTextureBitmap;
 
         public AsyncBitmapSource modTextureSource;
-        public AsyncBitmapSource replaceTextureSource;
-
         public SharpDX.Direct2D1.Bitmap modTextureBitmap;
-        public SharpDX.Direct2D1.Bitmap replaceTextureBitmap;
     }
 
     static TextureModForm instance;
@@ -122,68 +122,68 @@ public partial class TextureModForm
 
     // private ModTexture currentMod;
     // private TextureReplacement currentReplacement;
-    private List<TextureReplacement> replacements = new();
+    private List<TextureMapping> replacements = new();
     private bool applyDrawing;
 
     private void SelectTexMod(ModTexture modTexture)
     {
         if (working.modTexture != null)
         {
-            working.modTexture.editorState = PictureBoxViewer.SaveState(textureCanvas);
+            working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas);
         }
         replacements.Clear();
         working.modTexture = modTexture;
-        working.replacement = null;
+        working.mapping = null;
 
         Utilities.Dispose(ref working.modTextureSource);
         Utilities.Dispose(ref working.modTextureBitmap);
-        Utilities.Dispose(ref working.replaceTextureBitmap);
-        Utilities.Dispose(ref working.replaceTextureSource);
+        Utilities.Dispose(ref working.gameTextureBitmap);
+        Utilities.Dispose(ref working.gameTextureSource);
 
-        textureCanvas.ClearImage();
-        previewCanvas.ClearImage();
-        PictureBoxViewer.ResetViewer(textureCanvas);
-        PictureBoxViewer.ResetViewer(previewCanvas);
+        modTextureCanvas.ClearImage();
+        gameTextureCanvas.ClearImage();
+        PictureBoxViewer.ResetViewer(modTextureCanvas);
+        PictureBoxViewer.ResetViewer(gameTextureCanvas);
         if (modTexture != null)
         {
             working.modTextureSource = new AsyncImageFileSource(working.modTexture.filename);
             working.modTextureSource.shared = true;
             working.modTextureSource.LoadAsync();
-            textureCanvas.SetImage(working.modTextureSource);
-            PictureBoxViewer.LoadState(textureCanvas, modTexture.editorState);
+            modTextureCanvas.SetImage(working.modTextureSource);
+            PictureBoxViewer.LoadState(modTextureCanvas, modTexture.editorState);
         }
 
         ReadPanelDataFromSource();
         propertyGridFix1.SelectedObject = null;
-        replacementListView.VirtualListSize = 0;
-        replacementListView.SelectedIndices.Clear();
-        RefreshReplacementListView(true);
+        textureMappingView.VirtualListSize = 0;
+        textureMappingView.SelectedIndices.Clear();
+        RefreshTextureMappingView(true);
     }
 
-    private void SelecteTexReplacement(TextureReplacement replacement)
+    private void SelectTextureMapping(TextureMapping mapping)
     {
         propertyGridFix1.SelectedObject = null;
-        if (working.replacement != null)
+        if (working.mapping != null)
         {
-            working.replacement.editorState = PictureBoxViewer.SaveState(previewCanvas);
+            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
         }
-        working.replacement = replacement;
-        Utilities.Dispose(ref working.replaceTextureBitmap);
-        Utilities.Dispose(ref working.replaceTextureSource);
-        PictureBoxViewer.ResetViewer(previewCanvas);
-        previewCanvas.ClearImage();
+        working.mapping = mapping;
+        Utilities.Dispose(ref working.gameTextureBitmap);
+        Utilities.Dispose(ref working.gameTextureSource);
+        PictureBoxViewer.ResetViewer(gameTextureCanvas);
+        gameTextureCanvas.ClearImage();
 
-        if (project.sourceTextures.TryGetValue(replacement.sourceTexture, out var sourceTexture))
+        if (mapping != null && project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
         {
             ReadPanelDataFromSource();
-            working.replaceTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
-            working.replaceTextureSource.shared = true;
-            working.replaceTextureSource.LoadAsync();
-            previewCanvas.SetImage(working.replaceTextureSource);
-            PictureBoxViewer.LoadState(previewCanvas, replacement.editorState);
-            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(replacement, OnPropertyGridChanged);
-            propertyGridFix1.Refresh();
+            working.gameTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
+            working.gameTextureSource.shared = true;
+            working.gameTextureSource.LoadAsync();
+            gameTextureCanvas.SetImage(working.gameTextureSource);
+            PictureBoxViewer.LoadState(gameTextureCanvas, mapping.editorState);
+            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(mapping, OnPropertyGridChanged);
         }
+        propertyGridFix1.Refresh();
     }
 
     public void AddModSource(GameFile gameFile, string texName)
@@ -199,7 +199,7 @@ public partial class TextureModForm
                     return;
                 }
                 var sourceTexture = project.GetOrAddSourceTexture(sourceFile);
-                foreach (var item in project.replacements)
+                foreach (var item in project.textureMappings)
                 {
                     if (item.modTexture == modTexture.id && item.sourceTexture == sourceTexture.id)
                     {
@@ -210,7 +210,7 @@ public partial class TextureModForm
                 replacement.sourceTexture = sourceTexture.id;
                 replacement.modTexture = modTexture.id;
                 replacement.name = texName;
-                RefreshReplacementListView(true);
+                RefreshTextureMappingView(true);
                 return;
             }
         }
@@ -218,7 +218,6 @@ public partial class TextureModForm
 
     private void RenderUpdate()
     {
-
     }
 
     private void RenderDrawing()
@@ -228,23 +227,14 @@ public partial class TextureModForm
 
     private void ApplyDrawing()
     {
-#if true
-        // return;
-        // var targetImage = pictureBox1Async.GetImage();
-        // var sourceImage = previewPictureBoxAsync.GetImage();
-        // if (sourceImage == null || targetImage == null) return;
-        if (working.modTexture == null || working.replacement == null) return;
-        //
-        // var image = (Image)targetImage;
-        // var sourceTex = (Image)sourceImage;
-        //
-        // var sourceRect = currentMod.sourceRect;
-        var targetRect = working.replacement.targetRect;
-        var sourceTexture = project.sourceTextures[working.replacement.sourceTexture];
+        if (working.modTexture == null || working.mapping == null) return;
+
+        var targetRect = working.mapping.targetRect;
+        var sourceTexture = project.sourceTextures[working.mapping.sourceTexture];
         var textureName = adapter.GetSourceTextureName(sourceTexture.sourceFile);
         var nameHash = JenkHash.GenHash(textureName.ToLowerInvariant());
 
-        var sourceTex = previewCanvas.GetImage();
+        var sourceTex = gameTextureCanvas.GetImage();
         if (sourceTex == null) return;
 
         if (!Monitor.TryEnter(worldForm.Renderer.DXMan.syncroot, 50))
@@ -258,30 +248,21 @@ public partial class TextureModForm
 
             DrawPreviewOverlay(
                 d2dRenderTarget.target,
-                working.replaceTextureBitmap,
+                working.gameTextureBitmap,
                 working.modTextureBitmap,
-                working.replaceTextureBitmap.PixelSize,
+                working.gameTextureBitmap.PixelSize,
                 working.modTexture.sourceRect.Convert(),
-                working.replacement.targetRect.Convert(),
-                working.replacement.flipX,
-                working.replacement.flipY,
-                working.replacement.rotation
+                working.mapping.targetRect.Convert(),
+                working.mapping.flipX,
+                working.mapping.flipY,
+                working.mapping.rotation
             );
             if (checkBox3.Checked)
             {
                 d2dRenderTarget.FillRectangle(targetRect.Convert2());
             }
-
             d2dRenderTarget.EndDraw();
-            if (checkBox3.Checked)
-            {
-                // checkBox3.Checked = false;
-                // var bytes = d2dRenderTarget.Encode(Utils.NVTT.Format.Format_DXT1, Utils.NVTT.Quality.Quality_Normal);
-                // if (bytes != null)
-                // {
-                //     File.WriteAllBytes("C:\\xx.dds", bytes);
-                // }
-            }
+
             var texture = worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
                 x.Key.NameHash == nameHash);
             d2dRenderTarget.CopyTo(worldForm.Renderer.Device, texture);
@@ -291,7 +272,6 @@ public partial class TextureModForm
             Console.WriteLine(e);
         }
         Monitor.Exit(worldForm.Renderer.DXMan.syncroot);
-#endif
     }
 
     public class TextureReplacementPropertyObject
@@ -367,14 +347,14 @@ public partial class TextureModForm
             }
         }
 
-        private TextureReplacement sourceObject;
+        private TextureMapping sourceObject;
         private Action onPropertyGridChanged;
 
-        public static TextureReplacementPropertyObject From(TextureReplacement replacement, Action onPropertyGridChanged)
+        public static TextureReplacementPropertyObject From(TextureMapping mapping, Action onPropertyGridChanged)
         {
             var propertyObject = new TextureReplacementPropertyObject();
-            propertyObject.id = replacement.id.ToString("N");
-            propertyObject.sourceObject = replacement;
+            propertyObject.id = mapping.id.ToString("N");
+            propertyObject.sourceObject = mapping;
             propertyObject.onPropertyGridChanged = onPropertyGridChanged;
             return propertyObject;
         }

@@ -207,6 +207,7 @@ public class D2DCanvas : Control
     public RawMatrix3x2 transform => target.Transform;
     public D2DCanvasPaintHandler onPaint;
     public D2DCanvasBitmapLoadedHandler onBitmapLoaded;
+    private bool isError;
 
     public D2DCanvas()
     {
@@ -270,10 +271,7 @@ public class D2DCanvas : Control
             InterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor
         });
 
-        if (bitmapSource != null)
-        {
-            bitmapSource.LoadAsync();
-        }
+        bitmapSource?.LoadAsync();
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
@@ -313,9 +311,11 @@ public class D2DCanvas : Control
 
     public void ClearImage()
     {
+        isError = false;
         imageSize = Size2.Zero;
         Utilities.Dispose(ref bitmap);
         Utilities.Dispose(ref bitmapSource);
+        Invalidate();
     }
 
     public void SetImage(string imagePath)
@@ -334,7 +334,6 @@ public class D2DCanvas : Control
         if (target != null)
         {
             bitmapSource?.LoadAsync();
-            Invalidate();
         }
     }
 
@@ -355,7 +354,7 @@ public class D2DCanvas : Control
 
         if (bitmapSource != null)
         {
-            if (bitmapSource.error)
+            if (bitmapSource.error || isError)
             {
                 DrawText("unable to load image", 6, 0, Color.Red, fontSegoeUI_16);
             }
@@ -386,7 +385,7 @@ public class D2DCanvas : Control
             {
                 Utilities.Dispose(ref bitmap);
                 bitmap = bitmapSource.CreateBitmap(target);
-                if (bitmap != null)
+                if (!(isError = bitmap == null))
                 {
                     imageSize = bitmap.PixelSize;
                     onBitmapLoaded?.Invoke(this);

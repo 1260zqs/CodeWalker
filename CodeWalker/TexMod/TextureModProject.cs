@@ -13,7 +13,7 @@ public class TextureModProject
     public string manifestFile;
     public PackageManifest manifest;
     public ProjectDirectory directory = new();
-    public List<TextureReplacement> replacements = new();
+    public List<TextureMapping> textureMappings = new();
     public SortedList<Guid, ModTexture> modTextures = new();
     public SortedList<Guid, SourceTexture> sourceTextures = new();
 
@@ -62,11 +62,11 @@ public class TextureModProject
         return modTexture;
     }
 
-    public TextureReplacement CreateReplacement()
+    public TextureMapping CreateReplacement()
     {
-        var replacement = new TextureReplacement();
+        var replacement = new TextureMapping();
         replacement.id = Guid.NewGuid();
-        replacements.Add(replacement);
+        textureMappings.Add(replacement);
         return replacement;
     }
 
@@ -83,17 +83,17 @@ public class TextureModProject
         return sourceTexture;
     }
 
-    public List<TextureReplacement> FindTextureReplacements(Guid modeTexId)
+    public List<TextureMapping> FindTextureMapping(Guid modeTexId)
     {
-        var list = new List<TextureReplacement>();
-        FindTextureReplacements(modeTexId, list);
+        var list = new List<TextureMapping>();
+        FindTextureMapping(modeTexId, list);
         return list;
     }
 
-    public void FindTextureReplacements(Guid modeTexId, List<TextureReplacement> list)
+    public void FindTextureMapping(Guid modeTexId, List<TextureMapping> list)
     {
         list.Clear();
-        foreach (var replacement in replacements)
+        foreach (var replacement in textureMappings)
         {
             if (replacement.modTexture == modeTexId)
             {
@@ -102,10 +102,10 @@ public class TextureModProject
         }
     }
 
-    public List<TextureReplacement> FindSourceTextureReplacements(Guid sourceTexId)
+    public List<TextureMapping> FindSourceTextureMapping(Guid sourceTexId)
     {
-        var list = new List<TextureReplacement>();
-        foreach (var replacement in replacements)
+        var list = new List<TextureMapping>();
+        foreach (var replacement in textureMappings)
         {
             if (replacement.sourceTexture == sourceTexId)
             {
@@ -130,7 +130,7 @@ public class TextureModProject
     public List<SourceTexture> FindSourceTextures(Guid modeTexId)
     {
         var list = new List<SourceTexture>();
-        foreach (var replacement in replacements)
+        foreach (var replacement in textureMappings)
         {
             if (replacement.modTexture == modeTexId)
             {
@@ -146,7 +146,7 @@ public class TextureModProject
     public List<string> GetTags()
     {
         var list = new List<string>();
-        foreach (var replacement in replacements)
+        foreach (var replacement in textureMappings)
         {
             if (!string.IsNullOrWhiteSpace(replacement.tag))
             {
@@ -154,6 +154,36 @@ public class TextureModProject
             }
         }
         return list;
+    }
+
+    public void DeleteTextureMapping(TextureMapping mapping)
+    {
+        for (var i = 0; i < textureMappings.Count; i++)
+        {
+            if (textureMappings[i].id == mapping.id)
+            {
+                textureMappings.RemoveAt(i);
+                break;
+            }
+        }
+        foreach (var textureReplacement in textureMappings)
+        {
+            if (mapping.sourceTexture == textureReplacement.sourceTexture)
+            {
+                return;
+            }
+        }
+        sourceTextures.Remove(mapping.sourceTexture);
+    }
+
+    public void DeleteModTexture(ModTexture modTexture)
+    {
+        modTextures.Remove(modTexture.id);
+        var mappings = FindTextureMapping(modTexture.id);
+        foreach (var mapping in mappings)
+        {
+            DeleteTextureMapping(mapping);
+        }
     }
 }
 
@@ -202,7 +232,7 @@ public class SourceTexture
     public string localFile;
 }
 
-public class TextureReplacement
+public class TextureMapping
 {
     public Guid id;
 

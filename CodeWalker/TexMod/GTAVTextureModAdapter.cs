@@ -21,6 +21,11 @@ public class GTAVTextureModAdapter : TextureModAdapter
         this.fileCache = fileCache;
     }
 
+    public override bool IsIsInited()
+    {
+        return fileCache.IsInited;
+    }
+
     public override string MakeSourcePath(GameFile gameFile, string texName)
     {
         if (gameFile is YdrFile ydr)
