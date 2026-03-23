@@ -2,9 +2,11 @@
 using CodeWalker.Utils;
 using SharpDX;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using SharpDX.WIC;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -128,10 +130,12 @@ public partial class TextureModForm : Form
         PictureBoxViewer.Paint(canvas, bitmap);
         if (working.mapping != null && working.modTexture != null)
         {
+            var overlay = modTextureCanvas.GetImage();
+            if (!checkBox1.Checked) overlay = null;
             DrawPreviewOverlay(
                 target,
                 gameTextureCanvas.GetImage(),
-                modTextureCanvas.GetImage(),
+                overlay,
                 gameTextureCanvas.GetImageSize(),
                 working.modTexture.sourceRect.Convert(),
                 working.mapping.targetRect.Convert(),
@@ -241,16 +245,33 @@ public partial class TextureModForm : Form
 
     private void toolStripButton1_Click(object sender, EventArgs e)
     {
-        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
         {
             try
             {
                 var fileName = openFileDialog1.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
-                using var stream = File.OpenRead(fileName);
-                using var image = Image.FromStream(stream, false, false);
+
+                using var decoder = new BitmapDecoder(D2DCanvas.wic, fileName, DecodeOptions.CacheOnLoad);
+                using var converter = new FormatConverter(D2DCanvas.wic);
+                using var frame = decoder.GetFrame(0);
+
+                converter.Initialize(
+                    frame,
+                    SharpDX.WIC.PixelFormat.Format32bppRGBA,
+                    BitmapDitherType.None,
+                    null,
+                    0,
+                    BitmapPaletteType.Custom
+                );
+
+                var width = converter.Size.Width;
+                var height = converter.Size.Height;
+
+                // using var stream = File.OpenRead(fileName);
+                // using var image = Image.FromStream(stream, false, false);
                 var modTexture = project.CreateTextureMod(fileName);
-                modTexture.sourceRect = new SharpDX.Rectangle(0, 0, image.Width, image.Height);
+                modTexture.sourceRect = new SharpDX.Rectangle(0, 0, width, height);
 
                 RefreshModListView();
             }
@@ -389,9 +410,11 @@ public partial class TextureModForm : Form
 
     private void UpdateGroupBoxVisibility()
     {
+        panel1.AutoSize = false;
         var tabPage = imageTabControl.SelectedTab;
         groupBox1.Visible = tabPage == modTextureTabPage;
         groupBox3.Visible = tabPage == gameTextureTabPage;
+        groupBox4.Visible = tabPage == modTextureTabPage;
     }
 
     private void WritePanelDataToSource()
@@ -466,6 +489,7 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
+            RenderDrawing();
             PictureBoxRectTool.SetPaintEnable(gameTextureCanvas, checkBox1.Checked);
             gameTextureCanvas.Invalidate();
         }
@@ -640,5 +664,108 @@ public partial class TextureModForm : Form
     private void toolStripButton8_Click(object sender, EventArgs e)
     {
         PackMod();
+    }
+
+    private void button9_Click(object sender, EventArgs e)
+    {
+        if (working.modTexture != null)
+        {
+            lock (worldForm.RenderSyncRoot)
+            {
+                var camera = worldForm.Renderer.camera;
+                if (camera.FollowEntity != null)
+                {
+                    camera.FollowEntity.Position = working.modTexture.position;
+                }
+                else
+                {
+                }
+                camera.Position = working.modTexture.position;
+                camera.TargetRotation = working.modTexture.rotation;
+                camera.CurrentRotation = working.modTexture.rotation;
+            }
+        }
+    }
+
+    private void button8_Click(object sender, EventArgs e)
+    {
+        if (working.modTexture != null)
+        {
+            lock (worldForm.RenderSyncRoot)
+            {
+                var camera = worldForm.Renderer.camera;
+                if (camera.FollowEntity != null)
+                {
+                    working.modTexture.position = camera.FollowEntity.Position;
+                }
+                else
+                {
+                    working.modTexture.position = camera.Position;
+                }
+                working.modTexture.rotation = camera.TargetRotation;
+            }
+        }
+    }
+
+    private void toolStripButton4_Click(object sender, EventArgs e)
+    {
+        var form = new AddTexModSourceForm();
+        if (form.ShowDialog(this) == DialogResult.OK)
+        {
+            var gameFile = adapter.GetSourceFile(form.sourceFileName);
+            if (gameFile != null)
+            {
+                AddModSource(gameFile, form.sourceTexName);
+            }
+        }
+    }
+
+    private void toolStripButton6_Click(object sender, EventArgs e)
+    {
+        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                var fileName = openFileDialog1.FileName;
+                if (string.IsNullOrEmpty(fileName)) return;
+                if (working.modTexture != null)
+                {
+                    working.modTexture.filename = fileName;
+                    working.modTexture.name = Path.GetFileName(fileName);
+                }
+                RefreshModListView();
+            }
+            catch (Exception exception)
+            {
+                exception.ShowDialog();
+            }
+        }
+    }
+
+    private void toolStripButton9_Click(object sender, EventArgs e)
+    {
+        if (working.modTexture != null)
+        {
+            // duplicate
+            var modTexture = working.modTexture.Clone();
+            var mappings = project.FindTextureMapping(modTexture.id);
+            modTexture.id = Guid.NewGuid();
+            modTexture.createdAt = DateTimeOffset.Now;
+            modTexture.name = $"{modTexture.name} (Clone)";
+            var newMappings = new List<TextureMapping>();
+            foreach (var mapping in mappings)
+            {
+                var clone = mapping.Clone();
+                clone.id = Guid.NewGuid();
+                clone.modTexture = modTexture.id;
+                newMappings.Add(clone);
+            }
+            project.modTextures.Add(modTexture.id, modTexture);
+            foreach (var mapping in newMappings)
+            {
+                project.textureMappings.Add(mapping);
+            }
+            RefreshModListView();
+        }
     }
 }

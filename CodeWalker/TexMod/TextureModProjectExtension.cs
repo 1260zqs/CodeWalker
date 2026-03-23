@@ -27,10 +27,10 @@ public static class TextureModProjectExtension
             writer.WriteElementString("manifestFile", project.manifestFile);
             WriteProjectDirectory(writer, project.directory);
 
-            writer.WriteStartElement("Replacements");
+            writer.WriteStartElement("TextureMappings");
             foreach (var replacement in project.textureMappings)
             {
-                writer.WriteStartElement("TextureReplacement");
+                writer.WriteStartElement("TextureMapping");
                 writer.WriteAttributeString("Id", $"{replacement.id:N}");
                 writer.WriteElementString("Name", replacement.name);
                 writer.WriteElementString("Tag", replacement.tag);
@@ -56,7 +56,7 @@ public static class TextureModProjectExtension
                 writer.WriteElementString("CreatedAt", $"{modTexture.createdAt:G}");
                 writer.WriteElementString("Filename", modTexture.filename);
                 writer.Write("Position", modTexture.position);
-                writer.Write("LookAtDirection", modTexture.lookAtDirection);
+                writer.Write("Rotation", modTexture.rotation);
                 writer.Write("SourceRect", modTexture.sourceRect);
                 writer.WriteEndElement();
             }
@@ -122,9 +122,9 @@ public static class TextureModProjectExtension
         project.manifestFile = root["manifestFile"].InnerText;
 
         project.textureMappings.Clear();
-        if (root["Replacements"] is XmlElement replacements)
+        if (root["TextureMappings"] is XmlElement replacements)
         {
-            foreach (XmlElement xmlElement in replacements.GetElementsByTagName("TextureReplacement"))
+            foreach (XmlElement xmlElement in replacements.GetElementsByTagName("TextureMapping"))
             {
                 var replacement = new TextureMapping();
                 replacement.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
@@ -154,7 +154,7 @@ public static class TextureModProjectExtension
                 modTexture.name = xmlElement["Name"].InnerText;
 
                 modTexture.position = ReadVector3(xmlElement["Position"]);
-                modTexture.lookAtDirection = ReadVector3(xmlElement["LookAtDirection"]);
+                modTexture.rotation = ReadVector3(xmlElement["Rotation"]);
                 modTexture.sourceRect = ReadRectangle(xmlElement["SourceRect"]);
 
                 project.modTextures.Add(modTexture.id, modTexture);

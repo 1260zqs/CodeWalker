@@ -2051,11 +2051,7 @@ namespace CodeWalker.GameFiles
 
         public void TryLoadEnqueue(GameFile gf)
         {
-#if DEBUG
-            if (((!gf.Loaded)) && (requestQueue.Count < 10))// && (!gf.LoadQueued)
-#else
             if (((!gf.Loaded)) && (requestQueue.Count < 100))// && (!gf.LoadQueued)
-#endif
             {
                 requestQueue.Enqueue(gf);
                 gf.LoadQueued = true;

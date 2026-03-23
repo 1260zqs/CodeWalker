@@ -110,6 +110,8 @@ public partial class TextureModForm
 
         // 1. extract file
         var modPacks = new List<ModPack>();
+        var localPackFileCache = new Dictionary<string, GameFile>();
+        var sourcePackFileCache = new Dictionary<string, GameFile>();
         progressForm.SetMaxValue(project.sourceTextures.Count);
         foreach (var kv in project.sourceTextures)
         {
@@ -159,13 +161,21 @@ public partial class TextureModForm
             var name = Path.GetFileName(modPack.sourcePath);
             progressForm.IncreaseValue($"load file {name}");
 
+            if (localPackFileCache.TryGetValue(modPack.localSavePath, out var file))
+            {
+                modPack.localFile = file;
+                modPack.fileEntry = file.RpfFileEntry;
+                modPack.fileType = file.Type;
+                continue;
+            }
             modPack.fileType = GameFileUtils.GetFileTypeByExtension(Path.GetExtension(name));
-            var file = GameFileUtils.CreateFileObject(modPack.fileType);
+            file = GameFileUtils.CreateFileObject(modPack.fileType);
             if (file is PackedFile packedFile)
             {
                 modPack.fileEntry = GameFileUtils.CreateFileEntry(name, modPack.localSavePath, ref modPack.fileBytes);
                 packedFile.Load(modPack.fileBytes, modPack.fileEntry);
                 modPack.localFile = file;
+                localPackFileCache.Add(modPack.localSavePath, file);
                 continue;
             }
             throw new Exception("unable to pack file");
@@ -179,9 +189,16 @@ public partial class TextureModForm
             cts.ThrowIfCancellationRequested();
             progressForm.IncreaseValue($"begin draw texture {modPack.sourceTexName}");
             modPack.replacements = project.FindSourceTextureMapping(modPack.id);
-            var rpfEntry = worldForm.GameFileCache.RpfMan.GetEntry(modPack.sourcePath);
-            modPack.sourceFile = GameFileUtils.CreateFileObject(modPack.fileType);
-            worldForm.GameFileCache.RpfMan.LoadFile(modPack.sourceFile as PackedFile, rpfEntry);
+
+            if (!sourcePackFileCache.TryGetValue(modPack.sourcePath, out var file))
+            {
+                file = GameFileUtils.CreateFileObject(modPack.fileType);
+                var rpfEntry = worldForm.GameFileCache.RpfMan.GetEntry(modPack.sourcePath);
+                worldForm.GameFileCache.RpfMan.LoadFile(file as PackedFile, rpfEntry);
+                sourcePackFileCache.Add(modPack.sourcePath, file);
+            }
+            modPack.sourceFile = file;
+
             var findTexture = GameFileUtils.FindTexture(modPack.sourceFile, modPack.sourceTexName);
             if (findTexture == null)
             {

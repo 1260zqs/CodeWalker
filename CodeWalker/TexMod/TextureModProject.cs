@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Rectangle = SharpDX.Rectangle;
 
 namespace CodeWalker.TexMod;
 
@@ -235,9 +234,23 @@ public class ModTexture
     public string name;
 
     public Vector3 position;
-    public Vector3 lookAtDirection;
+    public Vector3 rotation;
 
     public object editorState;
+
+    public ModTexture Clone()
+    {
+        var clone = new ModTexture();
+        clone.id = id;
+        clone.createdAt = createdAt;
+        clone.sourceRect = sourceRect;
+        clone.filename = filename;
+        clone.name = name;
+
+        clone.position = position;
+        clone.rotation = rotation;
+        return clone;
+    }
 }
 
 public class SourceTexture
@@ -264,4 +277,23 @@ public class TextureMapping
     public float rotation;
 
     public object editorState;
+
+    public TextureMapping Clone()
+    {
+        var clone = new TextureMapping();
+        clone.id = id;
+
+        clone.tag = tag;
+        clone.name = name;
+        clone.comment = comment;
+        clone.modTexture = modTexture;
+
+        clone.sourceTexture = sourceTexture;
+        clone.targetRect = targetRect;
+
+        clone.flipX = flipX;
+        clone.flipY = flipY;
+        clone.rotation = rotation;
+        return clone;
+    }
 }

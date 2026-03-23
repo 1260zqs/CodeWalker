@@ -43,6 +43,7 @@ namespace CodeWalker.TexMod
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
             this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
@@ -51,8 +52,13 @@ namespace CodeWalker.TexMod
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.gameTextureTabPage = new System.Windows.Forms.TabPage();
+            this.gameTextureCanvas = new CodeWalker.D2DCanvas();
             this.modTextureTabPage = new System.Windows.Forms.TabPage();
+            this.modTextureCanvas = new CodeWalker.D2DCanvas();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.button9 = new System.Windows.Forms.Button();
+            this.button8 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.button7 = new System.Windows.Forms.Button();
@@ -92,11 +98,10 @@ namespace CodeWalker.TexMod
             this.listView2 = new System.Windows.Forms.ListView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.treeView = new System.Windows.Forms.TreeView();
+            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.gameTextureCanvas = new CodeWalker.D2DCanvas();
-            this.modTextureCanvas = new CodeWalker.D2DCanvas();
-            this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
+            this.toolStripButton9 = new System.Windows.Forms.ToolStripButton();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Tag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Comment = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -116,6 +121,7 @@ namespace CodeWalker.TexMod
             this.gameTextureTabPage.SuspendLayout();
             this.modTextureTabPage.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -224,6 +230,8 @@ namespace CodeWalker.TexMod
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton3,
+            this.toolStripButton6,
+            this.toolStripButton9,
             this.saveProjectBtn,
             this.toolStripButton2,
             this.toolStripButton8,
@@ -254,6 +262,16 @@ namespace CodeWalker.TexMod
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton3.ToolTipText = "Delete";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
+            // 
+            // toolStripButton6
+            // 
+            this.toolStripButton6.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
+            this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton6.Name = "toolStripButton6";
+            this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton6.Text = "Import Image";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
             // saveProjectBtn
             // 
@@ -358,6 +376,15 @@ namespace CodeWalker.TexMod
             this.gameTextureTabPage.Text = "Preview";
             this.gameTextureTabPage.UseVisualStyleBackColor = true;
             // 
+            // gameTextureCanvas
+            // 
+            this.gameTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gameTextureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.gameTextureCanvas.Name = "gameTextureCanvas";
+            this.gameTextureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.gameTextureCanvas.TabIndex = 0;
+            this.gameTextureCanvas.Text = "d2DCanvas1";
+            // 
             // modTextureTabPage
             // 
             this.modTextureTabPage.Controls.Add(this.modTextureCanvas);
@@ -369,11 +396,22 @@ namespace CodeWalker.TexMod
             this.modTextureTabPage.Text = "Texture";
             this.modTextureTabPage.UseVisualStyleBackColor = true;
             // 
+            // modTextureCanvas
+            // 
+            this.modTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modTextureCanvas.Location = new System.Drawing.Point(3, 3);
+            this.modTextureCanvas.Name = "modTextureCanvas";
+            this.modTextureCanvas.Size = new System.Drawing.Size(391, 300);
+            this.modTextureCanvas.TabIndex = 0;
+            this.modTextureCanvas.Text = "d2DCanvas1";
+            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.AutoScroll = true;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.groupBox4);
             this.panel1.Controls.Add(this.groupBox3);
             this.panel1.Controls.Add(this.groupBox1);
             this.panel1.Controls.Add(this.groupBox2);
@@ -383,6 +421,40 @@ namespace CodeWalker.TexMod
             this.panel1.Size = new System.Drawing.Size(221, 337);
             this.panel1.TabIndex = 0;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.button9);
+            this.groupBox4.Controls.Add(this.button8);
+            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox4.Location = new System.Drawing.Point(0, 356);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(202, 150);
+            this.groupBox4.TabIndex = 2;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Misc";
+            // 
+            // button9
+            // 
+            this.button9.AutoSize = true;
+            this.button9.Location = new System.Drawing.Point(4, 20);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(195, 30);
+            this.button9.TabIndex = 1;
+            this.button9.Text = "Go To Camera Position";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // button8
+            // 
+            this.button8.AutoSize = true;
+            this.button8.Location = new System.Drawing.Point(4, 64);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(129, 23);
+            this.button8.TabIndex = 0;
+            this.button8.Text = "Set Camera Position";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.checkBox3);
@@ -390,10 +462,10 @@ namespace CodeWalker.TexMod
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox3.Location = new System.Drawing.Point(0, 256);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(219, 100);
+            this.groupBox3.Size = new System.Drawing.Size(202, 100);
             this.groupBox3.TabIndex = 60;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "groupBox3";
+            this.groupBox3.Text = "Misc";
             // 
             // checkBox3
             // 
@@ -431,7 +503,7 @@ namespace CodeWalker.TexMod
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox1.Location = new System.Drawing.Point(0, 112);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(219, 144);
+            this.groupBox1.Size = new System.Drawing.Size(202, 144);
             this.groupBox1.TabIndex = 58;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Target rect";
@@ -545,7 +617,7 @@ namespace CodeWalker.TexMod
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(219, 112);
+            this.groupBox2.Size = new System.Drawing.Size(202, 112);
             this.groupBox2.TabIndex = 59;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Sources Rect";
@@ -744,6 +816,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton4.ToolTipText = "New";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // toolStripButton5
             // 
@@ -825,34 +898,6 @@ namespace CodeWalker.TexMod
             this.treeView.Size = new System.Drawing.Size(617, 219);
             this.treeView.TabIndex = 0;
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            this.openFileDialog1.RestoreDirectory = true;
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // gameTextureCanvas
-            // 
-            this.gameTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gameTextureCanvas.Location = new System.Drawing.Point(3, 3);
-            this.gameTextureCanvas.Name = "gameTextureCanvas";
-            this.gameTextureCanvas.Size = new System.Drawing.Size(391, 300);
-            this.gameTextureCanvas.TabIndex = 0;
-            this.gameTextureCanvas.Text = "d2DCanvas1";
-            // 
-            // modTextureCanvas
-            // 
-            this.modTextureCanvas.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modTextureCanvas.Location = new System.Drawing.Point(3, 3);
-            this.modTextureCanvas.Name = "modTextureCanvas";
-            this.modTextureCanvas.Size = new System.Drawing.Size(391, 300);
-            this.modTextureCanvas.TabIndex = 0;
-            this.modTextureCanvas.Text = "d2DCanvas1";
-            // 
             // propertyGridFix1
             // 
             this.propertyGridFix1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -863,6 +908,26 @@ namespace CodeWalker.TexMod
             this.propertyGridFix1.Size = new System.Drawing.Size(318, 251);
             this.propertyGridFix1.TabIndex = 0;
             this.propertyGridFix1.ToolbarVisible = false;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
+            this.openFileDialog1.RestoreDirectory = true;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // toolStripButton9
+            // 
+            this.toolStripButton9.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton9.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton9.Image")));
+            this.toolStripButton9.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton9.Name = "toolStripButton9";
+            this.toolStripButton9.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton9.Text = "Duplicate";
+            this.toolStripButton9.Click += new System.EventHandler(this.toolStripButton9_Click);
             // 
             // TextureModForm
             // 
@@ -888,6 +953,8 @@ namespace CodeWalker.TexMod
             this.gameTextureTabPage.ResumeLayout(false);
             this.modTextureTabPage.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -956,8 +1023,11 @@ namespace CodeWalker.TexMod
         private Label rectLabel;
         private CheckBox checkBox2;
         private CheckBox checkBox1;
+        private GroupBox groupBox3;
         private GroupBox groupBox1;
+        private CheckBox checkBox3;
         private GroupBox groupBox2;
+        private GroupBox groupBox4;
         private Label label1;
         private NumericUpDown numericUpDown1;
         private Label label2;
@@ -968,8 +1038,6 @@ namespace CodeWalker.TexMod
         private Button button3;
         private Button button5;
         private Button button6;
-        private GroupBox groupBox3;
-        private CheckBox checkBox3;
         private Button button7;
         private D2DCanvas gameTextureCanvas;
         private D2DCanvas modTextureCanvas;
@@ -978,5 +1046,9 @@ namespace CodeWalker.TexMod
         private ToolStripButton toolStripButton8;
         private TabPage tabPage3;
         private TreeView treeView;
+        private Button button9;
+        private Button button8;
+        private ToolStripButton toolStripButton6;
+        private ToolStripButton toolStripButton9;
     }
 }

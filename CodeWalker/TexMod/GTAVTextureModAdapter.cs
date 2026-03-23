@@ -76,48 +76,31 @@ public class GTAVTextureModAdapter : TextureModAdapter
         var indexOf = sourcePath.IndexOf(':');
         if (indexOf > 0)
         {
-            var entryPath = sourcePath.Substring(0, indexOf);
-            //if (project.manifest != null)
-            //{
-            //    var modEntryPath = project.manifest.FindArchiveFileSource(entryPath);
-            //    if (!string.IsNullOrEmpty(modEntryPath))
-            //    {
-            //        var path = Path.GetDirectoryName(project.manifestFile);
-            //        var filename = Path.Combine(path, "content", modEntryPath);
-            //        if (File.Exists(filename))
-            //        {
-            //            var file = GameFileUtils.LoadFile(filename);
-            //            if (file != null)
-            //            {
-            //                return file;
-            //            }
-            //        }
-            //    }
-            //}
-            var entry = fileCache.RpfMan.GetEntry(entryPath);
-            if (entry != null)
+            sourcePath = sourcePath.Substring(0, indexOf);
+        }
+        var entry = fileCache.RpfMan.GetEntry(sourcePath);
+        if (entry != null)
+        {
+            var gameFile = fileCache.GetFile(entry);
+            if (gameFile != null)
             {
-                var gameFile = fileCache.GetFile(entry);
-                if (gameFile != null)
+                if (gameFile.Loaded)
                 {
-                    if (gameFile.Loaded)
+                    // just hit return
+                }
+                else if (gameFile.LoadQueued)
+                {
+                }
+                else if (gameFile is PackedFile packedFile)
+                {
+                    var data = entry.File.ExtractFile((RpfFileEntry)entry);
+                    if (data != null)
                     {
-                        // just hit return
-                    }
-                    else if (gameFile.LoadQueued)
-                    {
-                    }
-                    else if (gameFile is PackedFile packedFile)
-                    {
-                        var data = entry.File.ExtractFile((RpfFileEntry)entry);
-                        if (data != null)
-                        {
-                            packedFile.Load(data, (RpfFileEntry)entry);
-                        }
+                        packedFile.Load(data, (RpfFileEntry)entry);
                     }
                 }
-                return gameFile;
             }
+            return gameFile;
         }
         return null;
     }

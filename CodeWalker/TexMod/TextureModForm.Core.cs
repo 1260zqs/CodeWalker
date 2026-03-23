@@ -246,10 +246,12 @@ public partial class TextureModForm
             d2dRenderTarget.SetTargetSize(worldForm.Renderer.Device, sourceTex.PixelSize);
             d2dRenderTarget.BeginDraw();
 
+            var overlay = working.modTextureBitmap;
+            if (!checkBox1.Checked) overlay = null;
             DrawPreviewOverlay(
                 d2dRenderTarget.target,
                 working.gameTextureBitmap,
-                working.modTextureBitmap,
+                overlay,
                 working.gameTextureBitmap.PixelSize,
                 working.modTexture.sourceRect.Convert(),
                 working.mapping.targetRect.Convert(),
@@ -353,6 +355,14 @@ public partial class TextureModForm
         public static TextureReplacementPropertyObject From(TextureMapping mapping, Action onPropertyGridChanged)
         {
             var propertyObject = new TextureReplacementPropertyObject();
+            if (workingProject.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
+            {
+                propertyObject.sourceTexture = sourceTexture.sourceFile;
+            }
+            if (workingProject.modTextures.TryGetValue(mapping.modTexture, out var modTexture))
+            {
+                propertyObject.modTexture = modTexture.filename;
+            }
             propertyObject.id = mapping.id.ToString("N");
             propertyObject.sourceObject = mapping;
             propertyObject.onPropertyGridChanged = onPropertyGridChanged;
