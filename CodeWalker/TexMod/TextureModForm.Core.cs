@@ -253,15 +253,15 @@ public partial class TextureModForm
                 working.gameTextureBitmap,
                 overlay,
                 working.gameTextureBitmap.PixelSize,
-                working.modTexture.sourceRect.Convert(),
-                working.mapping.targetRect.Convert(),
+                working.modTexture.sourceRect,
+                working.mapping.targetRect,
                 working.mapping.flipX,
                 working.mapping.flipY,
                 working.mapping.rotation
             );
             if (checkBox3.Checked)
             {
-                d2dRenderTarget.FillRectangle(targetRect.Convert2());
+                d2dRenderTarget.FillRectangle(targetRect.Raw());
             }
             d2dRenderTarget.EndDraw();
 

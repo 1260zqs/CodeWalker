@@ -229,7 +229,7 @@ public class ModTexture
 {
     public Guid id;
     public DateTimeOffset createdAt;
-    public Rectangle sourceRect;
+    public System.Drawing.RectangleF sourceRect;
     public string filename;
     public string name;
 
@@ -270,7 +270,7 @@ public class TextureMapping
 
     public Guid modTexture;
     public Guid sourceTexture;
-    public Rectangle targetRect;
+    public System.Drawing.RectangleF targetRect;
 
     public bool flipX;
     public bool flipY;

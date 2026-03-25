@@ -20,7 +20,7 @@ public static class PictureBoxRectTool
         public bool solid;
         public bool enable;
         public Point start;
-        public Rectangle rect;
+        public System.Drawing.RectangleF rect;
         public Color color;
 
         public bool gdi;
@@ -29,7 +29,7 @@ public static class PictureBoxRectTool
         public bool matrixInvert;
         public Matrix3x2 matrix3x2;
 
-        public Action<Rectangle> notify;
+        public Action<System.Drawing.RectangleF> notify;
     }
 
     static PictureBoxRectTool()
@@ -45,7 +45,7 @@ public static class PictureBoxRectTool
     private static ConcurrentDictionary<int, StateObject> stateObjects = new();
     private static Color defaultColor = Color.FromArgb(127, 255, 0, 0);
 
-    public static void AddFeature(Control pictureBox, Action<Rectangle> notify)
+    public static void AddFeature(Control pictureBox, Action<System.Drawing.RectangleF> notify)
     {
         pictureBox.Disposed += OnDisposed;
         pictureBox.MouseUp += OnMouseUp;
@@ -122,7 +122,12 @@ public static class PictureBoxRectTool
                 else
                 {
                     pen.Color = stateObject.color;
-                    graphics.DrawRectangle(pen, rect);
+                    var r = new System.Drawing.Rectangle();
+                    r.X = (int)rect.X;
+                    r.Y = (int)rect.Y;
+                    r.Width = (int)rect.Width;
+                    r.Height = (int)rect.Height;
+                    graphics.DrawRectangle(pen, r);
                 }
             }
         }
@@ -155,7 +160,7 @@ public static class PictureBoxRectTool
                     stateObject.drawing = true;
                     stateObject.solid = e.Button == MouseButtons.Right;
                     stateObject.start = ScreenToImage(stateObject, e.Location);
-                    stateObject.rect = new Rectangle(stateObject.start, Size.Empty);
+                    stateObject.rect = new System.Drawing.RectangleF(stateObject.start, Size.Empty);
                     stateObject.notify?.Invoke(stateObject.rect);
                     control.Invalidate();
                 }
@@ -226,14 +231,14 @@ public static class PictureBoxRectTool
         return stateObject;
     }
 
-    public static void SetRect(Control control, Rectangle rect)
+    public static void SetRect(Control control, System.Drawing.RectangleF rect)
     {
         var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
         stateObject.rect = rect;
         control.Invalidate();
     }
 
-    public static bool GetRect(Control control, out Rectangle rect)
+    public static bool GetRect(Control control, out System.Drawing.RectangleF rect)
     {
         if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
         {

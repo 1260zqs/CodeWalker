@@ -137,8 +137,8 @@ public partial class TextureModForm : Form
                 gameTextureCanvas.GetImage(),
                 overlay,
                 gameTextureCanvas.GetImageSize(),
-                working.modTexture.sourceRect.Convert(),
-                working.mapping.targetRect.Convert(),
+                working.modTexture.sourceRect,
+                working.mapping.targetRect,
                 working.mapping.flipX,
                 working.mapping.flipY,
                 working.mapping.rotation
@@ -151,9 +151,9 @@ public partial class TextureModForm : Form
         SharpDX.Direct2D1.RenderTarget target,
         SharpDX.Direct2D1.Bitmap baseImage,
         SharpDX.Direct2D1.Bitmap overlay,
-        SharpDX.Size2 baseImageSize,
-        System.Drawing.Rectangle srcRect,
-        System.Drawing.Rectangle destRect,
+        in SharpDX.Size2 baseImageSize,
+        in System.Drawing.RectangleF srcRect,
+        in System.Drawing.RectangleF destRect,
         bool flipX,
         bool flipY,
         float rotation
@@ -165,22 +165,22 @@ public partial class TextureModForm : Form
         }
         if (overlay == null) return;
 
-        var imgBounds = new System.Drawing.Rectangle(0, 0, baseImageSize.Width, baseImageSize.Height);
-        var clippedDest = System.Drawing.Rectangle.Intersect(destRect, imgBounds);
+        var imgBounds = new System.Drawing.RectangleF(0, 0, baseImageSize.Width, baseImageSize.Height);
+        var clippedDest = System.Drawing.RectangleF.Intersect(destRect, imgBounds);
 
         if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
             return;
 
-        var scaleX = (float)srcRect.Width / destRect.Width;
-        var scaleY = (float)srcRect.Height / destRect.Height;
+        var scaleX = srcRect.Width / destRect.Width;
+        var scaleY = srcRect.Height / destRect.Height;
 
         var dx = clippedDest.X - destRect.X;
         var dy = clippedDest.Y - destRect.Y;
 
-        srcRect.X += (int)(dx * scaleX);
-        srcRect.Y += (int)(dy * scaleY);
-        srcRect.Width = (int)(clippedDest.Width * scaleX);
-        srcRect.Height = (int)(clippedDest.Height * scaleY);
+        srcRect.X += dx * scaleX;
+        srcRect.Y += dy * scaleY;
+        srcRect.Width = clippedDest.Width * scaleX;
+        srcRect.Height = clippedDest.Height * scaleY;
 
         var matrix = target.Transform;
         var center = new Vector2(
@@ -192,15 +192,15 @@ public partial class TextureModForm : Form
 
         target.DrawBitmap(
             overlay,
-            clippedDest.Convert2(),
+            clippedDest.Raw(),
             1f,
             SharpDX.Direct2D1.BitmapInterpolationMode.Linear,
-            srcRect.Convert2()
+            srcRect.Raw()
         );
         target.Transform = matrix;
     }
 
-    private void OnRectDrawingChange(System.Drawing.Rectangle obj)
+    private void OnRectDrawingChange(System.Drawing.RectangleF obj)
     {
         WritePanelDataToSource();
     }
@@ -271,7 +271,7 @@ public partial class TextureModForm : Form
                 // using var stream = File.OpenRead(fileName);
                 // using var image = Image.FromStream(stream, false, false);
                 var modTexture = project.CreateTextureMod(fileName);
-                modTexture.sourceRect = new SharpDX.Rectangle(0, 0, width, height);
+                modTexture.sourceRect = new System.Drawing.RectangleF(0, 0, width, height);
 
                 RefreshModListView();
             }
@@ -326,12 +326,12 @@ public partial class TextureModForm : Form
         project.Save(Settings.Default.TexModWorkingDir);
     }
 
-    private void SetRectBox(System.Drawing.Rectangle rectangle)
+    private void SetRectBox(System.Drawing.RectangleF rectangle)
     {
-        rectBoxX.Value = rectangle.X;
-        rectBoxY.Value = rectangle.Y;
-        rectBoxW.Value = rectangle.Width;
-        rectBoxH.Value = rectangle.Height;
+        rectBoxX.Value = (decimal)rectangle.X;
+        rectBoxY.Value = (decimal)rectangle.Y;
+        rectBoxW.Value = (decimal)rectangle.Width;
+        rectBoxH.Value = (decimal)rectangle.Height;
     }
 
     private void rectBoxX_ValueChanged(object sender, EventArgs e)
@@ -339,13 +339,13 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
             PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
-            rect.X = (int)rectBoxX.Value;
+            rect.X = (float)rectBoxX.Value;
             PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
             PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
-            rect.X = (int)rectBoxX.Value;
+            rect.X = (float)rectBoxX.Value;
             PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
@@ -356,13 +356,13 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
             PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
-            rect.Y = (int)rectBoxY.Value;
+            rect.Y = (float)rectBoxY.Value;
             PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
             PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
-            rect.Y = (int)rectBoxY.Value;
+            rect.Y = (float)rectBoxY.Value;
             PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
@@ -373,13 +373,13 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
             PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
-            rect.Width = (int)rectBoxW.Value;
+            rect.Width = (float)rectBoxW.Value;
             PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
             PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
-            rect.Width = (int)rectBoxW.Value;
+            rect.Width = (float)rectBoxW.Value;
             PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
@@ -390,13 +390,13 @@ public partial class TextureModForm : Form
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
             PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
-            rect.Height = (int)rectBoxH.Value;
+            rect.Height = (float)rectBoxH.Value;
             PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
         }
         else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
             PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
-            rect.Height = (int)rectBoxH.Value;
+            rect.Height = (float)rectBoxH.Value;
             PictureBoxRectTool.SetRect(modTextureCanvas, rect);
         }
         WritePanelDataToSource();
@@ -424,7 +424,7 @@ public partial class TextureModForm : Form
             PictureBoxRectTool.GetRect(gameTextureCanvas, out var rect);
             if (working.mapping != null)
             {
-                working.mapping.targetRect = rect.Convert();
+                working.mapping.targetRect = rect;
             }
             SetRectBox(rect);
         }
@@ -433,7 +433,7 @@ public partial class TextureModForm : Form
             PictureBoxRectTool.GetRect(modTextureCanvas, out var rect);
             if (working.modTexture != null)
             {
-                working.modTexture.sourceRect = rect.Convert();
+                working.modTexture.sourceRect = rect;
             }
             SetRectBox(rect);
         }
@@ -444,10 +444,10 @@ public partial class TextureModForm : Form
     {
         if (imageTabControl.SelectedTab == gameTextureTabPage)
         {
-            var rect = new System.Drawing.Rectangle();
+            var rect = new System.Drawing.RectangleF();
             if (working.mapping != null)
             {
-                rect = working.mapping.targetRect.Convert();
+                rect = working.mapping.targetRect;
             }
             PictureBoxRectTool.SetRect(gameTextureCanvas, rect);
             checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(gameTextureCanvas);
@@ -456,18 +456,18 @@ public partial class TextureModForm : Form
         }
         else if (imageTabControl.SelectedTab == modTextureTabPage)
         {
-            var rect = new System.Drawing.Rectangle();
+            var rect = new System.Drawing.RectangleF();
             if (working.modTexture != null)
             {
-                rect = working.modTexture.sourceRect.Convert();
+                rect = working.modTexture.sourceRect;
             }
             PictureBoxRectTool.SetRect(modTextureCanvas, rect);
             checkBox1.Checked = PictureBoxRectTool.GetPaintEnable(modTextureCanvas);
             checkBox2.Checked = PictureBoxRectTool.GetSolid(modTextureCanvas);
             SetRectBox(rect);
 
-            numericUpDown1.Value = working.mapping?.targetRect.Width ?? 0;
-            numericUpDown2.Value = working.mapping?.targetRect.Height ?? 0;
+            numericUpDown1.Value = (decimal)(working.mapping?.targetRect.Width ?? 0);
+            numericUpDown2.Value = (decimal)(working.mapping?.targetRect.Height ?? 0);
         }
     }
 

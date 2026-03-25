@@ -134,7 +134,7 @@ public static class TextureModProjectExtension
 
                 replacement.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
                 replacement.sourceTexture = Guid.Parse(xmlElement["SourceTexture"].InnerText);
-                replacement.targetRect = ReadRectangle(xmlElement["TargetRect"]);
+                replacement.targetRect = ReadRectangleF(xmlElement["TargetRect"]);
 
                 replacement.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
                 replacement.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
@@ -155,7 +155,7 @@ public static class TextureModProjectExtension
 
                 modTexture.position = ReadVector3(xmlElement["Position"]);
                 modTexture.rotation = ReadVector3(xmlElement["Rotation"]);
-                modTexture.sourceRect = ReadRectangle(xmlElement["SourceRect"]);
+                modTexture.sourceRect = ReadRectangleF(xmlElement["SourceRect"]);
 
                 project.modTextures.Add(modTexture.id, modTexture);
             }
@@ -183,7 +183,7 @@ public static class TextureModProjectExtension
         writer.WriteEndElement();
     }
 
-    private static void Write(this XmlWriter writer, string name, Rectangle rectangle)
+    private static void Write(this XmlWriter writer, string name, System.Drawing.RectangleF rectangle)
     {
         writer.WriteStartElement(name);
         writer.WriteAttributeString("X", rectangle.X.ToString(CultureInfo.InvariantCulture));
@@ -202,13 +202,13 @@ public static class TextureModProjectExtension
         );
     }
 
-    private static Rectangle ReadRectangle(XmlElement element)
+    private static System.Drawing.RectangleF ReadRectangleF(XmlElement element)
     {
-        return new Rectangle(
-            int.Parse(element.GetAttribute("X"), CultureInfo.InvariantCulture),
-            int.Parse(element.GetAttribute("Y"), CultureInfo.InvariantCulture),
-            int.Parse(element.GetAttribute("Width"), CultureInfo.InvariantCulture),
-            int.Parse(element.GetAttribute("Height"), CultureInfo.InvariantCulture)
+        return new System.Drawing.RectangleF(
+            float.Parse(element.GetAttribute("X"), CultureInfo.InvariantCulture),
+            float.Parse(element.GetAttribute("Y"), CultureInfo.InvariantCulture),
+            float.Parse(element.GetAttribute("Width"), CultureInfo.InvariantCulture),
+            float.Parse(element.GetAttribute("Height"), CultureInfo.InvariantCulture)
         );
     }
 }

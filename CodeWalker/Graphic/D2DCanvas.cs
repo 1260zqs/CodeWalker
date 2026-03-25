@@ -196,6 +196,23 @@ public class D2DCanvas : Control
         fontSegoeUI_12 = new TextFormat(dwFactory, "Segoe UI", 12f);
     }
 
+    //public static TextFormat CreateFontFromBytes(byte[] fontData, float fontSize)
+    //{
+    //    var dwFactory = new Factory();
+
+    //    // Load the font from byte array
+    //    var fontStream = new MemoryStream(fontData);
+    //    var fontLoader = new FontFileLoader(dwFactory);
+
+    //    var fontFile = new FontFile(fontStream);
+    //    var fontFace = dwFactory.CreateFontFace(fontFile);
+
+    //    // Create TextFormat using the custom font and size
+    //    var textFormat = new TextFormat(dwFactory, fontFace, fontSize);
+
+    //    return textFormat;
+    //}
+
     WindowRenderTarget target;
     SolidColorBrush solidBrush;
     BitmapBrush tileBrush;
@@ -404,16 +421,16 @@ public class D2DCanvas : Control
         target.EndDraw();
     }
 
-    public void FillRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color)
+    public void FillRectangle(in System.Drawing.RectangleF rectangle, in RawColor4 color)
     {
         solidBrush.Color = color;
-        target.FillRectangle(rectangle.Convert2(), solidBrush);
+        target.FillRectangle(rectangle.Raw(), solidBrush);
     }
 
-    public void DrawRectangle(in System.Drawing.Rectangle rectangle, in RawColor4 color, float thickness)
+    public void DrawRectangle(in System.Drawing.RectangleF rectangle, in RawColor4 color, float thickness)
     {
         solidBrush.Color = color;
-        target.DrawRectangle(rectangle.Convert2(), solidBrush, thickness);
+        target.DrawRectangle(rectangle.Raw(), solidBrush, thickness);
     }
 
     public void DrawBitmap(Bitmap bitmap, int x, int y)
@@ -426,14 +443,14 @@ public class D2DCanvas : Control
         target.DrawBitmap(bitmap, rectangle, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
     }
 
-    public void DrawBitmap(Bitmap bitmap, in System.Drawing.Rectangle destinationRectangle, in System.Drawing.Rectangle sourceRectangle)
+    public void DrawBitmap(Bitmap bitmap, in System.Drawing.RectangleF destinationRectangle, in System.Drawing.Rectangle sourceRectangle)
     {
         target.DrawBitmap(
             bitmap,
-            destinationRectangle.Convert2(),
+            destinationRectangle.Raw(),
             1f,
             SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor,
-            sourceRectangle.Convert2()
+            sourceRectangle.Raw()
         );
     }
 
@@ -459,7 +476,7 @@ public class D2DCanvas : Control
         target.DrawText(
             text,
             font ?? fontSegoeUI_12,
-            new RawRectangleF(x, y, Width, Height),
+            new RawRectangleF(x, y, x + Width, y + Height),
             solidBrush,
             DrawTextOptions.None,
             MeasuringMode.Natural

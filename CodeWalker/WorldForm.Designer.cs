@@ -50,6 +50,12 @@ namespace CodeWalker
             this.StatusBarCheckBox = new System.Windows.Forms.CheckBox();
             this.ViewTabControl = new System.Windows.Forms.TabControl();
             this.ViewWorldTabPage = new System.Windows.Forms.TabPage();
+            this.WorldDetailDistLabel = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.WorldDetailDistTrackBar = new System.Windows.Forms.TrackBar();
+            this.WorldLodDistLabel = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.WorldLodDistTrackBar = new System.Windows.Forms.TrackBar();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.EnableModsCheckBox = new System.Windows.Forms.CheckBox();
             this.label30 = new System.Windows.Forms.Label();
@@ -58,12 +64,6 @@ namespace CodeWalker
             this.WorldYmapWeatherFilterCheckBox = new System.Windows.Forms.CheckBox();
             this.WorldYmapTimeFilterCheckBox = new System.Windows.Forms.CheckBox();
             this.WorldScriptedYmapsCheckBox = new System.Windows.Forms.CheckBox();
-            this.WorldDetailDistLabel = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.WorldDetailDistTrackBar = new System.Windows.Forms.TrackBar();
-            this.WorldLodDistLabel = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.WorldLodDistTrackBar = new System.Windows.Forms.TrackBar();
             this.label15 = new System.Windows.Forms.Label();
             this.WorldMaxLodComboBox = new System.Windows.Forms.ComboBox();
             this.ViewYmapsTabPage = new System.Windows.Forms.TabPage();
@@ -318,6 +318,8 @@ namespace CodeWalker
             this.SubtitleLabel = new System.Windows.Forms.Label();
             this.SubtitleTimer = new System.Windows.Forms.Timer(this.components);
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.StatusStrip.SuspendLayout();
             this.ToolsPanel.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -325,9 +327,9 @@ namespace CodeWalker
             this.ViewTabPage.SuspendLayout();
             this.ViewTabControl.SuspendLayout();
             this.ViewWorldTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorldDetailDistTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorldLodDistTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.ViewYmapsTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DetailTrackBar)).BeginInit();
             this.ViewModelTabPage.SuspendLayout();
@@ -606,6 +608,8 @@ namespace CodeWalker
             // 
             // ViewWorldTabPage
             // 
+            this.ViewWorldTabPage.Controls.Add(this.checkBox2);
+            this.ViewWorldTabPage.Controls.Add(this.checkBox1);
             this.ViewWorldTabPage.Controls.Add(this.WorldDetailDistLabel);
             this.ViewWorldTabPage.Controls.Add(this.label18);
             this.ViewWorldTabPage.Controls.Add(this.WorldDetailDistTrackBar);
@@ -629,6 +633,75 @@ namespace CodeWalker
             this.ViewWorldTabPage.TabIndex = 0;
             this.ViewWorldTabPage.Text = "World";
             this.ViewWorldTabPage.UseVisualStyleBackColor = true;
+            // 
+            // WorldDetailDistLabel
+            // 
+            this.WorldDetailDistLabel.AutoSize = true;
+            this.WorldDetailDistLabel.Location = new System.Drawing.Point(108, 70);
+            this.WorldDetailDistLabel.Name = "WorldDetailDistLabel";
+            this.WorldDetailDistLabel.Size = new System.Drawing.Size(23, 12);
+            this.WorldDetailDistLabel.TabIndex = 64;
+            this.WorldDetailDistLabel.Text = "1.0";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(6, 69);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(101, 12);
+            this.label18.TabIndex = 63;
+            this.label18.Text = "Detail distance:";
+            // 
+            // WorldDetailDistTrackBar
+            // 
+            this.WorldDetailDistTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.WorldDetailDistTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.WorldDetailDistTrackBar.LargeChange = 10;
+            this.WorldDetailDistTrackBar.Location = new System.Drawing.Point(6, 85);
+            this.WorldDetailDistTrackBar.Maximum = 50;
+            this.WorldDetailDistTrackBar.Name = "WorldDetailDistTrackBar";
+            this.WorldDetailDistTrackBar.Size = new System.Drawing.Size(213, 45);
+            this.WorldDetailDistTrackBar.TabIndex = 62;
+            this.WorldDetailDistTrackBar.TickFrequency = 2;
+            this.WorldDetailDistTrackBar.Value = 10;
+            this.WorldDetailDistTrackBar.Scroll += new System.EventHandler(this.WorldDetailDistTrackBar_Scroll);
+            // 
+            // WorldLodDistLabel
+            // 
+            this.WorldLodDistLabel.AutoSize = true;
+            this.WorldLodDistLabel.Location = new System.Drawing.Point(96, 128);
+            this.WorldLodDistLabel.Name = "WorldLodDistLabel";
+            this.WorldLodDistLabel.Size = new System.Drawing.Size(23, 12);
+            this.WorldLodDistLabel.TabIndex = 61;
+            this.WorldLodDistLabel.Text = "1.0";
+            this.WorldLodDistLabel.Visible = false;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 128);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(83, 12);
+            this.label16.TabIndex = 60;
+            this.label16.Text = "LOD distance:";
+            this.label16.Visible = false;
+            // 
+            // WorldLodDistTrackBar
+            // 
+            this.WorldLodDistTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.WorldLodDistTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.WorldLodDistTrackBar.LargeChange = 10;
+            this.WorldLodDistTrackBar.Location = new System.Drawing.Point(6, 143);
+            this.WorldLodDistTrackBar.Maximum = 30;
+            this.WorldLodDistTrackBar.Name = "WorldLodDistTrackBar";
+            this.WorldLodDistTrackBar.Size = new System.Drawing.Size(213, 45);
+            this.WorldLodDistTrackBar.TabIndex = 59;
+            this.WorldLodDistTrackBar.TickFrequency = 2;
+            this.WorldLodDistTrackBar.Value = 10;
+            this.WorldLodDistTrackBar.Visible = false;
+            this.WorldLodDistTrackBar.Scroll += new System.EventHandler(this.WorldLodDistTrackBar_Scroll);
             // 
             // trackBar1
             // 
@@ -730,75 +803,6 @@ namespace CodeWalker
             this.WorldScriptedYmapsCheckBox.Text = "Show scripted ymaps";
             this.WorldScriptedYmapsCheckBox.UseVisualStyleBackColor = true;
             this.WorldScriptedYmapsCheckBox.CheckedChanged += new System.EventHandler(this.WorldScriptedYmapsCheckBox_CheckedChanged);
-            // 
-            // WorldDetailDistLabel
-            // 
-            this.WorldDetailDistLabel.AutoSize = true;
-            this.WorldDetailDistLabel.Location = new System.Drawing.Point(108, 70);
-            this.WorldDetailDistLabel.Name = "WorldDetailDistLabel";
-            this.WorldDetailDistLabel.Size = new System.Drawing.Size(23, 12);
-            this.WorldDetailDistLabel.TabIndex = 64;
-            this.WorldDetailDistLabel.Text = "1.0";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(6, 69);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(101, 12);
-            this.label18.TabIndex = 63;
-            this.label18.Text = "Detail distance:";
-            // 
-            // WorldDetailDistTrackBar
-            // 
-            this.WorldDetailDistTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.WorldDetailDistTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.WorldDetailDistTrackBar.LargeChange = 10;
-            this.WorldDetailDistTrackBar.Location = new System.Drawing.Point(6, 85);
-            this.WorldDetailDistTrackBar.Maximum = 50;
-            this.WorldDetailDistTrackBar.Name = "WorldDetailDistTrackBar";
-            this.WorldDetailDistTrackBar.Size = new System.Drawing.Size(213, 45);
-            this.WorldDetailDistTrackBar.TabIndex = 62;
-            this.WorldDetailDistTrackBar.TickFrequency = 2;
-            this.WorldDetailDistTrackBar.Value = 10;
-            this.WorldDetailDistTrackBar.Scroll += new System.EventHandler(this.WorldDetailDistTrackBar_Scroll);
-            // 
-            // WorldLodDistLabel
-            // 
-            this.WorldLodDistLabel.AutoSize = true;
-            this.WorldLodDistLabel.Location = new System.Drawing.Point(96, 130);
-            this.WorldLodDistLabel.Name = "WorldLodDistLabel";
-            this.WorldLodDistLabel.Size = new System.Drawing.Size(23, 12);
-            this.WorldLodDistLabel.TabIndex = 61;
-            this.WorldLodDistLabel.Text = "1.0";
-            this.WorldLodDistLabel.Visible = false;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 130);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(83, 12);
-            this.label16.TabIndex = 60;
-            this.label16.Text = "LOD distance:";
-            this.label16.Visible = false;
-            // 
-            // WorldLodDistTrackBar
-            // 
-            this.WorldLodDistTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.WorldLodDistTrackBar.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.WorldLodDistTrackBar.LargeChange = 10;
-            this.WorldLodDistTrackBar.Location = new System.Drawing.Point(6, 145);
-            this.WorldLodDistTrackBar.Maximum = 30;
-            this.WorldLodDistTrackBar.Name = "WorldLodDistTrackBar";
-            this.WorldLodDistTrackBar.Size = new System.Drawing.Size(213, 45);
-            this.WorldLodDistTrackBar.TabIndex = 59;
-            this.WorldLodDistTrackBar.TickFrequency = 2;
-            this.WorldLodDistTrackBar.Value = 10;
-            this.WorldLodDistTrackBar.Visible = false;
-            this.WorldLodDistTrackBar.Scroll += new System.EventHandler(this.WorldLodDistTrackBar_Scroll);
             // 
             // label15
             // 
@@ -3692,6 +3696,32 @@ namespace CodeWalker
             // 
             this.vsExtender.DefaultRenderer = null;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(6, 172);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(90, 16);
+            this.checkBox1.TabIndex = 72;
+            this.checkBox1.Text = "HD textures";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Checked = true;
+            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox2.Location = new System.Drawing.Point(6, 148);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(150, 16);
+            this.checkBox2.TabIndex = 73;
+            this.checkBox2.Text = "Anisotropic filtering";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // WorldForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -3729,9 +3759,9 @@ namespace CodeWalker
             this.ViewTabControl.ResumeLayout(false);
             this.ViewWorldTabPage.ResumeLayout(false);
             this.ViewWorldTabPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorldDetailDistTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.WorldLodDistTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ViewYmapsTabPage.ResumeLayout(false);
             this.ViewYmapsTabPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DetailTrackBar)).EndInit();
@@ -4070,5 +4100,7 @@ namespace CodeWalker
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripMaxBtn;
         private System.Windows.Forms.ToolStripButton toolStripMinBtn;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

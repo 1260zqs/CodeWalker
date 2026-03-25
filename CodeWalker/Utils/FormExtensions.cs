@@ -11,7 +11,7 @@ namespace CodeWalker.Utils;
 
 public static class FormExtensions
 {
-    public static SharpDX.Mathematics.Interop.RawRectangleF Convert2(this System.Drawing.Rectangle rectangle)
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this System.Drawing.RectangleF rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
             rectangle.Left,
@@ -21,7 +21,17 @@ public static class FormExtensions
         );
     }
 
-    public static SharpDX.Mathematics.Interop.RawRectangleF Convert2(this SharpDX.Rectangle rectangle)
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this System.Drawing.Rectangle rectangle)
+    {
+        return new SharpDX.Mathematics.Interop.RawRectangleF(
+            rectangle.Left,
+            rectangle.Top,
+            rectangle.Right,
+            rectangle.Bottom
+        );
+    }
+
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this SharpDX.Rectangle rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
             rectangle.Left,

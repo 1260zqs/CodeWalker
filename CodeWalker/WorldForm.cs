@@ -6816,6 +6816,7 @@ namespace CodeWalker
         private void HDTexturesCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Renderer.renderhdtextures = HDTexturesCheckBox.Checked;
+            checkBox1.Checked = HDTexturesCheckBox.Checked;
         }
 
         private void NearClipUpDown_ValueChanged(object sender, EventArgs e)
@@ -7377,6 +7378,7 @@ namespace CodeWalker
         private void AnisotropicFilteringCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Renderer.shaders.AnisotropicFiltering = AnisotropicFilteringCheckBox.Checked;
+            checkBox2.Checked = AnisotropicFilteringCheckBox.Checked;
         }
 
         private void WorldMaxLodComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -8151,6 +8153,16 @@ namespace CodeWalker
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
             WorldMaxLodComboBox.SelectedIndex = trackBar1.Value;
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            this.AnisotropicFilteringCheckBox.Checked = checkBox2.Checked;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            this.HDTexturesCheckBox.Checked = checkBox1.Checked;
         }
     }
 

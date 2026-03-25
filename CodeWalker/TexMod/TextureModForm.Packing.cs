@@ -247,8 +247,8 @@ public partial class TextureModForm
                     null,
                     bitmap,
                     modPack.sourceBitmap.PixelSize,
-                    modTexture.sourceRect.Convert(),
-                    replacement.targetRect.Convert(),
+                    modTexture.sourceRect,
+                    replacement.targetRect,
                     replacement.flipX,
                     replacement.flipY,
                     replacement.rotation
