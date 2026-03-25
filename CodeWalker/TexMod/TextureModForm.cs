@@ -124,8 +124,38 @@ public partial class TextureModForm : Form
                 working.mapping.rotation
             );
         }
+        if (working.mapping != null)
+        {
+            PictureBoxViewer.GetState(canvas, out var zoom, out _);
+            foreach (var mapping in project.textureMappings)
+            {
+                if (mapping.sourceTexture == working.mapping.sourceTexture)
+                {
+                    var rect = mapping.targetRect;
+                    if (rect.Width > 0 && rect.Height > 0)
+                    {
+                        var color = new SharpDX.Mathematics.Interop.RawColor4(1f, 0f, 1f, 1f);
+                        canvas.DrawRectangle(rect, color, 1f / zoom);
+
+                        var text = $"{mapping.name} Left={mapping.targetRect.Left} Top={mapping.targetRect.Top} Right={mapping.targetRect.Right} Bottom={mapping.targetRect.Bottom}";
+                        var font = D2DCanvas.fontSegoeUI_12;
+                        var size = D2DCanvas.MeasureText(text, font);
+
+                        var texBg = new System.Drawing.RectangleF();
+                        texBg.X = rect.X;
+                        texBg.Width = size.Width + 10;
+                        texBg.Height = size.Height;
+                        texBg.Y = rect.Y - texBg.Height;
+                        canvas.FillRectangle(texBg, color);
+                        canvas.DrawText(text, texBg.X + 5, texBg.Y, SharpDX.Color.White, font);
+                    }
+                }
+            }
+        }
         PictureBoxRectTool.Paint(canvas);
     }
+
+    private List<TextureMapping> tempList = new();
 
     private static void DrawPreviewOverlay(
         SharpDX.Direct2D1.RenderTarget target,

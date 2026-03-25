@@ -119,6 +119,13 @@ public class TextureModProject
     public List<TextureMapping> FindSourceTextureMapping(Guid sourceTexId)
     {
         var list = new List<TextureMapping>();
+        FindSourceTextureMapping(sourceTexId, list);
+        return list;
+    }
+
+    public void FindSourceTextureMapping(Guid sourceTexId, List<TextureMapping> list)
+    {
+        list.Clear();
         foreach (var replacement in textureMappings)
         {
             if (replacement.sourceTexture == sourceTexId)
@@ -126,7 +133,6 @@ public class TextureModProject
                 list.Add(replacement);
             }
         }
-        return list;
     }
 
     public SourceTexture FindSourceTexture(string sourceFile)

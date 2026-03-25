@@ -183,17 +183,21 @@ public class D2DCanvas : Control
 {
     public static readonly WicFactory wic;
     public static readonly Factory factory;
+    public static readonly SharpDX.DirectWrite.Factory dwriteFactory;
     public static readonly TextFormat fontSegoeUI_16;
     public static readonly TextFormat fontSegoeUI_12;
+    public static readonly TextFormat fontSegoeUI_6;
 
     static D2DCanvas()
     {
         wic = new WicFactory();
         factory = new Factory(FactoryType.MultiThreaded);
+        dwriteFactory = new SharpDX.DirectWrite.Factory(SharpDX.DirectWrite.FactoryType.Shared);
 
         using var dwFactory = new SharpDX.DirectWrite.Factory();
         fontSegoeUI_16 = new TextFormat(dwFactory, "Segoe UI", 16f);
         fontSegoeUI_12 = new TextFormat(dwFactory, "Segoe UI", 12f);
+        fontSegoeUI_6 = new TextFormat(dwFactory, "Segoe UI", 6f);
     }
 
     //public static TextFormat CreateFontFromBytes(byte[] fontData, float fontSize)
@@ -470,7 +474,20 @@ public class D2DCanvas : Control
         target.Transform = Matrix3x2.Scaling(scale, scale) * Matrix3x2.Translation(x, y);
     }
 
-    public void DrawText(string text, int x, int y, in Color color, TextFormat font = null)
+    public static Size2F MeasureText(string text, TextFormat font = null)
+    {
+        using var layout = new TextLayout(
+            dwriteFactory,
+            text,
+            font ?? fontSegoeUI_12,
+            float.MaxValue,
+            float.MaxValue
+        );
+        var m = layout.Metrics;
+        return new Size2F(m.Width, m.Height);
+    }
+
+    public void DrawText(string text, float x, float y, in Color color, TextFormat font = null)
     {
         solidBrush.Color = color;
         target.DrawText(
