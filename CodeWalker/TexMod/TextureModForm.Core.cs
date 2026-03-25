@@ -28,7 +28,7 @@ public partial class TextureModForm
     }
 
     static TextureModForm instance;
-    static TextureModProject workingProject;
+    // static TextureModProject workingProject;
 
     public static void ShowWindow(WorldForm worldForm)
     {
@@ -86,10 +86,7 @@ public partial class TextureModForm
         {
             Settings.Default.TexModWorkingDir = workingDir;
         }
-        if (workingProject == null)
-        {
-            workingProject = TextureModProject.SetupWorkingProject(workingDir);
-        }
+        var workingProject = TextureModProject.SetupWorkingProject(workingDir);
         if (!string.IsNullOrEmpty(packageManifestFile) && File.Exists(packageManifestFile))
         {
             workingProject.manifestFile = packageManifestFile;
@@ -127,6 +124,10 @@ public partial class TextureModForm
 
     private void SelectTexMod(ModTexture modTexture)
     {
+        if (working.modTexture == modTexture)
+        {
+            return;
+        }
         if (working.modTexture != null)
         {
             working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas);
@@ -181,7 +182,7 @@ public partial class TextureModForm
             working.gameTextureSource.LoadAsync();
             gameTextureCanvas.SetImage(working.gameTextureSource);
             PictureBoxViewer.LoadState(gameTextureCanvas, mapping.editorState);
-            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(mapping, OnPropertyGridChanged);
+            propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(project, mapping, OnPropertyGridChanged);
         }
         propertyGridFix1.Refresh();
     }
@@ -248,17 +249,20 @@ public partial class TextureModForm
 
             var overlay = working.modTextureBitmap;
             if (!checkBox1.Checked) overlay = null;
-            DrawPreviewOverlay(
-                d2dRenderTarget.target,
-                working.gameTextureBitmap,
-                overlay,
-                working.gameTextureBitmap.PixelSize,
-                working.modTexture.sourceRect,
-                working.mapping.targetRect,
-                working.mapping.flipX,
-                working.mapping.flipY,
-                working.mapping.rotation
-            );
+            if (working.gameTextureBitmap != null)
+            {
+                DrawPreviewOverlay(
+                    d2dRenderTarget.target,
+                    working.gameTextureBitmap,
+                    overlay,
+                    working.gameTextureBitmap.PixelSize,
+                    working.modTexture.sourceRect,
+                    working.mapping.targetRect,
+                    working.mapping.flipX,
+                    working.mapping.flipY,
+                    working.mapping.rotation
+                );
+            }
             if (checkBox3.Checked)
             {
                 d2dRenderTarget.FillRectangle(targetRect.Raw());
@@ -352,14 +356,14 @@ public partial class TextureModForm
         private TextureMapping sourceObject;
         private Action onPropertyGridChanged;
 
-        public static TextureReplacementPropertyObject From(TextureMapping mapping, Action onPropertyGridChanged)
+        public static TextureReplacementPropertyObject From(TextureModProject project, TextureMapping mapping, Action onPropertyGridChanged)
         {
             var propertyObject = new TextureReplacementPropertyObject();
-            if (workingProject.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
+            if (project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
             {
                 propertyObject.sourceTexture = sourceTexture.sourceFile;
             }
-            if (workingProject.modTextures.TryGetValue(mapping.modTexture, out var modTexture))
+            if (project.modTextures.TryGetValue(mapping.modTexture, out var modTexture))
             {
                 propertyObject.modTexture = modTexture.filename;
             }

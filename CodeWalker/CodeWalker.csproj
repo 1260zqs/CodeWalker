@@ -58,10 +58,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="TexMod\TextureModForm.Packing.cs">
-      <SubType>Form</SubType>
       <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
     <Compile Update="TexMod\TextureModForm.Core.cs">
+      <DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModForm.TreeView.cs">
       <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>

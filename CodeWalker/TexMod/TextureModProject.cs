@@ -12,10 +12,10 @@ public class TextureModProject
 {
     public string manifestFile;
     public PackageManifest manifest;
-    public ProjectDirectory directory = new();
     public List<TextureMapping> textureMappings = new();
     public SortedList<Guid, ModTexture> modTextures = new();
     public SortedList<Guid, SourceTexture> sourceTextures = new();
+    public Dictionary<string, ProjectDirectory> directory = new();
 
     public static TextureModProject SetupWorkingProject(string workingDir)
     {
@@ -204,25 +204,8 @@ public class TextureModProject
 public class ProjectDirectory
 {
     public string name;
-    public ProjectDirectory parent;
-    public List<ProjectDirectory> directories = new();
+    public string path;
     public HashSet<Guid> files = new();
-
-    public bool isRoot => parent == null;
-
-    public string path
-    {
-        get
-        {
-            if (parent == null) return "/";
-            if (parent.isRoot) return parent.path + name;
-            return $"{parent.path}/{name}";
-        }
-    }
-
-    private void Rebuild()
-    {
-    }
 }
 
 public class ModTexture

@@ -25,7 +25,10 @@ public static class TextureModProjectExtension
             writer.WriteStartDocument();
             writer.WriteStartElement("TextureModProject");
             writer.WriteElementString("manifestFile", project.manifestFile);
+
+            writer.WriteStartElement("ProjectDirectory");
             WriteProjectDirectory(writer, project.directory);
+            writer.WriteEndElement();
 
             writer.WriteStartElement("TextureMappings");
             foreach (var replacement in project.textureMappings)
@@ -78,31 +81,17 @@ public static class TextureModProjectExtension
         }
     }
 
-    public static void WriteProjectDirectory(XmlWriter writer, ProjectDirectory root)
+    public static void WriteProjectDirectory(XmlWriter writer, Dictionary<string, ProjectDirectory> allDirs)
     {
-        var allDirs = new List<ProjectDirectory>();
-        CollectDirectories(root, allDirs);
-
-        writer.WriteStartElement("ProjectDirectory");
-        foreach (var dir in allDirs)
+        foreach (var pair in allDirs)
         {
             writer.WriteStartElement("Directory");
-            writer.WriteAttributeString("path", dir.path);
-            foreach (var file in dir.files)
+            writer.WriteAttributeString("path", pair.Key);
+            foreach (var file in pair.Value.files)
             {
                 writer.WriteElementString("File", $"{file:N}");
             }
             writer.WriteEndElement();
-        }
-        writer.WriteEndElement();
-    }
-
-    private static void CollectDirectories(ProjectDirectory dir, List<ProjectDirectory> list)
-    {
-        list.Add(dir);
-        foreach (var child in dir.directories)
-        {
-            CollectDirectories(child, list);
         }
     }
 
@@ -170,6 +159,20 @@ public static class TextureModProjectExtension
                 sourceTexture.sourceFile = xmlElement["SourceFile"].InnerText;
                 sourceTexture.localFile = xmlElement["LocalFile"].InnerText;
                 project.sourceTextures.Add(sourceTexture.id, sourceTexture);
+            }
+        }
+        project.directory.Clear();
+        if (root["ProjectDirectory"] is XmlElement projectDirectory)
+        {
+            foreach (XmlElement xmlElement in projectDirectory.GetElementsByTagName("Directory"))
+            {
+                var directory = new ProjectDirectory();
+                directory.path = xmlElement.Attributes["Path"].InnerText;
+                foreach (XmlElement xmlElement2 in xmlElement.GetElementsByTagName("File"))
+                {
+                    directory.files.Add(Guid.Parse(xmlElement2.InnerText));
+                }
+                project.directory.Add(directory.path, directory);
             }
         }
     }

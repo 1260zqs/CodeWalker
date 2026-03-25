@@ -3,6 +3,7 @@ using CodeWalker.Utils;
 using SharpDX;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -21,21 +22,21 @@ public partial class TextureModForm : Form
         vsExtender.SetStyle(toolStrip1, version, theme);
         vsExtender.SetStyle(toolStrip2, version, theme);
 
-        rectBoxX.Maximum = int.MaxValue;
-        rectBoxY.Maximum = int.MaxValue;
-        rectBoxW.Maximum = int.MaxValue;
-        rectBoxH.Maximum = int.MaxValue;
+        rectBoxX.Maximum = decimal.MaxValue;
+        rectBoxY.Maximum = decimal.MaxValue;
+        rectBoxW.Maximum = decimal.MaxValue;
+        rectBoxH.Maximum = decimal.MaxValue;
 
-        rectBoxX.Minimum = int.MinValue;
-        rectBoxY.Minimum = int.MinValue;
-        rectBoxW.Minimum = int.MinValue;
-        rectBoxH.Minimum = int.MinValue;
+        rectBoxX.Minimum = decimal.MinValue;
+        rectBoxY.Minimum = decimal.MinValue;
+        rectBoxW.Minimum = decimal.MinValue;
+        rectBoxH.Minimum = decimal.MinValue;
 
-        numericUpDown1.Maximum = int.MaxValue;
-        numericUpDown1.Minimum = int.MinValue;
+        numericUpDown1.Maximum = decimal.MaxValue;
+        numericUpDown1.Minimum = decimal.MinValue;
 
-        numericUpDown2.Maximum = int.MaxValue;
-        numericUpDown2.Minimum = int.MinValue;
+        numericUpDown2.Maximum = decimal.MaxValue;
+        numericUpDown2.Minimum = decimal.MinValue;
 
         PictureBoxViewer.AddFeature(gameTextureCanvas);
         PictureBoxViewer.AddFeature(modTextureCanvas);
@@ -54,37 +55,6 @@ public partial class TextureModForm : Form
 
         toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
         toolStripButton7.SelectEnum(textureMappingView.View);
-    }
-
-    static class TreeViewIcon
-    {
-        public const string folder = "folder";
-        public const string folder_open = "folder_open";
-        public const string document = "document";
-    }
-
-    private void LoadTreeView()
-    {
-        var imageList = new ImageList();
-        imageList.Images.Add("folder", Resources.folder);
-        imageList.Images.Add("folder-open", Resources.folder_open);
-        imageList.Images.Add("document", Resources.document);
-        treeView.ImageList = imageList;
-        var root = new TreeNode("/");
-        root.ImageKey = TreeViewIcon.folder;
-        root.SelectedImageKey = TreeViewIcon.folder;
-
-        var file = new TreeNode("texture.png");
-        file.ImageKey = TreeViewIcon.document;
-        file.SelectedImageKey = TreeViewIcon.document;
-
-        root.Nodes.Add(file);
-
-        var stateImageList = new ImageList();
-        treeView.StateImageList = stateImageList;
-
-        treeView.Nodes.Add(root);
-        treeView.Refresh();
     }
 
     private void ResetImageViewer(D2DCanvas canvas)
@@ -116,6 +86,16 @@ public partial class TextureModForm : Form
     {
         Utilities.Dispose(ref d2dRenderTarget);
         base.OnHandleDestroyed(e);
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        base.OnClosing(e);
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
     }
 
     private void PaintTexturePicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
@@ -151,9 +131,9 @@ public partial class TextureModForm : Form
         SharpDX.Direct2D1.RenderTarget target,
         SharpDX.Direct2D1.Bitmap baseImage,
         SharpDX.Direct2D1.Bitmap overlay,
-        in SharpDX.Size2 baseImageSize,
-        in System.Drawing.RectangleF srcRect,
-        in System.Drawing.RectangleF destRect,
+        SharpDX.Size2 baseImageSize,
+        System.Drawing.RectangleF srcRect,
+        System.Drawing.RectangleF destRect,
         bool flipX,
         bool flipY,
         float rotation
@@ -268,8 +248,6 @@ public partial class TextureModForm : Form
                 var width = converter.Size.Width;
                 var height = converter.Size.Height;
 
-                // using var stream = File.OpenRead(fileName);
-                // using var image = Image.FromStream(stream, false, false);
                 var modTexture = project.CreateTextureMod(fileName);
                 modTexture.sourceRect = new System.Drawing.RectangleF(0, 0, width, height);
 
@@ -323,6 +301,7 @@ public partial class TextureModForm : Form
 
     private void saveProjectBtn_Click(object sender, EventArgs e)
     {
+        project.directory = SaveTreeView();
         project.Save(Settings.Default.TexModWorkingDir);
     }
 
