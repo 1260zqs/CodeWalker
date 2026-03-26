@@ -8,7 +8,7 @@ namespace CodeWalker.Graphic;
 
 public static class DXGraphic
 {
-    public static readonly SharpDX.Direct2D1.Factory d2dFactory;
+    public static readonly SharpDX.Direct2D1.Factory1 d2dFactory;
     public static readonly SharpDX.WIC.ImagingFactory wicFactory;
     public static readonly SharpDX.DirectWrite.Factory dwriteFactory;
 
@@ -17,10 +17,14 @@ public static class DXGraphic
 
     public static TextFormat fontPfArmaFive_6;
 
+    public static SharpDX.DXGI.Factory d3dFactory;
+    private static SharpDX.Direct3D11.Device s_d3dDevice;
+    public static SharpDX.Direct3D11.DeviceContext immediateContext;
+
     static DXGraphic()
     {
         wicFactory = new SharpDX.WIC.ImagingFactory();
-        d2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);
+        d2dFactory = new SharpDX.Direct2D1.Factory1(SharpDX.Direct2D1.FactoryType.MultiThreaded);
         dwriteFactory = new SharpDX.DirectWrite.Factory(SharpDX.DirectWrite.FactoryType.Shared);
 
         fontSegoeUI_16 = new TextFormat(dwriteFactory, "Segoe UI", 16f);
@@ -43,6 +47,21 @@ public static class DXGraphic
             FontStretch.Normal,
             6
         );
+    }
+
+    public static SharpDX.Direct3D11.Device GetDevice()
+    {
+        if (s_d3dDevice == null)
+        {
+            d3dFactory = new SharpDX.DXGI.Factory1();
+            s_d3dDevice = new SharpDX.Direct3D11.Device(
+                SharpDX.Direct3D.DriverType.Hardware,
+                SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport,
+                SharpDX.Direct3D.FeatureLevel.Level_11_0
+            );
+            immediateContext = s_d3dDevice.ImmediateContext;
+        }
+        return s_d3dDevice;
     }
 
     public static SharpDX.Direct2D1.Bitmap LoadEmbeddedBitmap(RenderTarget target, string name)

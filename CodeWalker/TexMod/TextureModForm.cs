@@ -56,6 +56,22 @@ public partial class TextureModForm : Form
 
         toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
         toolStripButton7.SelectEnum(textureMappingView.View);
+        this.KeyDown += (sender, e) =>
+        {
+            if (e.Alt)
+            {
+                drawBoxFrame = true;
+                gameTextureCanvas.Invalidate();
+            }
+        };
+        this.KeyUp += (sender, e) =>
+        {
+            if (e.Alt)
+            {
+                drawBoxFrame = false;
+                gameTextureCanvas.Invalidate();
+            }
+        };
     }
 
     private void ResetImageViewer(D2DCanvas canvas)
@@ -80,7 +96,9 @@ public partial class TextureModForm : Form
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-        d2dRenderTarget = new D2DRenderTarget();
+        var d3dDevice = DXGraphic.GetDevice();
+        var d2dFactory = DXGraphic.d2dFactory;
+        d2dRenderTarget = new D2DRenderTarget(d3dDevice, d2dFactory);
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
@@ -233,9 +251,9 @@ public partial class TextureModForm : Form
     {
         if (reload && working.modTexture != null)
         {
-            project.FindTextureMapping(working.modTexture.id, replacements);
+            project.FindTextureMapping(working.modTexture.id, listOfMappings);
         }
-        textureMappingView.VirtualListSize = replacements.Count;
+        textureMappingView.VirtualListSize = listOfMappings.Count;
         if (textureMappingView.VirtualListSize > 0 && textureMappingView.SelectedIndices.Count == 0)
         {
             textureMappingView.SelectedIndices.Add(0);
@@ -245,7 +263,7 @@ public partial class TextureModForm : Form
 
     private void replacementListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
     {
-        var replacement = replacements[e.ItemIndex];
+        var replacement = listOfMappings[e.ItemIndex];
         e.Item = new ListViewItem(replacement.name);
         e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.tag));
         e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.comment));
@@ -328,7 +346,7 @@ public partial class TextureModForm : Form
     {
         foreach (int index in textureMappingView.SelectedIndices)
         {
-            SelectTextureMapping(replacements[index]);
+            SelectTextureMapping(listOfMappings[index]);
             return;
         }
     }
@@ -575,7 +593,8 @@ public partial class TextureModForm : Form
 
     private void button7_Click(object sender, EventArgs e)
     {
-        ApplyDrawing();
+        // ApplyDrawing();
+        RenderDrawing();
     }
 
     private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -598,6 +617,7 @@ public partial class TextureModForm : Form
                 modTextureCanvas.CreateImageFromExtern(gameTextureCanvas.GetRenderTargetInternal());
             }
         }
+        if (d2dRenderTarget.target == null) return;
         if (working.modTextureSource != null && working.modTextureBitmap == null)
         {
             working.modTextureBitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
@@ -636,7 +656,7 @@ public partial class TextureModForm : Form
         // delete replacement
         foreach (int selectedIndex in textureMappingView.SelectedIndices)
         {
-            var textureMapping = replacements[selectedIndex];
+            var textureMapping = listOfMappings[selectedIndex];
             if (MessageBox.Show($"Delete {textureMapping.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
             {
                 return;
@@ -683,9 +703,9 @@ public partial class TextureModForm : Form
     {
         if (working.modTexture != null)
         {
-            lock (worldForm.RenderSyncRoot)
+            lock (renderer.RenderSyncRoot)
             {
-                var camera = worldForm.Renderer.camera;
+                var camera = renderer.camera;
                 if (camera.FollowEntity != null)
                 {
                     camera.FollowEntity.Position = working.modTexture.position;
@@ -704,9 +724,9 @@ public partial class TextureModForm : Form
     {
         if (working.modTexture != null)
         {
-            lock (worldForm.RenderSyncRoot)
+            lock (renderer.RenderSyncRoot)
             {
-                var camera = worldForm.Renderer.camera;
+                var camera = renderer.camera;
                 if (camera.FollowEntity != null)
                 {
                     working.modTexture.position = camera.FollowEntity.Position;

@@ -31,21 +31,21 @@ public static class TextureModProjectExtension
             writer.WriteEndElement();
 
             writer.WriteStartElement("TextureMappings");
-            foreach (var replacement in project.textureMappings)
+            foreach (var mapping in project.textureMappings)
             {
                 writer.WriteStartElement("TextureMapping");
-                writer.WriteAttributeString("Id", $"{replacement.id:N}");
-                writer.WriteElementString("Name", replacement.name);
-                writer.WriteElementString("Tag", replacement.tag);
+                writer.WriteAttributeString("Id", $"{mapping.id:N}");
+                writer.WriteElementString("Name", mapping.name);
+                writer.WriteElementString("Tag", mapping.tag);
 
-                writer.WriteElementString("ModTexture", $"{replacement.modTexture:N}");
-                writer.WriteElementString("SourceTexture", $"{replacement.sourceTexture:N}");
-                writer.Write("TargetRect", replacement.targetRect);
+                writer.WriteElementString("ModTexture", $"{mapping.modTexture:N}");
+                writer.WriteElementString("SourceTexture", $"{mapping.sourceTexture:N}");
+                writer.Write("TargetRect", mapping.targetRect);
 
-                writer.WriteElementString("FlipX", $"{replacement.flipX}");
-                writer.WriteElementString("FlipY", $"{replacement.flipY}");
-                writer.WriteElementString("Rotation", $"{replacement.rotation}");
-                writer.WriteElementString("Comment", replacement.comment);
+                writer.WriteElementString("FlipX", $"{mapping.flipX}");
+                writer.WriteElementString("FlipY", $"{mapping.flipY}");
+                writer.WriteElementString("Rotation", $"{mapping.rotation}");
+                writer.WriteElementString("Comment", mapping.comment);
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -86,7 +86,7 @@ public static class TextureModProjectExtension
         foreach (var pair in allDirs)
         {
             writer.WriteStartElement("Directory");
-            writer.WriteAttributeString("path", pair.Key);
+            writer.WriteAttributeString("Path", pair.Key);
             foreach (var file in pair.Value.files)
             {
                 writer.WriteElementString("File", $"{file:N}");
@@ -115,20 +115,20 @@ public static class TextureModProjectExtension
         {
             foreach (XmlElement xmlElement in replacements.GetElementsByTagName("TextureMapping"))
             {
-                var replacement = new TextureMapping();
-                replacement.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
-                replacement.tag = xmlElement["Tag"].InnerText;
-                replacement.name = xmlElement["Name"].InnerText;
-                replacement.comment = xmlElement["Comment"].InnerText;
+                var mapping = new TextureMapping();
+                mapping.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
+                mapping.tag = xmlElement["Tag"].InnerText;
+                mapping.name = xmlElement["Name"].InnerText;
+                mapping.comment = xmlElement["Comment"].InnerText;
 
-                replacement.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
-                replacement.sourceTexture = Guid.Parse(xmlElement["SourceTexture"].InnerText);
-                replacement.targetRect = ReadRectangleF(xmlElement["TargetRect"]);
+                mapping.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
+                mapping.sourceTexture = Guid.Parse(xmlElement["SourceTexture"].InnerText);
+                mapping.targetRect = ReadRectangleF(xmlElement["TargetRect"]);
 
-                replacement.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
-                replacement.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
-                replacement.rotation = int.Parse(xmlElement["Rotation"].InnerText);
-                project.textureMappings.Add(replacement);
+                mapping.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
+                mapping.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
+                mapping.rotation = int.Parse(xmlElement["Rotation"].InnerText);
+                project.textureMappings.Add(mapping);
             }
         }
         project.modTextures.Clear();

@@ -194,8 +194,8 @@ public partial class TextureModForm
             if (!sourcePackFileCache.TryGetValue(modPack.sourcePath, out var file))
             {
                 file = GameFileUtils.CreateFileObject(modPack.fileType);
-                var rpfEntry = worldForm.GameFileCache.RpfMan.GetEntry(modPack.sourcePath);
-                worldForm.GameFileCache.RpfMan.LoadFile(file as PackedFile, rpfEntry);
+                var rpfEntry = rpfManager.GetEntry(modPack.sourcePath);
+                rpfManager.LoadFile(file as PackedFile, rpfEntry);
                 sourcePackFileCache.Add(modPack.sourcePath, file);
             }
             modPack.sourceFile = file;

@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using CodeWalker.Rendering;
 using SharpDX;
 
 namespace CodeWalker.TexMod;
@@ -104,24 +105,35 @@ public partial class TextureModForm
             workingProject.manifestFile = setupForm.PackageManifestFile;
         }
         workingProject.LoadPackageManifest();
-        var form = new TextureModForm();
-        form.project = workingProject;
-        form.worldForm = worldForm;
-        form.adapter = new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache);
+        var form = new TextureModForm(
+            workingProject,
+            worldForm.Renderer,
+            worldForm.GameFileCache.RpfMan,
+            new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache)
+        );
         return form;
     }
 
-    public TextureModProject project;
-    public TextureModAdapter adapter;
-    public WorldForm worldForm;
+    private TextureModProject project;
+    private TextureModAdapter adapter;
+    private RpfManager rpfManager;
+    private Renderer renderer;
 
     private CodeWalker.Graphic.D2DRenderTarget d2dRenderTarget;
     private WorkingState working = new();
 
     // private ModTexture currentMod;
     // private TextureReplacement currentReplacement;
-    private List<TextureMapping> replacements = new();
+    private List<TextureMapping> listOfMappings = new();
     private bool applyDrawing;
+
+    private TextureModForm(TextureModProject workingProject, Renderer renderer, RpfManager rpfMan, TextureModAdapter adapter) : this()
+    {
+        this.project = workingProject;
+        this.rpfManager = rpfMan;
+        this.renderer = renderer;
+        this.adapter = adapter;
+    }
 
     private void SelectTexMod(ModTexture modTexture)
     {
@@ -139,7 +151,7 @@ public partial class TextureModForm
             //imageCache.ReturnToPool(key, working.modTextureBitmap);
             //working.modTextureBitmap = null;
         }
-        replacements.Clear();
+        listOfMappings.Clear();
         working.modTexture = modTexture;
         working.mapping = null;
 
@@ -271,46 +283,51 @@ public partial class TextureModForm
         var sourceTex = gameTextureCanvas.GetImage();
         if (sourceTex == null) return;
 
-        if (!Monitor.TryEnter(worldForm.Renderer.DXMan.syncroot, 50))
+        if (!Monitor.TryEnter(renderer.DXMan.syncroot, 50))
         {
             return;
         }
         try
         {
-            d2dRenderTarget.SetTargetSize(worldForm.Renderer.Device, sourceTex.PixelSize);
+            d2dRenderTarget.SetTargetSize(renderer.Device, sourceTex.PixelSize);
             d2dRenderTarget.BeginDraw();
 
             var overlay = working.modTextureBitmap;
             if (!checkBox1.Checked) overlay = null;
-            if (working.gameTextureBitmap != null)
-            {
-                DrawPreviewOverlay(
-                    d2dRenderTarget.target,
-                    working.gameTextureBitmap,
-                    overlay,
-                    working.gameTextureBitmap.PixelSize,
-                    working.modTexture.sourceRect,
-                    working.mapping.targetRect,
-                    working.mapping.flipX,
-                    working.mapping.flipY,
-                    working.mapping.rotation
-                );
-            }
+            DrawPreviewOverlay(
+                d2dRenderTarget.target,
+                working.gameTextureBitmap,
+                overlay,
+                sourceTex.PixelSize,
+                working.modTexture.sourceRect,
+                working.mapping.targetRect,
+                working.mapping.flipX,
+                working.mapping.flipY,
+                working.mapping.rotation
+            );
             if (checkBox3.Checked)
             {
                 d2dRenderTarget.FillRectangle(targetRect.Raw());
             }
             d2dRenderTarget.EndDraw();
 
-            var texture = worldForm.Renderer.RenderableCache.FindRenderableTexture(x =>
-                x.Key.NameHash == nameHash);
-            d2dRenderTarget.CopyTo(worldForm.Renderer.Device, texture);
+            var pixelSize = sourceTex.PixelSize;
+            var texture = renderer.RenderableCache.FindRenderableTexture(x =>
+            {
+                var tex = x.Key;
+                if (tex.NameHash == nameHash)
+                {
+                    return tex.Width == pixelSize.Width && tex.Height == pixelSize.Height;
+                }
+                return false;
+            });
+            d2dRenderTarget.CopyTo(renderer.Device, texture);
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        Monitor.Exit(worldForm.Renderer.DXMan.syncroot);
+        Monitor.Exit(renderer.DXMan.syncroot);
     }
 
     public class TextureReplacementPropertyObject

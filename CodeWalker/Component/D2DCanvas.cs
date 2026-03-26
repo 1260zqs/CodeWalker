@@ -1,28 +1,38 @@
 using System;
 using System.Windows.Forms;
 using SharpDX;
-using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
-using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
+using SharpDX.DXGI;
+using SharpDX.Direct2D1;
+using SharpDX.Direct3D11;
+using Bitmap = SharpDX.Direct2D1.Bitmap;
 using CodeWalker.Graphic;
 using CodeWalker.Utils;
-using Bitmap = SharpDX.Direct2D1.Bitmap;
+using Device = SharpDX.Direct3D11.Device;
 
 namespace CodeWalker;
 
 public delegate void D2DCanvasBitmapLoadedHandler(D2DCanvas canvas);
+
 public delegate void D2DCanvasPaintHandler(D2DCanvas canvas, RenderTarget target, Bitmap bitmap);
 
 public class D2DCanvas : Control
 {
-    WindowRenderTarget target;
+    SharpDX.Direct3D11.DeviceContext immediateContext;
+    SwapChain swapChain;
+    Texture2D backBuffer;
+    RenderTargetView backBufferView;
+    RenderTarget target;
     SolidColorBrush solidBrush;
     BitmapBrush tileBrush;
 
     Bitmap bitmap;
     Size2 imageSize;
     AsyncBitmapSource bitmapSource;
+
+    public SharpDX.Direct3D11.Device d3dDevice;
+    public SharpDX.DXGI.Factory d3dFactory;
 
     public RawMatrix3x2 transform => target.Transform;
     public D2DCanvasPaintHandler onPaint;
@@ -40,24 +50,22 @@ public class D2DCanvas : Control
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-
-        var props = new HwndRenderTargetProperties()
+        d3dDevice ??= DXGraphic.GetDevice();
+        d3dFactory ??= DXGraphic.d3dFactory;
+        immediateContext = d3dDevice.ImmediateContext;
+        var desc = new SwapChainDescription()
         {
-            Hwnd = Handle,
-            PixelSize = new Size2(Width, Height),
-            PresentOptions = PresentOptions.Immediately
+            BufferCount = 1,
+            ModeDescription = new ModeDescription(Width, Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
+            IsWindowed = true,
+            OutputHandle = Handle,
+            SampleDescription = new SampleDescription(1, 0),
+            SwapEffect = SwapEffect.Discard,
+            Usage = Usage.RenderTargetOutput
         };
-        var format = new SharpDX.Direct2D1.PixelFormat(
-            Format.R8G8B8A8_UNorm,
-            SharpDX.Direct2D1.AlphaMode.Ignore
-        );
-        var rtProps = new RenderTargetProperties(
-            RenderTargetType.Hardware,
-            format, 0, 0,
-            RenderTargetUsage.None,
-            FeatureLevel.Level_DEFAULT
-        );
-        target = new WindowRenderTarget(DXGraphic.d2dFactory, rtProps, props);
+        d3dFactory.MakeWindowAssociation(Handle, WindowAssociationFlags.IgnoreAll);
+        swapChain = new SwapChain(d3dFactory, d3dDevice, desc);
+        CreateRenderTarget(d3dDevice);
 
         solidBrush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
         var transparent = DXGraphic.LoadEmbeddedBitmap(target, "transparent.bmp");
@@ -74,6 +82,24 @@ public class D2DCanvas : Control
         bitmapSource?.LoadAsync();
     }
 
+    private void CreateRenderTarget(Device device)
+    {
+        backBuffer = SharpDX.Direct3D11.Resource.FromSwapChain<Texture2D>(swapChain, 0);
+        backBufferView = new RenderTargetView(device, backBuffer);
+        using var surface = backBuffer.QueryInterface<Surface>();
+        var format = new SharpDX.Direct2D1.PixelFormat(
+            Format.R8G8B8A8_UNorm,
+            SharpDX.Direct2D1.AlphaMode.Ignore
+        );
+        target = new RenderTarget(DXGraphic.d2dFactory, surface, new(
+            RenderTargetType.Hardware,
+            format, 96, 96,
+            RenderTargetUsage.None,
+            FeatureLevel.Level_DEFAULT
+        ));
+        target.AntialiasMode = AntialiasMode.PerPrimitive;
+    }
+
     protected override void OnHandleDestroyed(EventArgs e)
     {
         Utilities.Dispose(ref bitmap);
@@ -81,6 +107,9 @@ public class D2DCanvas : Control
         Utilities.Dispose(ref solidBrush);
         Utilities.Dispose(ref bitmapSource);
         Utilities.Dispose(ref target);
+        Utilities.Dispose(ref backBufferView);
+        Utilities.Dispose(ref backBuffer);
+        Utilities.Dispose(ref swapChain);
         base.OnHandleDestroyed(e);
     }
 
@@ -89,7 +118,18 @@ public class D2DCanvas : Control
         base.OnResize(e);
         if (target != null)
         {
-            target.Resize(new Size2(Width, Height));
+            Utilities.Dispose(ref target);
+            Utilities.Dispose(ref backBufferView);
+            Utilities.Dispose(ref backBuffer);
+            var desc = swapChain.Description;
+            swapChain.ResizeBuffers(
+                desc.BufferCount,
+                Width,
+                Height,
+                desc.ModeDescription.Format,
+                desc.Flags
+            );
+            CreateRenderTarget(d3dDevice);
             Invalidate();
         }
     }
@@ -172,57 +212,63 @@ public class D2DCanvas : Control
     protected override void OnPaint(PaintEventArgs e)
     {
         if (target == null) return;
-
+        immediateContext.Rasterizer.SetViewport(new Viewport(0, 0, Width, Height));
+        immediateContext.OutputMerger.SetTargets(backBufferView);
         target.BeginDraw();
+
         target.Transform = Matrix3x2.Identity;
         if (tileBrush != null)
         {
-            target.FillRectangle(
-                new RawRectangleF(0, 0, Width, Height),
-                tileBrush
-            );
+            target.FillRectangle(new RawRectangleF(0, 0, Width, Height), tileBrush);
         }
         else
         {
             target.Clear(new RawColor4(1, 1, 1, 1));
         }
-
-        if (bitmapSource != null)
-        {
-            if (bitmapSource.error || isError)
-            {
-                DrawText("unable to load image", 6, 0, Color.Red, DXGraphic.fontSegoeUI_16);
-            }
-            else if (bitmapSource.loading)
-            {
-                DrawText("loading...", 6, 0, Color.Orange, DXGraphic.fontSegoeUI_16);
-                Invalidate();
-            }
-            else if (bitmap != null)
-            {
-                if (onPaint == null)
-                {
-                    target.DrawBitmap(bitmap, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
-                }
-                else
-                {
-                    try
-                    {
-                        onPaint(this, target, bitmap);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-            }
-            else if (bitmapSource.state == AsyncImageState.Ready)
-            {
-                CreateBitmap(target);
-                Invalidate();
-            }
-        }
+        OnDraw();
         target.EndDraw();
+        swapChain.Present(1, PresentFlags.None);
+    }
+
+    private void OnDraw()
+    {
+        if (bitmap != null)
+        {
+            if (onPaint != null)
+            {
+                try
+                {
+                    onPaint(this, target, bitmap);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            else
+            {
+                target.DrawBitmap(bitmap, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+            }
+            return;
+        }
+        if (bitmapSource == null)
+        {
+            return;
+        }
+        if (bitmapSource.error || isError)
+        {
+            DrawText("unable to load image", 6, 0, Color.Red, DXGraphic.fontSegoeUI_16);
+        }
+        else if (bitmapSource.loading)
+        {
+            DrawText("loading...", 6, 0, Color.Orange, DXGraphic.fontSegoeUI_16);
+            Invalidate();
+        }
+        else if (bitmapSource.state == AsyncImageState.Ready)
+        {
+            CreateBitmap(target);
+            Invalidate();
+        }
     }
 
     public void FillRectangle(in System.Drawing.RectangleF rectangle, in RawColor4 color)

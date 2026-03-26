@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
@@ -10,83 +11,78 @@ namespace CodeWalker.Graphic;
 
 public class D2DRenderTarget : IDisposable
 {
-    private SharpDX.Direct3D11.Device d3dDevice;
     private SharpDX.Direct2D1.Device d2dDevice;
-    public SharpDX.Direct2D1.DeviceContext target;
+    public SharpDX.Direct2D1.RenderTarget target;
 
     private SolidColorBrush solidBrush;
-    private SharpDX.Direct2D1.Bitmap1 rt;
-    private SharpDX.Direct2D1.Bitmap1 bitmap;
+    private SharpDX.Direct3D11.Texture2D rtTexture;
     private SharpDX.Direct3D11.Texture2D stagingTexture;
     private SharpDX.Direct3D11.Texture2D targetTexture;
 
     private SharpDX.Size2 pixelSize;
     private SharpDX.DXGI.Format format;
 
-    public D2DRenderTarget()
-    {
-        format = SharpDX.DXGI.Format.B8G8R8A8_UNorm;
-        d3dDevice = new SharpDX.Direct3D11.Device(
-            SharpDX.Direct3D.DriverType.Hardware,
-            SharpDX.Direct3D11.DeviceCreationFlags.BgraSupport
-        );
-        using var dxgiDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device>();
-        using var d2dFactory = new SharpDX.Direct2D1.Factory1();
-        d2dDevice = new SharpDX.Direct2D1.Device(d2dFactory, dxgiDevice);
-        target = new SharpDX.Direct2D1.DeviceContext(
-            d2dDevice,
-            SharpDX.Direct2D1.DeviceContextOptions.None
-        );
+    private SharpDX.Direct3D11.Device d3dDevice;
+    private SharpDX.Direct2D1.Factory1 d2dFactory;
+    private IntPtr sharedHandle;
+    private KeyedMutex mutexA;
+    private KeyedMutex mutexB;
 
-        solidBrush = new SolidColorBrush(target, new RawColor4(0f, 1f, 0, 1f));
+    private const int kMutexKey = 0;
+
+    public D2DRenderTarget(SharpDX.Direct3D11.Device d3dDevice, SharpDX.Direct2D1.Factory1 d2dFactory)
+    {
+        format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
+        this.d3dDevice = d3dDevice;
+        this.d2dFactory = d2dFactory;
     }
 
     public void BeginDraw()
     {
-        target.Target = rt;
+        mutexA.Acquire(kMutexKey, 100);
         target.BeginDraw();
-        target.Clear(new RawColor4(0f, 0, 0, 0));
+        target.Clear(new RawColor4());
     }
 
     public void EndDraw()
     {
         target.EndDraw();
-        target.Target = null;
+        mutexA.Release(kMutexKey);
     }
 
     public byte[] Encode(CodeWalker.Utils.NVTT.Format texFormat, CodeWalker.Utils.NVTT.Quality quality)
     {
         byte[] bytes = null;
-        bitmap.CopyFromBitmap(rt);
-        var map = bitmap.Map(MapOptions.Read);
-        try
-        {
-            var success = CodeWalker.Utils.NVTT.Compress(
-                map.DataPointer,
-                pixelSize.Width,
-                pixelSize.Height,
-                Utils.NVTT.InputFormat.InputFormat_BGRA_8UB,
-                texFormat,
-                quality,
-                out var ptr,
-                out var size
-            );
-            if (success)
-            {
-                var dataSize = (int)size;
-                bytes = new byte[dataSize];
-                Marshal.Copy(ptr, bytes, 0, dataSize);
-                CodeWalker.Utils.NVTT.FreeBuffer(ptr);
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-        finally
-        {
-            bitmap.Unmap();
-        }
+        // cpuBitmap.CopyFromBitmap(rt);
+        // var map = cpuBitmap.Map(MapOptions.Read);
+        // try
+        // {
+        //     var success = CodeWalker.Utils.NVTT.Compress(
+        //         map.DataPointer,
+        //         pixelSize.Width,
+        //         pixelSize.Height,
+        //         Utils.NVTT.InputFormat.InputFormat_BGRA_8UB,
+        //         texFormat,
+        //         quality,
+        //         out var ptr,
+        //         out var size
+        //     );
+        //     if (success)
+        //     {
+        //         var dataSize = (int)size;
+        //         bytes = new byte[dataSize];
+        //         Marshal.Copy(ptr, bytes, 0, dataSize);
+        //         CodeWalker.Utils.NVTT.FreeBuffer(ptr);
+        //     }
+        // }
+        // catch (Exception e)
+        // {
+        //     Console.WriteLine(e);
+        // }
+        // finally
+        // {
+        //     cpuBitmap.Unmap();
+        // }
         return bytes;
     }
 
@@ -95,7 +91,7 @@ public class D2DRenderTarget : IDisposable
         if (renderableTexture == null || !renderableTexture.IsLoaded) return;
         if (targetTexture == null || targetTexture.IsDisposed)
         {
-            var texDesc = new Texture2DDescription
+            targetTexture = new SharpDX.Direct3D11.Texture2D(device, new()
             {
                 Format = format,
                 Width = pixelSize.Width,
@@ -106,8 +102,8 @@ public class D2DRenderTarget : IDisposable
                 OptionFlags = ResourceOptionFlags.None,
                 BindFlags = BindFlags.ShaderResource,
                 SampleDescription = new SampleDescription(1, 0),
-            };
-            targetTexture = new SharpDX.Direct3D11.Texture2D(device, texDesc);
+            });
+            targetTexture.Tag = "override texture";
         }
         if (!ReferenceEquals(renderableTexture.Texture2D, targetTexture))
         {
@@ -116,19 +112,18 @@ public class D2DRenderTarget : IDisposable
             renderableTexture.Texture2D = targetTexture;
             renderableTexture.ShaderResourceView = new(device, targetTexture);
         }
-        bitmap.CopyFromBitmap(rt);
-        CheckCreateStagingTexture(device);
+        if (stagingTexture == null)
+        {
+            stagingTexture = device.OpenSharedResource<Texture2D>(sharedHandle);
+            mutexB = stagingTexture.QueryInterface<KeyedMutex>();
+        }
 
-        var d2dData = bitmap.Map(MapOptions.Read);
-        device.ImmediateContext.UpdateSubresource(new(d2dData.DataPointer,
-            d2dData.Pitch, pixelSize.Height
-        ), stagingTexture);
-        bitmap.Unmap();
-
+        mutexB.Acquire(kMutexKey, 100);
         device.ImmediateContext.CopySubresourceRegion(
             stagingTexture, 0, null,
             targetTexture, 0
         );
+        mutexB.Release(kMutexKey);
     }
 
     public void SetTargetSize(SharpDX.Direct3D11.Device device, SharpDX.Size2 pixelSize)
@@ -139,65 +134,59 @@ public class D2DRenderTarget : IDisposable
         }
         this.Release();
         this.pixelSize = pixelSize;
-        CheckCreateStagingTexture(device);
-        var bmpProps = new BitmapProperties1(
-            new SharpDX.Direct2D1.PixelFormat(
-                format,
-                SharpDX.Direct2D1.AlphaMode.Premultiplied
-            ),
-            96, 96,
-            BitmapOptions.Target | BitmapOptions.CannotDraw
-        );
-        var bitmapProperties = new BitmapProperties1
-        {
-            PixelFormat = bmpProps.PixelFormat,
-            BitmapOptions = BitmapOptions.CannotDraw | BitmapOptions.CpuRead,
-        };
 
-        rt = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bmpProps);
-        bitmap = new SharpDX.Direct2D1.Bitmap1(target, pixelSize, bitmapProperties);
-        Utilities.Dispose(ref targetTexture);
-    }
-
-    private void CheckCreateStagingTexture(SharpDX.Direct3D11.Device device)
-    {
-        if (device == null || stagingTexture != null) return;
-        var texDesc = new Texture2DDescription
+        rtTexture = new SharpDX.Direct3D11.Texture2D(d3dDevice, new()
         {
+            Format = format,
             Width = pixelSize.Width,
             Height = pixelSize.Height,
             ArraySize = 1,
             MipLevels = 1,
-            BindFlags = BindFlags.None,
-            Format = format,
-            OptionFlags = ResourceOptionFlags.None,
-            CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
+            CpuAccessFlags = CpuAccessFlags.None,
+            OptionFlags = ResourceOptionFlags.SharedKeyedmutex,
+            BindFlags = BindFlags.RenderTarget,
             SampleDescription = new SampleDescription(1, 0),
-        };
-        stagingTexture = new SharpDX.Direct3D11.Texture2D(device, texDesc);
+        });
+
+        mutexA = rtTexture.QueryInterface<KeyedMutex>();
+        using var surface = rtTexture.QueryInterface<Surface>();
+        var pixelFormat = new SharpDX.Direct2D1.PixelFormat(
+            format,
+            SharpDX.Direct2D1.AlphaMode.Premultiplied
+        );
+        target = new RenderTarget(d2dFactory, surface, new(
+            RenderTargetType.Hardware,
+            pixelFormat, 96, 96,
+            RenderTargetUsage.None,
+            FeatureLevel.Level_DEFAULT
+        ));
+
+        using var dxgi = rtTexture.QueryInterface<SharpDX.DXGI.Resource>();
+        sharedHandle = dxgi.SharedHandle;
+        solidBrush = new SolidColorBrush(target, new RawColor4(0f, 1f, 0, 1f));
     }
 
     public void FillRectangle(in RawRectangleF rectangle)
     {
+        solidBrush.Color = new RawColor4(0, 1, 0, 1);
         target.FillRectangle(rectangle, solidBrush);
     }
 
     private void Release()
     {
         pixelSize = Size2.Zero;
-        Utilities.Dispose(ref rt);
-        Utilities.Dispose(ref bitmap);
+        sharedHandle = IntPtr.Zero;
         Utilities.Dispose(ref stagingTexture);
+
+        Utilities.Dispose(ref rtTexture);
+        Utilities.Dispose(ref target);
+        Utilities.Dispose(ref mutexA);
+        Utilities.Dispose(ref mutexB);
     }
 
     public void Dispose()
     {
-        Utilities.Dispose(ref rt);
-        Utilities.Dispose(ref bitmap);
-        Utilities.Dispose(ref stagingTexture);
-
-        Utilities.Dispose(ref target);
-        Utilities.Dispose(ref d2dDevice);
-        Utilities.Dispose(ref d3dDevice);
+        Release();
+        GC.SuppressFinalize(this);
     }
 }

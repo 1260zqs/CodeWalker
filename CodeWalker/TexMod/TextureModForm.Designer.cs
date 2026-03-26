@@ -221,8 +221,8 @@ namespace CodeWalker.TexMod
             // projectListPanel
             // 
             this.projectListPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.projectListPanel.Controls.Add(this.treeView);
             this.projectListPanel.Controls.Add(this.toolStrip1);
-            this.projectListPanel.Controls.Add(this.modListView);
             this.projectListPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.projectListPanel.Location = new System.Drawing.Point(6, 6);
             this.projectListPanel.Margin = new System.Windows.Forms.Padding(0);
@@ -334,22 +334,20 @@ namespace CodeWalker.TexMod
             // 
             // modListView
             // 
-            this.modListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.modListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.modListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             columnHeader1});
+            this.modListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.modListView.FullRowSelect = true;
             this.modListView.GridLines = true;
             this.modListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.modListView.HideSelection = false;
             this.modListView.LabelEdit = true;
-            this.modListView.Location = new System.Drawing.Point(0, 25);
+            this.modListView.Location = new System.Drawing.Point(3, 3);
             this.modListView.Margin = new System.Windows.Forms.Padding(0);
             this.modListView.MultiSelect = false;
             this.modListView.Name = "modListView";
-            this.modListView.Size = new System.Drawing.Size(312, 310);
+            this.modListView.Size = new System.Drawing.Size(617, 219);
             this.modListView.TabIndex = 0;
             this.modListView.UseCompatibleStateImageBehavior = false;
             this.modListView.View = System.Windows.Forms.View.Details;
@@ -898,7 +896,7 @@ namespace CodeWalker.TexMod
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.treeView);
+            this.tabPage3.Controls.Add(this.modListView);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -910,9 +908,11 @@ namespace CodeWalker.TexMod
             // treeView
             // 
             this.treeView.AllowDrop = true;
+            this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.treeView.ContextMenuStrip = this.m_ProjectTreeViewContextMenu;
-            this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.FullRowSelect = true;
             this.treeView.HideSelection = false;
             this.treeView.ImageIndex = 0;
@@ -920,13 +920,13 @@ namespace CodeWalker.TexMod
             this.treeView.Indent = 16;
             this.treeView.ItemHeight = 18;
             this.treeView.LabelEdit = true;
-            this.treeView.Location = new System.Drawing.Point(3, 3);
+            this.treeView.Location = new System.Drawing.Point(0, 25);
             this.treeView.Name = "treeView";
             this.treeView.PathSeparator = "/";
             this.treeView.SelectedImageIndex = 0;
             this.treeView.ShowLines = false;
             this.treeView.ShowRootLines = false;
-            this.treeView.Size = new System.Drawing.Size(617, 219);
+            this.treeView.Size = new System.Drawing.Size(312, 310);
             this.treeView.TabIndex = 0;
             this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
             this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
