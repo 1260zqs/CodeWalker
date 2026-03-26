@@ -27,6 +27,7 @@ public class D2DRenderTarget : IDisposable
     private IntPtr sharedHandle;
     private KeyedMutex mutexA;
     private KeyedMutex mutexB;
+    private bool resizeTargetTexture;
 
     private const int kMutexKey = 0;
 
@@ -89,8 +90,9 @@ public class D2DRenderTarget : IDisposable
     public void CopyTo(SharpDX.Direct3D11.Device device, CodeWalker.Rendering.RenderableTexture renderableTexture)
     {
         if (renderableTexture == null || !renderableTexture.IsLoaded) return;
-        if (targetTexture == null || targetTexture.IsDisposed)
+        if (targetTexture == null || targetTexture.IsDisposed || resizeTargetTexture)
         {
+            resizeTargetTexture = false;
             targetTexture = new SharpDX.Direct3D11.Texture2D(device, new()
             {
                 Format = format,
@@ -134,6 +136,7 @@ public class D2DRenderTarget : IDisposable
         }
         this.Release();
         this.pixelSize = pixelSize;
+        resizeTargetTexture = true;
 
         rtTexture = new SharpDX.Direct3D11.Texture2D(d3dDevice, new()
         {
