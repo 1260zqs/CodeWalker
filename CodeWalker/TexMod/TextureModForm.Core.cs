@@ -114,7 +114,7 @@ public partial class TextureModForm
     public TextureModAdapter adapter;
     public WorldForm worldForm;
 
-    private D2DRenderTarget d2dRenderTarget;
+    private CodeWalker.Graphic.D2DRenderTarget d2dRenderTarget;
     private WorkingState working = new();
 
     // private ModTexture currentMod;

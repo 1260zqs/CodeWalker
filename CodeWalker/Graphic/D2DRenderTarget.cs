@@ -6,7 +6,7 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 
-namespace CodeWalker.TexMod;
+namespace CodeWalker.Graphic;
 
 public class D2DRenderTarget : IDisposable
 {

@@ -98,7 +98,7 @@ namespace CodeWalker.TexMod
             this.panel3 = new System.Windows.Forms.Panel();
             this.listView2 = new System.Windows.Forms.ListView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.treeView = new CodeWalker.Graphic.TexModTreeView();
+            this.treeView = new CodeWalker.TexModTreeView();
             this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1142,13 +1142,13 @@ namespace CodeWalker.TexMod
         private Button button5;
         private Button button6;
         private Button button7;
-        private D2DCanvas gameTextureCanvas;
-        private D2DCanvas modTextureCanvas;
+        private CodeWalker.D2DCanvas gameTextureCanvas;
+        private CodeWalker.D2DCanvas modTextureCanvas;
         private Timer timer1;
         private ToolStripButton toolStripButton3;
         private ToolStripButton toolStripButton8;
         private TabPage tabPage3;
-        private CodeWalker.Graphic.TexModTreeView treeView;
+        private CodeWalker.TexModTreeView treeView;
         private Button button9;
         private Button button8;
         private ToolStripButton toolStripButton6;

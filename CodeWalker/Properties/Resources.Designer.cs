@@ -184,15 +184,5 @@ namespace CodeWalker.Properties {
                 return ResourceManager.GetString("Msg_BuildModConfirm", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] transparent {
-            get {
-                object obj = ResourceManager.GetObject("transparent", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

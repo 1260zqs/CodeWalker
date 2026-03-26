@@ -1,222 +1,21 @@
-﻿using CodeWalker.Utils;
+﻿using CodeWalker.Graphic;
+using CodeWalker.Utils;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using SharpDX.WIC;
 using System;
-using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
-using Factory = SharpDX.Direct2D1.Factory;
-using FactoryType = SharpDX.Direct2D1.FactoryType;
-using WicFactory = SharpDX.WIC.ImagingFactory;
 
 namespace CodeWalker;
 
-public enum AsyncImageState : byte
-{
-    None,
-    Loading,
-    Ready,
-    Loaded,
-    Error,
-    Disposed
-}
-
-public abstract class AsyncBitmapSource : IDisposable
-{
-    public abstract class Factory : IDisposable
-    {
-        public abstract Bitmap CreateBitmap(RenderTarget target);
-        public abstract void Dispose();
-    }
-
-    public bool shared;
-    public Factory factory;
-    public AsyncImageState state;
-
-    public bool disposed => state == AsyncImageState.Disposed;
-    public bool loading => state == AsyncImageState.Loading;
-    public bool error => state == AsyncImageState.Error;
-
-    public abstract Bitmap CreateBitmap(RenderTarget target);
-    public abstract Task LoadAsync();
-    public abstract bool Equals(AsyncBitmapSource other);
-
-    public virtual void Dispose()
-    {
-        state = AsyncImageState.Disposed;
-        Utilities.Dispose(ref factory);
-    }
-}
-
-public class AsyncImageFileSource : AsyncBitmapSource
-{
-    class ImageFactory : Factory
-    {
-        public int width;
-        public int height;
-        public DataStream dataStream;
-
-        public ImageFactory(DataStream data, int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-            this.dataStream = data;
-        }
-
-        public override Bitmap CreateBitmap(RenderTarget target)
-        {
-            try
-            {
-                var pixelFormat = new SharpDX.Direct2D1.
-                    PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore);
-                var bmpProps = new BitmapProperties(pixelFormat);
-
-                var stride = width * 4;
-                return new Bitmap(
-                    target,
-                    new Size2(width, height),
-                    new DataPointer(dataStream.DataPointer, stride * height),
-                    stride,
-                    bmpProps
-                );
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return null;
-        }
-
-        public override void Dispose()
-        {
-            Utilities.Dispose(ref dataStream);
-        }
-    }
-
-    private string filename;
-
-    public AsyncImageFileSource(string filename)
-    {
-        this.filename = filename;
-    }
-
-    public override Task LoadAsync()
-    {
-        if (state == AsyncImageState.None)
-        {
-            state = AsyncImageState.Loading;
-            return Task.Run(Run);
-        }
-        return Task.CompletedTask;
-    }
-
-    public override Bitmap CreateBitmap(RenderTarget target)
-    {
-        var bitmap = factory?.CreateBitmap(target);
-        if (!shared) Utilities.Dispose(ref factory);
-        return bitmap;
-    }
-
-    private void Run()
-    {
-        try
-        {
-            using var decoder = new BitmapDecoder(D2DCanvas.wic, filename, DecodeOptions.CacheOnLoad);
-            using var converter = new FormatConverter(D2DCanvas.wic);
-            using var frame = decoder.GetFrame(0);
-
-            converter.Initialize(
-                frame,
-                SharpDX.WIC.PixelFormat.Format32bppRGBA,
-                BitmapDitherType.None,
-                null,
-                0,
-                BitmapPaletteType.Custom
-            );
-
-            var width = converter.Size.Width;
-            var height = converter.Size.Height;
-
-            var stride = width * 4;
-            var pixels = new byte[stride * height];
-            converter.CopyPixels(pixels, stride);
-
-            var data = new DataStream(pixels.Length, true, true);
-            data.Write(pixels, 0, pixels.Length);
-            data.Position = 0;
-
-            if (disposed)
-            {
-                data.Dispose();
-                return;
-            }
-            factory = new ImageFactory(data, width, height);
-            state = AsyncImageState.Ready;
-        }
-        catch (Exception ex)
-        {
-            state = AsyncImageState.Error;
-            Console.WriteLine(ex);
-        }
-    }
-
-    public override bool Equals(AsyncBitmapSource other)
-    {
-        if (other is AsyncImageFileSource x)
-        {
-            return x.filename == filename;
-        }
-        return false;
-    }
-}
-
 public delegate void D2DCanvasBitmapLoadedHandler(D2DCanvas canvas);
-
 public delegate void D2DCanvasPaintHandler(D2DCanvas canvas, RenderTarget target, Bitmap bitmap);
 
 public class D2DCanvas : Control
 {
-    public static readonly WicFactory wic;
-    public static readonly Factory factory;
-    public static readonly SharpDX.DirectWrite.Factory dwriteFactory;
-    public static readonly TextFormat fontSegoeUI_16;
-    public static readonly TextFormat fontSegoeUI_12;
-    public static readonly TextFormat fontSegoeUI_6;
-
-    static D2DCanvas()
-    {
-        wic = new WicFactory();
-        factory = new Factory(FactoryType.MultiThreaded);
-        dwriteFactory = new SharpDX.DirectWrite.Factory(SharpDX.DirectWrite.FactoryType.Shared);
-
-        using var dwFactory = new SharpDX.DirectWrite.Factory();
-        fontSegoeUI_16 = new TextFormat(dwFactory, "Segoe UI", 16f);
-        fontSegoeUI_12 = new TextFormat(dwFactory, "Segoe UI", 12f);
-        fontSegoeUI_6 = new TextFormat(dwFactory, "Segoe UI", 6f);
-    }
-
-    //public static TextFormat CreateFontFromBytes(byte[] fontData, float fontSize)
-    //{
-    //    var dwFactory = new Factory();
-
-    //    // Load the font from byte array
-    //    var fontStream = new MemoryStream(fontData);
-    //    var fontLoader = new FontFileLoader(dwFactory);
-
-    //    var fontFile = new FontFile(fontStream);
-    //    var fontFace = dwFactory.CreateFontFace(fontFile);
-
-    //    // Create TextFormat using the custom font and size
-    //    var textFormat = new TextFormat(dwFactory, fontFace, fontSize);
-
-    //    return textFormat;
-    //}
-
     WindowRenderTarget target;
     SolidColorBrush solidBrush;
     BitmapBrush tileBrush;
@@ -232,33 +31,10 @@ public class D2DCanvas : Control
 
     public D2DCanvas()
     {
-        SetStyle(ControlStyles.AllPaintingInWmPaint
-                 | ControlStyles.UserPaint
-                 | ControlStyles.SupportsTransparentBackColor, true);
-    }
-
-    static Bitmap LoadEmbeddedBitmap(WindowRenderTarget target, byte[] bytes)
-    {
-        using var stream = new MemoryStream(bytes);
-        using var wicStream = new WICStream(wic, stream);
-        using var decoder = new BitmapDecoder(
-            wic,
-            wicStream,
-            DecodeOptions.CacheOnLoad
-        );
-
-        using var frame = decoder.GetFrame(0);
-        using var converter = new FormatConverter(wic);
-        converter.Initialize(
-            frame,
-            SharpDX.WIC.PixelFormat.Format32bppRGB,
-            BitmapDitherType.None,
-            null,
-            0,
-            BitmapPaletteType.Custom
-        );
-
-        return Bitmap.FromWicBitmap(target, converter);
+        const ControlStyles flags = ControlStyles.UserPaint
+                                    | ControlStyles.AllPaintingInWmPaint
+                                    | ControlStyles.SupportsTransparentBackColor;
+        SetStyle(flags, true);
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -281,10 +57,10 @@ public class D2DCanvas : Control
             RenderTargetUsage.None,
             FeatureLevel.Level_DEFAULT
         );
-        target = new WindowRenderTarget(factory, rtProps, props);
+        target = new WindowRenderTarget(DXGraphic.d2dFactory, rtProps, props);
 
         solidBrush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
-        var transparent = LoadEmbeddedBitmap(target, Properties.Resources.transparent);
+        var transparent = DXGraphic.LoadEmbeddedBitmap(target, "transparent.bmp");
         tileBrush = new BitmapBrush(target, transparent, new BitmapBrushProperties()
         {
             ExtendModeX = ExtendMode.Wrap,
@@ -391,11 +167,11 @@ public class D2DCanvas : Control
         {
             if (bitmapSource.error || isError)
             {
-                DrawText("unable to load image", 6, 0, Color.Red, fontSegoeUI_16);
+                DrawText("unable to load image", 6, 0, Color.Red, DXGraphic.fontSegoeUI_16);
             }
             else if (bitmapSource.loading)
             {
-                DrawText("loading...", 6, 0, Color.Orange, fontSegoeUI_16);
+                DrawText("loading...", 6, 0, Color.Orange, DXGraphic.fontSegoeUI_16);
                 Invalidate();
             }
             else if (bitmap != null)
@@ -429,6 +205,12 @@ public class D2DCanvas : Control
     {
         solidBrush.Color = color;
         target.FillRectangle(rectangle.Raw(), solidBrush);
+    }
+
+    public void FillRectangle(in SharpDX.Mathematics.Interop.RawRectangleF rectangle, in RawColor4 color)
+    {
+        solidBrush.Color = color;
+        target.FillRectangle(rectangle, solidBrush);
     }
 
     public void DrawRectangle(in System.Drawing.RectangleF rectangle, in RawColor4 color, float thickness)
@@ -477,9 +259,9 @@ public class D2DCanvas : Control
     public static Size2F MeasureText(string text, TextFormat font = null)
     {
         using var layout = new TextLayout(
-            dwriteFactory,
+            DXGraphic.dwriteFactory,
             text,
-            font ?? fontSegoeUI_12,
+            font ?? DXGraphic.fontSegoeUI_12,
             float.MaxValue,
             float.MaxValue
         );
@@ -487,12 +269,18 @@ public class D2DCanvas : Control
         return new Size2F(m.Width, m.Height);
     }
 
-    public void DrawText(string text, float x, float y, in Color color, TextFormat font = null)
+    public void DrawTextLayout(float x, float y, TextLayout textLayout, in SharpDX.Color color)
+    {
+        solidBrush.Color = color;
+        target.DrawTextLayout(new RawVector2(x, y), textLayout, solidBrush);
+    }
+
+    public void DrawText(string text, float x, float y, in SharpDX.Color color, TextFormat font = null)
     {
         solidBrush.Color = color;
         target.DrawText(
             text,
-            font ?? fontSegoeUI_12,
+            font ?? DXGraphic.fontSegoeUI_12,
             new RawRectangleF(x, y, x + Width, y + Height),
             solidBrush,
             DrawTextOptions.None,

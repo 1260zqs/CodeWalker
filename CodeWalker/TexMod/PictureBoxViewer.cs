@@ -92,7 +92,7 @@ public static class PictureBoxViewer
         stateObject.maxZoom = Math.Max((float)control.Width / width, (float)control.Height / height) * 100;
     }
 
-    internal static void Paint(D2DCanvas canvas, SharpDX.Direct2D1.Bitmap bitmap)
+    internal static void Paint(CodeWalker.D2DCanvas canvas, SharpDX.Direct2D1.Bitmap bitmap)
     {
         if (stateObjects.TryGetValue(GetHandle(canvas), out var stateObject))
         {

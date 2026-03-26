@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.Graphic
+﻿namespace CodeWalker
 {
     partial class RectangleControl
     {

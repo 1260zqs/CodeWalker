@@ -59,6 +59,7 @@ namespace CodeWalker
             //Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            CodeWalker.Graphic.DXGraphic.Initialize();
             EditorApplication.Startup();
 
             // Always check the GTA folder first thing
@@ -71,7 +72,7 @@ namespace CodeWalker
             try
             {
 #endif
-            if (menumode || false)
+            if (menumode)
             {
                 Application.Run(new MenuForm());
             }

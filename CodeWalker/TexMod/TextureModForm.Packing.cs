@@ -60,7 +60,7 @@ public partial class TextureModForm
         public RpfFileEntry fileEntry;
         public GameFile localFile;
         public GameFile sourceFile;
-        public List<TextureMapping> replacements;
+        public List<TextureMapping> mappings;
         public Bitmap sourceBitmap;
     }
 
@@ -98,12 +98,13 @@ public partial class TextureModForm
         }
     }
 
-    private async Task BuildModAsync(CancellationToken cts, ProgressForm progressForm, ActionResult result)
+    private async Task BuildModAsync(CancellationToken cts, ProgressForm progress, ActionResult result)
     {
         void Log(string msg)
         {
             Console.WriteLine(msg);
         }
+
         var directoryName = Path.GetDirectoryName(project.manifestFile);
         var targetFolder = Path.Combine(directoryName, "content");
         if (!Directory.Exists(targetFolder)) Directory.CreateDirectory(targetFolder);
@@ -112,7 +113,7 @@ public partial class TextureModForm
         var modPacks = new List<ModPack>();
         var localPackFileCache = new Dictionary<string, GameFile>();
         var sourcePackFileCache = new Dictionary<string, GameFile>();
-        progressForm.SetMaxValue(project.sourceTextures.Count);
+        progress.SetMaxValue(project.sourceTextures.Count);
         foreach (var kv in project.sourceTextures)
         {
             var sourceTexture = kv.Value;
@@ -124,7 +125,7 @@ public partial class TextureModForm
             // var fn = Path.GetFileNameWithoutExtension(filename);
             // var hash = JenkHash.GenHash(sourceFileName.ToLowerInvariant());
             // var localFile = $"texmod\\{fn}_{hash:x8}{ext}";
-            progressForm.IncreaseValue($"extract {filename}");
+            progress.IncreaseValue($"extract {filename}");
             cts.ThrowIfCancellationRequested();
 
             var localFile = $"texmod\\{filename}";
@@ -141,7 +142,6 @@ public partial class TextureModForm
             modPacks.Add(modPack);
             if (File.Exists(savepath))
             {
-                modPack.fileBytes = File.ReadAllBytes(savepath);
                 continue;
             }
             var bytes = adapter.ExtractSourceFile(sourceFileName);
@@ -154,12 +154,12 @@ public partial class TextureModForm
         }
 
         // 2. load pack file
-        progressForm.SetMaxValue(modPacks.Count);
+        progress.SetMaxValue(modPacks.Count);
         foreach (var modPack in modPacks)
         {
             cts.ThrowIfCancellationRequested();
             var name = Path.GetFileName(modPack.sourcePath);
-            progressForm.IncreaseValue($"load file {name}");
+            progress.IncreaseValue($"load file {name}");
 
             if (localPackFileCache.TryGetValue(modPack.localSavePath, out var file))
             {
@@ -172,6 +172,7 @@ public partial class TextureModForm
             file = GameFileUtils.CreateFileObject(modPack.fileType);
             if (file is PackedFile packedFile)
             {
+                modPack.fileBytes ??= File.ReadAllBytes(modPack.localSavePath);
                 modPack.fileEntry = GameFileUtils.CreateFileEntry(name, modPack.localSavePath, ref modPack.fileBytes);
                 packedFile.Load(modPack.fileBytes, modPack.fileEntry);
                 modPack.localFile = file;
@@ -181,14 +182,14 @@ public partial class TextureModForm
             throw new Exception("unable to pack file");
         }
 
-        progressForm.SetMaxValue(modPacks.Count);
+        progress.SetMaxValue(modPacks.Count);
         var imageCache = new Dictionary<string, SharpDX.Direct2D1.Bitmap>();
         foreach (var modPack in modPacks)
         {
             // load game source texture
             cts.ThrowIfCancellationRequested();
-            progressForm.IncreaseValue($"begin draw texture {modPack.sourceTexName}");
-            modPack.replacements = project.FindSourceTextureMapping(modPack.id);
+            progress.IncreaseValue($"begin draw texture {modPack.sourceTexName}");
+            modPack.mappings = project.FindSourceTextureMapping(modPack.id);
 
             if (!sourcePackFileCache.TryGetValue(modPack.sourcePath, out var file))
             {
@@ -206,7 +207,7 @@ public partial class TextureModForm
             }
             modPack.originTexture = findTexture;
 
-            progressForm.UpdateStatusTex($"load texture {modPack.sourceTexName}");
+            // progress.UpdateStatusTex($"load texture {modPack.sourceTexName}");
             var textureSource = new AsyncTextureSource(findTexture, 0);
             await textureSource.LoadAsync();
             modPack.sourceBitmap = textureSource.CreateBitmap(d2dRenderTarget.target);
@@ -215,13 +216,13 @@ public partial class TextureModForm
                 throw new Exception("unable to load source bitmap");
             }
 
-            var drawList = new List<(TextureMapping replacement, SharpDX.Direct2D1.Bitmap bitmap)>();
-            foreach (var replacement in modPack.replacements)
+            var drawList = new List<(TextureMapping mapping, SharpDX.Direct2D1.Bitmap bitmap)>();
+            foreach (var mapping in modPack.mappings)
             {
-                var modTexture = project.modTextures[replacement.modTexture];
+                var modTexture = project.modTextures[mapping.modTexture];
                 if (!imageCache.TryGetValue(modTexture.filename, out var bitmap))
                 {
-                    progressForm.UpdateStatusTex($"load image {modTexture.filename}");
+                    // progress.UpdateStatusTex($"load image {modTexture.filename}");
                     var imageSource = new AsyncImageFileSource(modTexture.filename);
                     await imageSource.LoadAsync();
                     bitmap = imageSource.CreateBitmap(d2dRenderTarget.target);
@@ -231,32 +232,33 @@ public partial class TextureModForm
                 {
                     throw new Exception("unable to load image bitmap");
                 }
-                drawList.Add((replacement, bitmap));
+                drawList.Add((mapping, bitmap));
             }
+            if (drawList.Count == 0) continue;
 
-            progressForm.UpdateStatusTex($"draw texture {modPack.sourceTexName}");
+            // progress.UpdateStatusTex($"draw texture {modPack.sourceTexName}");
             d2dRenderTarget.SetTargetSize(null, modPack.sourceBitmap.PixelSize);
             d2dRenderTarget.BeginDraw();
             d2dRenderTarget.target.DrawBitmap(modPack.sourceBitmap, 1, BitmapInterpolationMode.NearestNeighbor);
-            foreach (var (replacement, bitmap) in drawList)
+            foreach (var (mapping, bitmap) in drawList)
             {
-                Log($"draw texture, {replacement.name}");
-                var modTexture = project.modTextures[replacement.modTexture];
+                Log($"draw texture, {mapping.name}");
+                var modTexture = project.modTextures[mapping.modTexture];
                 DrawPreviewOverlay(
                     d2dRenderTarget.target,
                     null,
                     bitmap,
                     modPack.sourceBitmap.PixelSize,
                     modTexture.sourceRect,
-                    replacement.targetRect,
-                    replacement.flipX,
-                    replacement.flipY,
-                    replacement.rotation
+                    mapping.targetRect,
+                    mapping.flipX,
+                    mapping.flipY,
+                    mapping.rotation
                 );
             }
             d2dRenderTarget.EndDraw();
 
-            progressForm.UpdateStatusTex($"encode texture {modPack.sourceTexName}");
+            // progress.UpdateStatusTex($"encode texture {modPack.sourceTexName}");
             var encodeBytes = d2dRenderTarget.Encode(
                 Utils.NVTT.Format.Format_DXT1,
                 Utils.NVTT.Quality.Quality_Normal
@@ -280,12 +282,12 @@ public partial class TextureModForm
         }
         imageCache.Clear();
 
-        progressForm.SetMaxValue(modPacks.Count);
+        progress.SetMaxValue(modPacks.Count);
         foreach (var modPack in modPacks)
         {
             if (modPack.localFile is PackedFile packedFile)
             {
-                progressForm.IncreaseValue($"write file {modPack.localFilePath}");
+                progress.IncreaseValue($"write file {modPack.localFilePath}");
                 var bytes = packedFile.Save();
                 File.WriteAllBytes(modPack.localSavePath, bytes);
             }
@@ -296,7 +298,7 @@ public partial class TextureModForm
         }
         project.SaveManifest();
         result.success = true;
-        progressForm.ClearProgress();
+        progress.ClearProgress();
         Console.WriteLine("mod pack ok");
     }
 
@@ -314,18 +316,18 @@ public partial class TextureModForm
             var result = new ActionResult();
             var fileName = saveFileDialog.FileName;
             var cts = new CancellationTokenSource();
-            var progressForm = ProgressForm.Create("Create OpenIV Package", cts);
+            var progress = ProgressForm.Create("Create OpenIV Package", cts);
             Task.Run(() =>
             {
-                PackModTask(fileName, cts.Token, progressForm, result);
+                PackModTask(fileName, cts.Token, progress, result);
                 cts.Dispose();
             }, cts.Token);
-            progressForm.ShowDialog(this);
+            progress.ShowDialog(this);
             result.ShowMessageBox(this);
         }
     }
 
-    private void PackModTask(string zipPath, CancellationToken cts, ProgressForm progressForm, ActionResult result)
+    private void PackModTask(string zipPath, CancellationToken cts, ProgressForm progress, ActionResult result)
     {
         // pack oiv
         var folder = Path.GetDirectoryName(project.manifestFile)!;
@@ -350,7 +352,7 @@ public partial class TextureModForm
                 {
                     var file = files[i];
                     var entry = file.Substring(folder.Length + 1);
-                    progressForm.UpdateProgress(entry, i + 1, files.Length);
+                    progress.UpdateProgress(entry, i + 1, files.Length);
                     archive.CreateEntryFromFile(file, entry);
                     if (cts.IsCancellationRequested)
                     {
@@ -375,13 +377,13 @@ public partial class TextureModForm
                 result.success = true;
                 result.message = "pack success";
             }
-            progressForm.ClearProgress();
+            progress.ClearProgress();
             Console.WriteLine("pack mod done");
         }
         catch (Exception exception)
         {
             result.exception = exception;
-            progressForm.ClearProgress();
+            progress.ClearProgress();
         }
         finally
         {

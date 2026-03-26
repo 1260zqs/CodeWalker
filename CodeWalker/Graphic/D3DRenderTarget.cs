@@ -3,7 +3,7 @@ using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace CodeWalker.TexMod;
+namespace CodeWalker.Graphic;
 
 public class D3DRenderTarget : IDisposable
 {

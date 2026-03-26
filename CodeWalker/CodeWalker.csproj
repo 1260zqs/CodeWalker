@@ -17,6 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\pf_arma_five.ttf" />
+    <None Remove="Resources\transparent.bmp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.0.6" />
     <PackageReference Include="FCTB" Version="2.16.24" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
@@ -51,20 +56,20 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="Graphic\D2DCanvas.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Graphic\DxImageControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="TexMod\TextureModForm.Packing.cs">
       <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
     <Compile Update="TexMod\TextureModForm.Core.cs">
       <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
-    <Compile Update="TexMod\TextureModForm.TreeView.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
+    <Compile Update="Control\D2DCanvas.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Control\RectangleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Control\TexModTreeView.cs">
+      <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
 
@@ -89,6 +94,15 @@
 
   <ItemGroup>
     <ClCompile Include="Resources\Image.hlsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\pf_arma_five.ttf">
+      <LogicalName>pf_arma_five.ttf</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\transparent.bmp">
+      <LogicalName>transparent.bmp</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

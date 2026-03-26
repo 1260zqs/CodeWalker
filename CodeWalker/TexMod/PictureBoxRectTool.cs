@@ -79,7 +79,7 @@ public static class PictureBoxRectTool
         }
     }
 
-    public static void Paint(D2DCanvas canvas)
+    public static void Paint(CodeWalker.D2DCanvas canvas)
     {
         if (stateObjects.TryGetValue(GetHandle(canvas), out var stateObject))
         {

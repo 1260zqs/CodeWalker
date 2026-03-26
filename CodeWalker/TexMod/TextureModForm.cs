@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Forms;
 using SharpDX.WIC;
 using WeifenLuo.WinFormsUI.Docking;
+using CodeWalker.Graphic;
 
 namespace CodeWalker.TexMod;
 
@@ -105,6 +106,8 @@ public partial class TextureModForm : Form
         PictureBoxRectTool.Paint(canvas);
     }
 
+    private bool drawBoxFrame;
+
     private void PaintPreviewPicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
     {
         PictureBoxViewer.Paint(canvas, bitmap);
@@ -124,7 +127,7 @@ public partial class TextureModForm : Form
                 working.mapping.rotation
             );
         }
-        if (working.mapping != null)
+        if (drawBoxFrame && working.mapping != null)
         {
             PictureBoxViewer.GetState(canvas, out var zoom, out _);
             foreach (var mapping in project.textureMappings)
@@ -138,16 +141,16 @@ public partial class TextureModForm : Form
                         canvas.DrawRectangle(rect, color, 1f / zoom);
 
                         var text = $"{mapping.name} Left={mapping.targetRect.Left} Top={mapping.targetRect.Top} Right={mapping.targetRect.Right} Bottom={mapping.targetRect.Bottom}";
-                        var font = D2DCanvas.fontSegoeUI_12;
-                        var size = D2DCanvas.MeasureText(text, font);
+                        var textLayout = DXGraphic.CreateTextLayout(text, DXGraphic.fontSegoeUI_12);
 
-                        var texBg = new System.Drawing.RectangleF();
-                        texBg.X = rect.X;
-                        texBg.Width = size.Width + 10;
-                        texBg.Height = size.Height;
-                        texBg.Y = rect.Y - texBg.Height;
-                        canvas.FillRectangle(texBg, color);
-                        canvas.DrawText(text, texBg.X + 5, texBg.Y, SharpDX.Color.White, font);
+                        var metrics = textLayout.Metrics;
+                        var textRect = new SharpDX.Mathematics.Interop.RawRectangleF();
+                        textRect.Left = rect.Left;
+                        textRect.Right = rect.Left + metrics.Width;
+                        textRect.Top = rect.Top - metrics.Height;
+                        textRect.Bottom = rect.Top;
+                        canvas.FillRectangle(textRect, color);
+                        canvas.DrawTextLayout(textRect.Left, textRect.Top, textLayout, SharpDX.Color.White);
                     }
                 }
             }
@@ -262,8 +265,8 @@ public partial class TextureModForm : Form
                 var fileName = openFileDialog1.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
 
-                using var decoder = new BitmapDecoder(D2DCanvas.wic, fileName, DecodeOptions.CacheOnLoad);
-                using var converter = new FormatConverter(D2DCanvas.wic);
+                using var decoder = new BitmapDecoder(DXGraphic.wicFactory, fileName, DecodeOptions.CacheOnLoad);
+                using var converter = new FormatConverter(DXGraphic.wicFactory);
                 using var frame = decoder.GetFrame(0);
 
                 converter.Initialize(

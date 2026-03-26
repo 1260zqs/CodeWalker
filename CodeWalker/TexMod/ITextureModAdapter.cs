@@ -16,7 +16,7 @@ public interface ITextureModAdapter
     Texture GetSourceTexture(GameFile gameFile, string texName);
 }
 
-public abstract class TextureModAdapter : ITextureModAdapter, IResourceLoader
+public abstract class TextureModAdapter : ITextureModAdapter
 {
     static TextureModAdapter()
     {
