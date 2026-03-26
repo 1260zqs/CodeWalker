@@ -1,4 +1,4 @@
-﻿using CodeWalker.Properties;
+using CodeWalker.Properties;
 using CodeWalker.Utils;
 using SharpDX;
 using System;
@@ -97,6 +97,7 @@ public partial class TextureModForm : Form
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
+        imageCache.Clear();
     }
 
     private void PaintTexturePicture(D2DCanvas canvas, SharpDX.Direct2D1.RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)

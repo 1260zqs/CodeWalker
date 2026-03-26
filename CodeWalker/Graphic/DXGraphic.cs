@@ -48,6 +48,7 @@ public static class DXGraphic
     public static SharpDX.Direct2D1.Bitmap LoadEmbeddedBitmap(RenderTarget target, string name)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
+        if (stream == null) return null;
         using var wicStream = new WICStream(wicFactory, stream);
         using var decoder = new BitmapDecoder(
             wicFactory,

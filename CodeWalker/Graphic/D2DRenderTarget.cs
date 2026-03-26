@@ -18,7 +18,7 @@ public class D2DRenderTarget : IDisposable
     private SharpDX.Direct2D1.Bitmap1 rt;
     private SharpDX.Direct2D1.Bitmap1 bitmap;
     private SharpDX.Direct3D11.Texture2D stagingTexture;
-    public SharpDX.Direct3D11.Texture2D targetTexture;
+    private SharpDX.Direct3D11.Texture2D targetTexture;
 
     private SharpDX.Size2 pixelSize;
     private SharpDX.DXGI.Format format;

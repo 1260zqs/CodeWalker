@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CodeWalker.GameFiles;
 using CodeWalker.Properties;
 using CodeWalker.TexMod;
@@ -19,11 +19,12 @@ public partial class TextureModForm
     {
         public ModTexture modTexture;
         public TextureMapping mapping;
+        public SourceTexture sourceTexture;
 
-        public AsyncBitmapSource gameTextureSource;
+        public AsyncGameTextureSource gameTextureSource;
         public SharpDX.Direct2D1.Bitmap gameTextureBitmap;
 
-        public AsyncBitmapSource modTextureSource;
+        public AsyncImageFileSource modTextureSource;
         public SharpDX.Direct2D1.Bitmap modTextureBitmap;
     }
 
@@ -132,6 +133,12 @@ public partial class TextureModForm
         {
             working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas);
         }
+        if (working.modTextureBitmap != null && working.modTexture != null)
+        {
+            var key = working.modTexture.filename;
+            //imageCache.ReturnToPool(key, working.modTextureBitmap);
+            //working.modTextureBitmap = null;
+        }
         replacements.Clear();
         working.modTexture = modTexture;
         working.mapping = null;
@@ -147,10 +154,18 @@ public partial class TextureModForm
         PictureBoxViewer.ResetViewer(gameTextureCanvas);
         if (modTexture != null)
         {
-            working.modTextureSource = new AsyncImageFileSource(working.modTexture.filename);
-            working.modTextureSource.shared = true;
-            working.modTextureSource.LoadAsync();
-            modTextureCanvas.SetImage(working.modTextureSource);
+            if (imageCache.TryGetFromPool(modTexture.filename, out var bitmap))
+            {
+                working.modTextureBitmap = bitmap;
+                modTextureCanvas.SetImage(bitmap);
+            }
+            else
+            {
+                working.modTextureSource = new AsyncImageFileSource(working.modTexture.filename);
+                working.modTextureSource.shared = true;
+                working.modTextureSource.LoadAsync();
+                modTextureCanvas.SetImage(working.modTextureSource);
+            }
             PictureBoxViewer.LoadState(modTextureCanvas, modTexture.editorState);
         }
 
@@ -163,12 +178,25 @@ public partial class TextureModForm
 
     private void SelectTextureMapping(TextureMapping mapping)
     {
-        propertyGridFix1.SelectedObject = null;
+        if (working.mapping == mapping)
+        {
+            return;
+        }
         if (working.mapping != null)
         {
             working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
         }
+        if (working.gameTextureBitmap != null && working.sourceTexture != null)
+        {
+            var key = working.sourceTexture.sourceFile;
+            //imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            //working.gameTextureBitmap = null;
+        }
+
         working.mapping = mapping;
+        working.sourceTexture = null;
+        propertyGridFix1.SelectedObject = null;
+
         Utilities.Dispose(ref working.gameTextureBitmap);
         Utilities.Dispose(ref working.gameTextureSource);
         PictureBoxViewer.ResetViewer(gameTextureCanvas);
@@ -176,11 +204,20 @@ public partial class TextureModForm
 
         if (mapping != null && project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
         {
+            working.sourceTexture = sourceTexture;
+            if (imageCache.TryGetFromPool(sourceTexture.sourceFile, out var bitmap))
+            {
+                working.gameTextureBitmap = bitmap;
+                gameTextureCanvas.SetImage(bitmap);
+            }
+            else
+            {
+                working.gameTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
+                working.gameTextureSource.shared = true;
+                working.gameTextureSource.LoadAsync();
+                gameTextureCanvas.SetImage(working.gameTextureSource);
+            }
             ReadPanelDataFromSource();
-            working.gameTextureSource = new AsyncGameTextureSource(adapter, sourceTexture.sourceFile);
-            working.gameTextureSource.shared = true;
-            working.gameTextureSource.LoadAsync();
-            gameTextureCanvas.SetImage(working.gameTextureSource);
             PictureBoxViewer.LoadState(gameTextureCanvas, mapping.editorState);
             propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(project, mapping, OnPropertyGridChanged);
         }
@@ -215,10 +252,6 @@ public partial class TextureModForm
                 return;
             }
         }
-    }
-
-    private void RenderUpdate()
-    {
     }
 
     private void RenderDrawing()

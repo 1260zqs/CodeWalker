@@ -1,4 +1,4 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using CodeWalker.TexMod;
 using CodeWalker.Utils;
 using SharpDX;
@@ -167,7 +167,7 @@ public class AsyncGameTextureSource : AsyncTextureSource
 {
     public TextureModAdapter adapter;
     private GameFile gameFile;
-    private string sourceFile;
+    public readonly string sourceFile;
 
     public AsyncGameTextureSource(TextureModAdapter adapter, string sourceFile)
     {

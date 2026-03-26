@@ -62,13 +62,19 @@
     <Compile Update="TexMod\TextureModForm.Core.cs">
       <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
-    <Compile Update="Control\D2DCanvas.cs">
+    <Compile Update="TexMod\TextureModForm.Caching.cs">
+		<DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModForm.TreeView.cs">
+		<DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Component\D2DCanvas.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Control\RectangleControl.cs">
+    <Compile Update="Component\RectangleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Control\TexModTreeView.cs">
+    <Compile Update="Component\TexModTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

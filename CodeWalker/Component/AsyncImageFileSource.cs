@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using CodeWalker.Graphic;
 using SharpDX;
@@ -54,7 +54,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
         }
     }
 
-    private string filename;
+    public readonly string filename;
 
     public AsyncImageFileSource(string filename)
     {

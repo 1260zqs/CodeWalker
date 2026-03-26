@@ -1,12 +1,12 @@
-﻿using CodeWalker.Graphic;
-using CodeWalker.Utils;
+using System;
+using System.Windows.Forms;
 using SharpDX;
 using SharpDX.Direct2D1;
 using SharpDX.DirectWrite;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
-using System;
-using System.Windows.Forms;
+using CodeWalker.Graphic;
+using CodeWalker.Utils;
 using Bitmap = SharpDX.Direct2D1.Bitmap;
 
 namespace CodeWalker;
@@ -61,12 +61,15 @@ public class D2DCanvas : Control
 
         solidBrush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
         var transparent = DXGraphic.LoadEmbeddedBitmap(target, "transparent.bmp");
-        tileBrush = new BitmapBrush(target, transparent, new BitmapBrushProperties()
+        if (transparent != null)
         {
-            ExtendModeX = ExtendMode.Wrap,
-            ExtendModeY = ExtendMode.Wrap,
-            InterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor
-        });
+            tileBrush = new BitmapBrush(target, transparent, new BitmapBrushProperties()
+            {
+                ExtendModeX = ExtendMode.Wrap,
+                ExtendModeY = ExtendMode.Wrap,
+                InterpolationMode = SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor
+            });
+        }
 
         bitmapSource?.LoadAsync();
     }
@@ -115,6 +118,20 @@ public class D2DCanvas : Control
         Invalidate();
     }
 
+    public void SetImage(SharpDX.Direct2D1.Bitmap bitmap)
+    {
+        isError = false;
+        this.bitmap = bitmap;
+        if (bitmap != null)
+        {
+            imageSize = bitmap.PixelSize;
+        }
+        else
+        {
+            imageSize = Size2.Zero;
+        }
+    }
+
     public void SetImage(string imagePath)
     {
         SetImage(new AsyncImageFileSource(imagePath));
@@ -158,10 +175,17 @@ public class D2DCanvas : Control
 
         target.BeginDraw();
         target.Transform = Matrix3x2.Identity;
-        target.FillRectangle(
-            new RawRectangleF(0, 0, Width, Height),
-            tileBrush
-        );
+        if (tileBrush != null)
+        {
+            target.FillRectangle(
+                new RawRectangleF(0, 0, Width, Height),
+                tileBrush
+            );
+        }
+        else
+        {
+            target.Clear(new RawColor4(1, 1, 1, 1));
+        }
 
         if (bitmapSource != null)
         {
@@ -254,19 +278,6 @@ public class D2DCanvas : Control
     public void SetTransformation(float x, float y, float scale)
     {
         target.Transform = Matrix3x2.Scaling(scale, scale) * Matrix3x2.Translation(x, y);
-    }
-
-    public static Size2F MeasureText(string text, TextFormat font = null)
-    {
-        using var layout = new TextLayout(
-            DXGraphic.dwriteFactory,
-            text,
-            font ?? DXGraphic.fontSegoeUI_12,
-            float.MaxValue,
-            float.MaxValue
-        );
-        var m = layout.Metrics;
-        return new Size2F(m.Width, m.Height);
     }
 
     public void DrawTextLayout(float x, float y, TextLayout textLayout, in SharpDX.Color color)
