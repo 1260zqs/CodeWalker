@@ -105,7 +105,6 @@ public class D2DRenderTarget : IDisposable
                 BindFlags = BindFlags.ShaderResource,
                 SampleDescription = new SampleDescription(1, 0),
             });
-            targetTexture.Tag = "override texture";
         }
         if (!ReferenceEquals(renderableTexture.Texture2D, targetTexture))
         {
@@ -121,11 +120,17 @@ public class D2DRenderTarget : IDisposable
         }
 
         mutexB.Acquire(kMutexKey, 100);
-        device.ImmediateContext.CopySubresourceRegion(
-            stagingTexture, 0, null,
-            targetTexture, 0
-        );
-        mutexB.Release(kMutexKey);
+        try
+        {
+            device.ImmediateContext.CopySubresourceRegion(
+                stagingTexture, 0, null,
+                targetTexture, 0
+            );
+        }
+        finally
+        {
+            mutexB.Release(kMutexKey);
+        }
     }
 
     public void SetTargetSize(SharpDX.Direct3D11.Device device, SharpDX.Size2 pixelSize)
