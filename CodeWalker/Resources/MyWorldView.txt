@@ -1,0 +1,246 @@
+﻿using UnityEngine;
+using UnityEditor;
+using UnityEditor.AnimatedValues;
+
+public class MyWorldView : EditorWindow
+{
+    PreviewRenderUtility preview;
+    Mesh cubeMesh;
+    Material mat;
+
+    [MenuItem("Tools/MyEditor2")]
+    static void Open()
+    {
+        GetWindow<MyWorldView>();
+    }
+
+    void OnEnable()
+    {
+        preview = new PreviewRenderUtility();
+        preview.cameraFieldOfView = 30f;
+
+        cubeMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
+        mat = new Material(Shader.Find("Standard"));
+        m_Position.target = m_Position.value = new Vector3(2, 2, 2);
+        m_Rotation.target = m_Rotation.value = Quaternion.LookRotation(Vector3.zero);
+    }
+
+    void OnDestroy()
+    {
+        preview.Cleanup();
+        DestroyImmediate(mat);
+    }
+
+    private Camera camera;
+    private AnimFloat m_Size = new AnimFloat(kDefaultViewSize);
+    private AnimBool m_Ortho = new AnimBool();
+    private AnimVector3 m_Position = new AnimVector3();
+    private AnimQuaternion m_Rotation = new AnimQuaternion(Quaternion.identity);
+    private static float s_FPSScrollWheelMultiplier = 0.01f;
+    private bool viewIsLockedToObject;
+
+    const float k_MaxSceneViewSize = 3.2e38f;
+    const float kDefaultViewSize = 10f;
+
+    static float ValidateSceneSize(float value)
+    {
+        if (value == 0f)
+            return float.Epsilon;
+        if (value > k_MaxSceneViewSize)
+            return k_MaxSceneViewSize;
+        if (value < -k_MaxSceneViewSize)
+            return -k_MaxSceneViewSize;
+        return value;
+    }
+
+    float perspectiveFov => camera.fieldOfView;
+
+    public float size
+    {
+        get => m_Size.value;
+        set => m_Size.value = ValidateSceneSize(value);
+    }
+    public Vector3 pivot
+    {
+        get => m_Position.value;
+        set => m_Position.value = value;
+    }
+
+    // The direction of the scene view.
+    public Quaternion rotation
+    {
+        get => m_Rotation.value;
+        set => m_Rotation.value = value;
+    }
+    public float cameraDistance
+    {
+        get
+        {
+            float res;
+            if (!camera.orthographic)
+            {
+                float fov = m_Ortho.Fade(perspectiveFov, 0);
+                res = GetPerspectiveCameraDistance(size, fov);
+            }
+            else
+                res = size * 2f;
+
+            // clamp to allowed range in case scene view size was huge
+            return Mathf.Clamp(res, -k_MaxSceneViewSize, k_MaxSceneViewSize);
+        }
+    }
+
+    static float GetPerspectiveCameraDistance(float objectSize, float fov)
+    {
+        //        A
+        //        |\        We want to place camera at a
+        //        | \       distance that, at the given FOV,
+        //        |  \      would enclose a sphere of radius
+        //     _..+.._\     "size". Here |BC|=size, and we
+        //   .'   |   '\    need to find |AB|. ACB is a right
+        //  /     |    _C   angle, andBAC is half the FOV. So
+        // |      | _-   |  that gives: sin(BAC)=|BC|/|AB|,
+        // |      B      |  and thus |AB|=|BC|/sin(BAC).
+        // |             |
+        //  \           /
+        //   '._     _.'
+        //      `````
+        return objectSize / Mathf.Sin(fov * 0.5f * Mathf.Deg2Rad);
+    }
+
+    private void UpdateCamera()
+    {
+        var e = Event.current;
+        if (e.type == EventType.ScrollWheel)
+        {
+            HandleScrollWheel(this, false);
+            e.Use();
+        }
+        else if (e.type == EventType.MouseDrag)
+        {
+            HandleMouseDrag(this, 0);
+        }
+    }
+
+    private void HandleScrollWheel(MyWorldView view, bool zoomTowardsCenter)
+    {
+        var zoomDelta = Event.current.delta.y;
+        float targetSize = 0;
+        if (!camera.orthographic)
+        {
+            const float deltaCutoff = .3f;
+            var relativeDelta = Mathf.Abs(view.size) * zoomDelta * .015f;
+            if (relativeDelta > 0 && relativeDelta < deltaCutoff)
+                relativeDelta = deltaCutoff;
+            else if (relativeDelta < 0 && relativeDelta > -deltaCutoff)
+                relativeDelta = -deltaCutoff;
+
+            targetSize = view.size + relativeDelta;
+        }
+        else
+        {
+            targetSize = Mathf.Abs(view.size) * (zoomDelta * .015f + 1.0f);
+        }
+
+        var initialDistance = view.cameraDistance;
+
+        if (!(float.IsNaN(targetSize) || float.IsInfinity(targetSize)))
+        {
+            targetSize = Mathf.Min(k_MaxSceneViewSize, targetSize);
+            view.size = targetSize;
+        }
+
+        if (!zoomTowardsCenter && Mathf.Abs(view.cameraDistance) < 1.0e7f)
+        {
+            var percentage = 1f - (view.cameraDistance / initialDistance);
+            Handles.SetCamera(viewRect, camera);
+            var mouseRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            var mousePivot = mouseRay.origin + mouseRay.direction * view.cameraDistance;
+            var pivotVector = mousePivot - view.pivot;
+
+            view.pivot += pivotVector * percentage;
+        }
+    }
+
+    private void HandleMouseDrag(MyWorldView view, int id)
+    {
+        var evt = Event.current;
+
+        if (evt.alt)
+        {
+            view.FixNegativeSize();
+            Quaternion rotation = view.m_Rotation.target;
+            rotation = Quaternion.AngleAxis(evt.delta.y * .003f * Mathf.Rad2Deg, rotation * Vector3.right) * rotation;
+            rotation = Quaternion.AngleAxis(evt.delta.x * .003f * Mathf.Rad2Deg, Vector3.up) * rotation;
+            if (view.size < 0)
+            {
+                view.pivot = view.camera.transform.position;
+                view.size = 0;
+            }
+            view.rotation = rotation;
+        }
+        else
+        {
+            view.viewIsLockedToObject = false;
+            view.FixNegativeSize();
+            Camera cam = view.camera;
+            Vector3 screenPos = cam.WorldToScreenPoint(view.pivot);
+            screenPos += new Vector3(-Event.current.delta.x, Event.current.delta.y, 0);
+            Vector3 worldDelta = camera.ScreenToWorldPoint(screenPos) - view.pivot;
+            worldDelta *= EditorGUIUtility.pixelsPerPoint;
+            if (evt.shift)
+                worldDelta *= 4;
+            view.pivot += worldDelta;
+        }
+    }
+
+    public void FixNegativeSize()
+    {
+        if (size == 0f)
+            size = float.Epsilon;
+
+        float fov = perspectiveFov;
+
+        if (size < 0)
+        {
+            float distance = GetPerspectiveCameraDistance(size, fov);
+            Vector3 p = m_Position.value + rotation * new Vector3(0, 0, -distance);
+            size = -size;
+            distance = GetPerspectiveCameraDistance(size, fov);
+            m_Position.value = p + rotation * new Vector3(0, 0, distance);
+        }
+    }
+
+    private Rect viewRect;
+
+    void OnGUI()
+    {
+        var r = GUILayoutUtility.GetRect(position.width, position.height);
+        if (Event.current.type == EventType.Repaint)
+        {
+            viewRect = r;
+            preview.BeginPreview(r, GUIStyle.none);
+
+            camera = preview.camera;
+            camera.transform.rotation = m_Rotation.value;
+            camera.transform.position = m_Position.value + camera.transform.rotation * new Vector3(0, 0, -cameraDistance);
+
+            camera.nearClipPlane = 0.1f;
+            camera.farClipPlane = 100;
+
+            preview.lights[0].intensity = 1.2f;
+            preview.lights[0].transform.rotation = Quaternion.Euler(40, 40, 0);
+            preview.lights[1].intensity = 1.2f;
+
+            preview.DrawMesh(cubeMesh, Matrix4x4.identity, mat, 0);
+            preview.camera.Render();
+            var tex = preview.EndPreview();
+            GUI.DrawTexture(r, tex, ScaleMode.StretchToFill, false);
+            Repaint();
+        }
+        else
+        {
+            UpdateCamera();
+        }
+    }
+}
