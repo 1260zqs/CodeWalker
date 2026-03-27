@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Bitmap = SharpDX.Direct2D1.Bitmap;
 
 namespace CodeWalker.TexMod;
 
@@ -81,6 +82,10 @@ public partial class TextureModForm
             cacheItem.bitmap = bitmap;
             cacheItem.lastUseAt = DateTime.Now;
             cacheItem.refCount = Math.Max(cacheItem.refCount - 1, 0);
+        }
+
+        public void CreateCacheItem(string key, Bitmap bitmap)
+        {
         }
     }
 

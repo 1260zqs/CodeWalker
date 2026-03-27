@@ -27,7 +27,7 @@ public class D2DRenderTarget : IDisposable
     private IntPtr sharedHandle;
     private KeyedMutex mutexA;
     private KeyedMutex mutexB;
-    private bool resizeTargetTexture;
+    private bool targetTextureInvalid;
 
     private const int kMutexKey = 0;
 
@@ -51,48 +51,67 @@ public class D2DRenderTarget : IDisposable
         mutexA.Release(kMutexKey);
     }
 
-    public byte[] Encode(CodeWalker.Utils.NVTT.Format texFormat, CodeWalker.Utils.NVTT.Quality quality)
+    public byte[] EncodeTexture(CodeWalker.Utils.NVTT.Format texFormat, CodeWalker.Utils.NVTT.Quality quality)
     {
         byte[] bytes = null;
-        // cpuBitmap.CopyFromBitmap(rt);
-        // var map = cpuBitmap.Map(MapOptions.Read);
-        // try
-        // {
-        //     var success = CodeWalker.Utils.NVTT.Compress(
-        //         map.DataPointer,
-        //         pixelSize.Width,
-        //         pixelSize.Height,
-        //         Utils.NVTT.InputFormat.InputFormat_BGRA_8UB,
-        //         texFormat,
-        //         quality,
-        //         out var ptr,
-        //         out var size
-        //     );
-        //     if (success)
-        //     {
-        //         var dataSize = (int)size;
-        //         bytes = new byte[dataSize];
-        //         Marshal.Copy(ptr, bytes, 0, dataSize);
-        //         CodeWalker.Utils.NVTT.FreeBuffer(ptr);
-        //     }
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine(e);
-        // }
-        // finally
-        // {
-        //     cpuBitmap.Unmap();
-        // }
+        mutexA.Acquire(kMutexKey, 100);
+        try
+        {
+            using var cpuTexture = new SharpDX.Direct3D11.Texture2D(d3dDevice, new()
+            {
+                Format = Format.B8G8R8A8_UNorm,
+                Width = pixelSize.Width,
+                Height = pixelSize.Height,
+                ArraySize = 1,
+                MipLevels = 1,
+                CpuAccessFlags = CpuAccessFlags.Read,
+                OptionFlags = ResourceOptionFlags.None,
+                BindFlags = BindFlags.None,
+                SampleDescription = new SampleDescription(1, 0),
+            });
+            var immediateContext = d3dDevice.ImmediateContext;
+            immediateContext.CopySubresourceRegion(
+                rtTexture, 0, null,
+                cpuTexture, 0
+            );
+            var dataBox = immediateContext.MapSubresource(
+                cpuTexture,
+                0,
+                MapMode.Read,
+                SharpDX.Direct3D11.MapFlags.None
+            );
+            var success = CodeWalker.Utils.NVTT.Compress(
+                dataBox.DataPointer,
+                pixelSize.Width,
+                pixelSize.Height,
+                Utils.NVTT.InputFormat.InputFormat_BGRA_8UB,
+                texFormat,
+                quality,
+                out var ptr,
+                out var size
+            );
+            if (success)
+            {
+                var dataSize = (int)size;
+                bytes = new byte[dataSize];
+                Marshal.Copy(ptr, bytes, 0, dataSize);
+                CodeWalker.Utils.NVTT.FreeBuffer(ptr);
+            }
+            immediateContext.UnmapSubresource(cpuTexture, 0);
+        }
+        finally
+        {
+            mutexA.Release(kMutexKey);
+        }
         return bytes;
     }
 
     public void CopyTo(SharpDX.Direct3D11.Device device, CodeWalker.Rendering.RenderableTexture renderableTexture)
     {
         if (renderableTexture == null || !renderableTexture.IsLoaded) return;
-        if (targetTexture == null || targetTexture.IsDisposed || resizeTargetTexture)
+        if (targetTexture == null || targetTexture.IsDisposed || targetTextureInvalid)
         {
-            resizeTargetTexture = false;
+            targetTextureInvalid = false;
             targetTexture = new SharpDX.Direct3D11.Texture2D(device, new()
             {
                 Format = format,
@@ -133,7 +152,7 @@ public class D2DRenderTarget : IDisposable
         }
     }
 
-    public void SetTargetSize(SharpDX.Direct3D11.Device device, SharpDX.Size2 pixelSize)
+    public void SetTargetSize(SharpDX.Size2 pixelSize)
     {
         if (this.pixelSize == pixelSize)
         {
@@ -141,7 +160,7 @@ public class D2DRenderTarget : IDisposable
         }
         this.Release();
         this.pixelSize = pixelSize;
-        resizeTargetTexture = true;
+        targetTextureInvalid = true;
 
         rtTexture = new SharpDX.Direct3D11.Texture2D(d3dDevice, new()
         {

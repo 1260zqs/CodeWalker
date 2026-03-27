@@ -289,7 +289,7 @@ public partial class TextureModForm
         }
         try
         {
-            d2dRenderTarget.SetTargetSize(renderer.Device, sourceTex.PixelSize);
+            d2dRenderTarget.SetTargetSize(sourceTex.PixelSize);
             d2dRenderTarget.BeginDraw();
 
             var overlay = working.modTextureBitmap;

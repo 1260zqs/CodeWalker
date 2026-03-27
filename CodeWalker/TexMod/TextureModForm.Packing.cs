@@ -237,7 +237,7 @@ public partial class TextureModForm
             if (drawList.Count == 0) continue;
 
             // progress.UpdateStatusTex($"draw texture {modPack.sourceTexName}");
-            d2dRenderTarget.SetTargetSize(null, modPack.sourceBitmap.PixelSize);
+            d2dRenderTarget.SetTargetSize(modPack.sourceBitmap.PixelSize);
             d2dRenderTarget.BeginDraw();
             d2dRenderTarget.target.DrawBitmap(modPack.sourceBitmap, 1, BitmapInterpolationMode.NearestNeighbor);
             foreach (var (mapping, bitmap) in drawList)
@@ -259,7 +259,7 @@ public partial class TextureModForm
             d2dRenderTarget.EndDraw();
 
             // progress.UpdateStatusTex($"encode texture {modPack.sourceTexName}");
-            var encodeBytes = d2dRenderTarget.Encode(
+            var encodeBytes = d2dRenderTarget.EncodeTexture(
                 Utils.NVTT.Format.Format_DXT1,
                 Utils.NVTT.Quality.Quality_Normal
             );

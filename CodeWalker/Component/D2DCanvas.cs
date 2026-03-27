@@ -162,14 +162,8 @@ public class D2DCanvas : Control
     {
         isError = false;
         this.bitmap = bitmap;
-        if (bitmap != null)
-        {
-            imageSize = bitmap.PixelSize;
-        }
-        else
-        {
-            imageSize = Size2.Zero;
-        }
+        Utilities.Dispose(ref bitmapSource);
+        imageSize = bitmap != null ? bitmap.PixelSize : Size2.Zero;
     }
 
     public void SetImage(string imagePath)

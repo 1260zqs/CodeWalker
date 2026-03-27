@@ -47,8 +47,8 @@ public partial class TextureModForm : Form
         gameTextureCanvas.onPaint = PaintPreviewPicture;
         modTextureCanvas.onPaint = PaintTexturePicture;
 
-        gameTextureCanvas.onBitmapLoaded = ResetImageViewer;
-        modTextureCanvas.onBitmapLoaded = ResetImageViewer;
+        gameTextureCanvas.onBitmapLoaded = OnBitmapLoaded;
+        modTextureCanvas.onBitmapLoaded = OnBitmapLoaded;
         UpdateGroupBoxVisibility();
 
         repViewModeBtn.SetEnumDrop<View>(x => modListView.View = x);
@@ -74,7 +74,7 @@ public partial class TextureModForm : Form
         };
     }
 
-    private void ResetImageViewer(D2DCanvas canvas)
+    private void OnBitmapLoaded(D2DCanvas canvas)
     {
         var imageSize = canvas.GetImageSize();
         PictureBoxViewer.FitViewer(canvas, imageSize.Width, imageSize.Height);
@@ -99,6 +99,7 @@ public partial class TextureModForm : Form
         var d3dDevice = DXGraphic.GetDevice();
         var d2dFactory = DXGraphic.d2dFactory;
         d2dRenderTarget = new D2DRenderTarget(d3dDevice, d2dFactory);
+        d2dRenderTarget.SetTargetSize(new Size2(1, 1));
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
@@ -614,21 +615,22 @@ public partial class TextureModForm : Form
         {
             if (modTextureCanvas.GetImage() == null && working.modTextureSource.state == AsyncImageState.Ready)
             {
-                modTextureCanvas.CreateImageFromExtern(gameTextureCanvas.GetRenderTargetInternal());
+                var bitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
+                modTextureCanvas.SetImage(bitmap);
+                CheckImageUnload();
             }
         }
-        if (d2dRenderTarget.target == null) return;
         if (working.modTextureSource != null && working.modTextureBitmap == null)
         {
-            working.modTextureBitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
-            CheckImageUnload();
+            working.modTextureBitmap = modTextureCanvas.GetImage();
             gameTextureCanvas.Invalidate();
+            CheckImageUnload();
         }
         if (working.gameTextureSource != null && working.gameTextureBitmap == null)
         {
-            working.gameTextureBitmap = working.gameTextureSource.CreateBitmap(d2dRenderTarget.target);
-            CheckImageUnload();
+            working.gameTextureBitmap = gameTextureCanvas.GetImage();
             gameTextureCanvas.Invalidate();
+            CheckImageUnload();
         }
     }
 
@@ -637,11 +639,19 @@ public partial class TextureModForm : Form
         if (working == null) return;
         if (modTextureCanvas.HasImage() && working.modTextureBitmap != null)
         {
-            Utilities.Dispose(ref working.modTextureSource);
+            if (working.modTextureSource != null)
+            {
+                Utilities.Dispose(ref working.modTextureSource);
+                imageCache.CreateCacheItem(working.modTexture.filename, working.modTextureBitmap);
+            }
         }
         if (gameTextureCanvas.HasImage() && working.gameTextureBitmap != null)
         {
-            Utilities.Dispose(ref working.gameTextureSource);
+            if (working.gameTextureSource != null)
+            {
+                Utilities.Dispose(ref working.gameTextureSource);
+                imageCache.CreateCacheItem(working.sourceTexture.sourceFile, working.gameTextureBitmap);
+            }
         }
     }
 
