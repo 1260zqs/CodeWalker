@@ -491,7 +491,7 @@ namespace CodeWalker.TexMod
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(114, 16);
             this.checkBox3.TabIndex = 1;
-            this.checkBox3.Text = "draw test color";
+            this.checkBox3.Text = "Draw test color";
             this.checkBox3.UseVisualStyleBackColor = true;
             this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
@@ -501,7 +501,7 @@ namespace CodeWalker.TexMod
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(105, 23);
             this.button7.TabIndex = 0;
-            this.button7.Text = "update viewport";
+            this.button7.Text = "Update Viewport";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 

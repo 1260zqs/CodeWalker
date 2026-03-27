@@ -145,11 +145,21 @@ public partial class TextureModForm
         {
             working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas);
         }
+        if (working.mapping != null)
+        {
+            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
+        }
         if (working.modTextureBitmap != null && working.modTexture != null)
         {
             var key = working.modTexture.filename;
-            //imageCache.ReturnToPool(key, working.modTextureBitmap);
-            //working.modTextureBitmap = null;
+            imageCache.ReturnToPool(key, working.modTextureBitmap);
+            working.modTextureBitmap = null;
+        }
+        if (working.gameTextureBitmap != null && working.sourceTexture != null)
+        {
+            var key = working.sourceTexture.sourceFile;
+            imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            working.gameTextureBitmap = null;
         }
         listOfMappings.Clear();
         working.modTexture = modTexture;
@@ -170,6 +180,7 @@ public partial class TextureModForm
             {
                 working.modTextureBitmap = bitmap;
                 modTextureCanvas.SetImage(bitmap);
+                RenderDrawing();
             }
             else
             {
@@ -201,8 +212,8 @@ public partial class TextureModForm
         if (working.gameTextureBitmap != null && working.sourceTexture != null)
         {
             var key = working.sourceTexture.sourceFile;
-            //imageCache.ReturnToPool(key, working.gameTextureBitmap);
-            //working.gameTextureBitmap = null;
+            imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            working.gameTextureBitmap = null;
         }
 
         working.mapping = mapping;
@@ -221,6 +232,13 @@ public partial class TextureModForm
             {
                 working.gameTextureBitmap = bitmap;
                 gameTextureCanvas.SetImage(bitmap);
+                if (mapping.editorState == null)
+                {
+                    var imageSize = bitmap.PixelSize;
+                    PictureBoxViewer.FitViewer(gameTextureCanvas, imageSize.Width, imageSize.Height);
+                    working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
+                }
+                RenderDrawing();
             }
             else
             {
@@ -268,7 +286,7 @@ public partial class TextureModForm
 
     private void RenderDrawing()
     {
-        applyDrawing = true;
+        BeginInvoke(ApplyDrawing);
     }
 
     private void ApplyDrawing()
@@ -289,11 +307,12 @@ public partial class TextureModForm
         }
         try
         {
-            d2dRenderTarget.SetTargetSize(sourceTex.PixelSize);
+            d2dRenderTarget.SetTargetSize(working.mapping.id, sourceTex.PixelSize);
             d2dRenderTarget.BeginDraw();
 
             var overlay = working.modTextureBitmap;
             if (!checkBox1.Checked) overlay = null;
+            if (checkBox3.Checked) overlay = null;
             DrawPreviewOverlay(
                 d2dRenderTarget.target,
                 working.gameTextureBitmap,
@@ -312,16 +331,15 @@ public partial class TextureModForm
             d2dRenderTarget.EndDraw();
 
             var pixelSize = sourceTex.PixelSize;
-            var texture = renderer.RenderableCache.FindRenderableTexture(x =>
+            renderer.RenderableCache.FindRenderableTexture(x =>
             {
                 var tex = x.Key;
-                if (tex.NameHash == nameHash)
+                if (tex.NameHash == nameHash && tex.Width == pixelSize.Width && tex.Height == pixelSize.Height)
                 {
-                    return tex.Width == pixelSize.Width && tex.Height == pixelSize.Height;
+                    d2dRenderTarget.CopyTo(renderer.Device, x);
                 }
                 return false;
             });
-            d2dRenderTarget.CopyTo(renderer.Device, texture);
         }
         catch (Exception e)
         {

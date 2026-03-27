@@ -1,15 +1,15 @@
+using CodeWalker.Graphic;
 using CodeWalker.Properties;
 using CodeWalker.Utils;
 using SharpDX;
+using SharpDX.WIC;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using SharpDX.WIC;
 using WeifenLuo.WinFormsUI.Docking;
-using CodeWalker.Graphic;
 
 namespace CodeWalker.TexMod;
 
@@ -56,28 +56,10 @@ public partial class TextureModForm : Form
 
         toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
         toolStripButton7.SelectEnum(textureMappingView.View);
-        this.KeyDown += (sender, e) =>
-        {
-            if (e.Alt)
-            {
-                drawBoxFrame = true;
-                gameTextureCanvas.Invalidate();
-            }
-        };
-        this.KeyUp += (sender, e) =>
-        {
-            if (e.Alt)
-            {
-                drawBoxFrame = false;
-                gameTextureCanvas.Invalidate();
-            }
-        };
     }
 
     private void OnBitmapLoaded(D2DCanvas canvas)
     {
-        var imageSize = canvas.GetImageSize();
-        PictureBoxViewer.FitViewer(canvas, imageSize.Width, imageSize.Height);
         CheckImageUnload();
     }
 
@@ -99,7 +81,7 @@ public partial class TextureModForm : Form
         var d3dDevice = DXGraphic.GetDevice();
         var d2dFactory = DXGraphic.d2dFactory;
         d2dRenderTarget = new D2DRenderTarget(d3dDevice, d2dFactory);
-        d2dRenderTarget.SetTargetSize(new Size2(1, 1));
+        d2dRenderTarget.SetTargetSize(Guid.Empty, new Size2(1, 1));
     }
 
     protected override void OnHandleDestroyed(EventArgs e)
@@ -469,7 +451,7 @@ public partial class TextureModForm : Form
             }
             SetRectBox(rect);
         }
-        ApplyDrawing();
+        RenderDrawing();
     }
 
     private void ReadPanelDataFromSource()
@@ -594,8 +576,7 @@ public partial class TextureModForm : Form
 
     private void button7_Click(object sender, EventArgs e)
     {
-        // ApplyDrawing();
-        RenderDrawing();
+        ApplyDrawing();
     }
 
     private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -605,7 +586,6 @@ public partial class TextureModForm : Form
 
     private void timer1_Tick(object sender, EventArgs e)
     {
-        if (working == null) return;
         if (applyDrawing)
         {
             applyDrawing = false;
@@ -622,36 +602,53 @@ public partial class TextureModForm : Form
         }
         if (working.modTextureSource != null && working.modTextureBitmap == null)
         {
-            working.modTextureBitmap = modTextureCanvas.GetImage();
+            //working.modTextureBitmap = modTextureCanvas.GetImage();
             gameTextureCanvas.Invalidate();
             CheckImageUnload();
         }
         if (working.gameTextureSource != null && working.gameTextureBitmap == null)
         {
-            working.gameTextureBitmap = gameTextureCanvas.GetImage();
+            //working.gameTextureBitmap = gameTextureCanvas.GetImage();
             gameTextureCanvas.Invalidate();
             CheckImageUnload();
         }
+        ImageCache_Update();
     }
 
     private void CheckImageUnload()
     {
-        if (working == null) return;
-        if (modTextureCanvas.HasImage() && working.modTextureBitmap != null)
+        if (modTextureCanvas.HasImage() && working.modTextureBitmap == null)
         {
+            working.modTextureBitmap = modTextureCanvas.GetImage();
             if (working.modTextureSource != null)
             {
                 Utilities.Dispose(ref working.modTextureSource);
-                imageCache.CreateCacheItem(working.modTexture.filename, working.modTextureBitmap);
+                imageCache.AddToCache(working.modTexture.filename, working.modTextureBitmap);
             }
+            if (working.modTexture.editorState == null)
+            {
+                var imageSize = modTextureCanvas.GetImageSize();
+                PictureBoxViewer.FitViewer(modTextureCanvas, imageSize.Width, imageSize.Height);
+                working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas);
+            }
+            gameTextureCanvas.Invalidate();
+            RenderDrawing();
         }
-        if (gameTextureCanvas.HasImage() && working.gameTextureBitmap != null)
+        if (gameTextureCanvas.HasImage() && working.gameTextureBitmap == null)
         {
+            working.gameTextureBitmap = gameTextureCanvas.GetImage();
             if (working.gameTextureSource != null)
             {
                 Utilities.Dispose(ref working.gameTextureSource);
-                imageCache.CreateCacheItem(working.sourceTexture.sourceFile, working.gameTextureBitmap);
+                imageCache.AddToCache(working.sourceTexture.sourceFile, working.gameTextureBitmap);
             }
+            if (working.mapping.editorState == null)
+            {
+                var imageSize = gameTextureCanvas.GetImageSize();
+                PictureBoxViewer.FitViewer(gameTextureCanvas, imageSize.Width, imageSize.Height);
+                working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
+            }
+            RenderDrawing();
         }
     }
 
@@ -673,8 +670,14 @@ public partial class TextureModForm : Form
             }
             project.DeleteTextureMapping(textureMapping);
         }
-        gameTextureCanvas.ClearImage();
+        if (working.sourceTexture != null && working.gameTextureBitmap != null)
+        {
+            var key = working.sourceTexture.sourceFile;
+            imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            working.gameTextureBitmap = null;
+        }
         working.mapping = null;
+        gameTextureCanvas.ClearImage();
         Utilities.Dispose(ref working.gameTextureBitmap);
         Utilities.Dispose(ref working.gameTextureSource);
 

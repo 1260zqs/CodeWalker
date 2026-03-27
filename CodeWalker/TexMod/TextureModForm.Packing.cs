@@ -237,7 +237,7 @@ public partial class TextureModForm
             if (drawList.Count == 0) continue;
 
             // progress.UpdateStatusTex($"draw texture {modPack.sourceTexName}");
-            d2dRenderTarget.SetTargetSize(modPack.sourceBitmap.PixelSize);
+            d2dRenderTarget.SetTargetSize(modPack.id, modPack.sourceBitmap.PixelSize);
             d2dRenderTarget.BeginDraw();
             d2dRenderTarget.target.DrawBitmap(modPack.sourceBitmap, 1, BitmapInterpolationMode.NearestNeighbor);
             foreach (var (mapping, bitmap) in drawList)

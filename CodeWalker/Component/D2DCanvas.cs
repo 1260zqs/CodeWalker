@@ -102,6 +102,9 @@ public class D2DCanvas : Control
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
+        d3dDevice = null;
+        d3dFactory = null;
+        immediateContext = null;
         Utilities.Dispose(ref bitmap);
         Utilities.Dispose(ref tileBrush);
         Utilities.Dispose(ref solidBrush);
@@ -152,18 +155,18 @@ public class D2DCanvas : Control
     public void ClearImage()
     {
         isError = false;
+        bitmap = null;
+        bitmapSource = null;
         imageSize = Size2.Zero;
-        Utilities.Dispose(ref bitmap);
-        Utilities.Dispose(ref bitmapSource);
         Invalidate();
     }
 
     public void SetImage(SharpDX.Direct2D1.Bitmap bitmap)
     {
-        isError = false;
+        ClearImage();
         this.bitmap = bitmap;
-        Utilities.Dispose(ref bitmapSource);
         imageSize = bitmap != null ? bitmap.PixelSize : Size2.Zero;
+        Invalidate();
     }
 
     public void SetImage(string imagePath)
@@ -182,20 +185,6 @@ public class D2DCanvas : Control
         if (target != null)
         {
             bitmapSource?.LoadAsync();
-        }
-    }
-
-    internal RenderTarget GetRenderTargetInternal() => target;
-    internal void CreateImageFromExtern(RenderTarget target) => CreateBitmap(target);
-
-    private void CreateBitmap(RenderTarget target)
-    {
-        Utilities.Dispose(ref bitmap);
-        bitmap = bitmapSource.CreateBitmap(target);
-        if (!(isError = bitmap == null))
-        {
-            imageSize = bitmap.PixelSize;
-            onBitmapLoaded?.Invoke(this);
         }
     }
 
@@ -228,6 +217,11 @@ public class D2DCanvas : Control
     {
         if (bitmap != null)
         {
+            if (bitmap.IsDisposed)
+            {
+                bitmap = null;
+                return;
+            }
             if (onPaint != null)
             {
                 try
@@ -245,13 +239,13 @@ public class D2DCanvas : Control
             }
             return;
         }
-        if (bitmapSource == null)
-        {
-            return;
-        }
-        if (bitmapSource.error || isError)
+        if (isError || (bitmapSource != null && bitmapSource.error))
         {
             DrawText("unable to load image", 6, 0, Color.Red, DXGraphic.fontSegoeUI_16);
+        }
+        else if (bitmapSource == null)
+        {
+            return;
         }
         else if (bitmapSource.loading)
         {
@@ -260,7 +254,12 @@ public class D2DCanvas : Control
         }
         else if (bitmapSource.state == AsyncImageState.Ready)
         {
-            CreateBitmap(target);
+            bitmap = bitmapSource.CreateBitmap(target);
+            if (!(isError = bitmap == null))
+            {
+                imageSize = bitmap.PixelSize;
+                onBitmapLoaded?.Invoke(this);
+            }
             Invalidate();
         }
     }

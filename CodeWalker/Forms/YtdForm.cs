@@ -30,6 +30,7 @@ namespace CodeWalker.Forms
         private ExploreForm ExploreForm = null;
         private ModelForm ModelForm = null;
         private List<Texture> listData;
+        private AsyncBitmapSource bitmapSource;
 
 
         public YtdForm(ExploreForm exploreForm = null, ModelForm modelForm = null)
@@ -48,6 +49,12 @@ namespace CodeWalker.Forms
             var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
             vsExtender.SetStyle(toolStrip1, version, theme);
             vsExtender.SetStyle(menuStrip1, version, theme);
+        }
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            SharpDX.Utilities.Dispose(ref bitmapSource);
+            base.OnHandleDestroyed(e);
         }
 
         private void OnDrawTexture(D2DCanvas canvas, RenderTarget target, SharpDX.Direct2D1.Bitmap bitmap)
@@ -191,7 +198,9 @@ namespace CodeWalker.Forms
                 SelTextureDimensionsLabel.Text = dimstr;
                 PictureBoxViewer.ResetViewer(d2DCanvas1);
                 PictureBoxViewer.FitViewer(d2DCanvas1, w, h);
-                d2DCanvas1.SetImage(new AsyncTextureSource(tex, cmip));
+                SharpDX.Utilities.Dispose(ref bitmapSource);
+                bitmapSource = new AsyncTextureSource(tex, cmip);
+                d2DCanvas1.SetImage(bitmapSource);
 
                 var str1 = GetTexCountStr();
                 var str2 = $"{tex.Name}, mip {cmip}, {dimstr}";

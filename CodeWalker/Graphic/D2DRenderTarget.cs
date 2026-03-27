@@ -19,6 +19,7 @@ public class D2DRenderTarget : IDisposable
     private SharpDX.Direct3D11.Texture2D stagingTexture;
     private SharpDX.Direct3D11.Texture2D targetTexture;
 
+    private Guid texId;
     private SharpDX.Size2 pixelSize;
     private SharpDX.DXGI.Format format;
 
@@ -112,6 +113,7 @@ public class D2DRenderTarget : IDisposable
         if (targetTexture == null || targetTexture.IsDisposed || targetTextureInvalid)
         {
             targetTextureInvalid = false;
+            Utilities.Dispose(ref targetTexture);
             targetTexture = new SharpDX.Direct3D11.Texture2D(device, new()
             {
                 Format = format,
@@ -152,9 +154,9 @@ public class D2DRenderTarget : IDisposable
         }
     }
 
-    public void SetTargetSize(SharpDX.Size2 pixelSize)
+    public void SetTargetSize(Guid texId, Size2 pixelSize)
     {
-        if (this.pixelSize == pixelSize)
+        if (this.pixelSize == pixelSize && this.texId == texId)
         {
             return;
         }

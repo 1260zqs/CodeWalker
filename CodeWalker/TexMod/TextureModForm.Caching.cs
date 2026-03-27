@@ -30,7 +30,7 @@ public partial class TextureModForm
             foreach (var pair in cache)
             {
                 var item = pair.Value;
-                if (item.refCount == 0 && now - item.lastUseAt >= maxCacheAge)
+                if (item.refCount <= 0 && now - item.lastUseAt >= maxCacheAge)
                 {
                     keys.Add(pair.Key);
                 }
@@ -79,13 +79,20 @@ public partial class TextureModForm
                 cacheItem = new CacheItem();
                 cache.Add(key, cacheItem);
             }
+            cacheItem.refCount--;
             cacheItem.bitmap = bitmap;
             cacheItem.lastUseAt = DateTime.Now;
-            cacheItem.refCount = Math.Max(cacheItem.refCount - 1, 0);
         }
 
-        public void CreateCacheItem(string key, Bitmap bitmap)
+        public void AddToCache(string key, Bitmap bitmap)
         {
+            if (!cache.TryGetValue(key, out var cacheItem))
+            {
+                cacheItem = new CacheItem();
+                cacheItem.refCount = 1;
+                cacheItem.bitmap = bitmap;
+                cache.Add(key, cacheItem);
+            }
         }
     }
 
