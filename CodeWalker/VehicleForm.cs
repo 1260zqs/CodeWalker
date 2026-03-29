@@ -129,10 +129,11 @@ namespace CodeWalker
             camera.FollowEntity.Orientation = Quaternion.LookAtLH(Vector3.Zero, Vector3.Up, Vector3.ForwardLH);
             camera.TargetDistance = 2.0f;
             camera.CurrentDistance = 2.0f;
-            camera.TargetRotation.Y = 0.2f;
-            camera.CurrentRotation.Y = 0.2f;
-            camera.TargetRotation.X = 0.5f * (float)Math.PI;
-            camera.CurrentRotation.X = 0.5f * (float)Math.PI;
+            //TODO
+            // camera.TargetRotation.Y = 0.2f;
+            // camera.CurrentRotation.Y = 0.2f;
+            // camera.TargetRotation.X = 0.5f * (float)Math.PI;
+            // camera.CurrentRotation.X = 0.5f * (float)Math.PI;
 
             Renderer.shaders.deferred = false; //no point using this here yet
 

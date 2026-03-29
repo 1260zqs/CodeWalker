@@ -188,7 +188,7 @@ public partial class TextureModForm
         {
             // load game source texture
             cts.ThrowIfCancellationRequested();
-            progress.IncreaseValue($"begin draw texture {modPack.sourceTexName}");
+            progress.IncreaseValue($"draw texture {modPack.sourceTexName}");
             modPack.mappings = project.FindSourceTextureMapping(modPack.id);
 
             if (!sourcePackFileCache.TryGetValue(modPack.sourcePath, out var file))
@@ -242,7 +242,7 @@ public partial class TextureModForm
             d2dRenderTarget.target.DrawBitmap(modPack.sourceBitmap, 1, BitmapInterpolationMode.NearestNeighbor);
             foreach (var (mapping, bitmap) in drawList)
             {
-                Log($"draw texture, {mapping.name}");
+                //Log($"draw texture, {mapping.name}");
                 var modTexture = project.modTextures[mapping.modTexture];
                 DrawPreviewOverlay(
                     d2dRenderTarget.target,
@@ -265,6 +265,7 @@ public partial class TextureModForm
             );
             var tex = DDSIO.GetTexture(encodeBytes);
             var originTexture = modPack.originTexture;
+            //File.WriteAllBytes($"C:\\tex\\{modPack.sourceTexName}.dds", encodeBytes);
 
             tex.Name = originTexture.Name;
             tex.NameHash = originTexture.NameHash;

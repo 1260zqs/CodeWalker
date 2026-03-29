@@ -130,18 +130,18 @@ internal static class GameFileUtils
         }
     }
 
-    public static bool ReplaceTexture(TextureDictionary dictionary, Texture texture)
+    public static void ReplaceTexture(TextureDictionary dictionary, Texture texture)
     {
-        var textures = dictionary.Textures.data_items;
-        for (var i = textures.Length - 1; i >= 0; i--)
+        var textures = new List<Texture>(dictionary.Textures.data_items);
+        for (var i = 0; i < textures.Count; i++)
         {
             if (textures[i].NameHash == texture.NameHash)
             {
                 textures[i] = texture;
-                return true;
+                break;
             }
         }
-        return false;
+        dictionary.BuildFromTextureList(textures);
     }
 
     public static void UpdateEmbeddedTextures(DrawableBase dwbl)

@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SharpDX.Mathematics.Interop;
 using WeifenLuo.WinFormsUI.Docking;
 using Device = SharpDX.Direct3D11.Device;
 using DeviceContext = SharpDX.Direct3D11.DeviceContext;
@@ -214,8 +215,6 @@ namespace CodeWalker
 
         bool initedOk = false;
 
-        public SceneView sceneView;
-
         public WorldForm()
         {
             InitializeComponent();
@@ -225,8 +224,6 @@ namespace CodeWalker
             timecycle = Renderer.timecycle;
             weather = Renderer.weather;
             clouds = Renderer.clouds;
-            sceneView = new SceneView();
-            sceneView.camera = camera;
 
             CurMouseHit.WorldForm = this;
             LastMouseHit.WorldForm = this;
@@ -444,7 +441,6 @@ namespace CodeWalker
         {
             var elapsed = (float)frametimer.Elapsed.TotalSeconds;
             frametimer.Restart();
-            EditorApplication.Update();
 
             if (pauserendering) return;
 
@@ -461,7 +457,7 @@ namespace CodeWalker
             {
                 CutsceneForm.UpdateAnimation(elapsed);
             }
-
+            camera.SetViewport(context.Rasterizer.GetViewports<RawViewportF>()[0]);
             Renderer.Update(elapsed, MouseLastPoint.X, MouseLastPoint.Y);
 
 
@@ -6438,8 +6434,6 @@ namespace CodeWalker
                     return;
                 }
             }
-
-
 
             MousedMarker = FindMousedMarker();
 

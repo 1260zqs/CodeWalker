@@ -45,6 +45,8 @@ namespace CodeWalker.Forms
         System.Drawing.Point MouseDownPoint;
         System.Drawing.Point MouseLastPoint;
         bool MouseInvert = Settings.Default.MouseInvert;
+        private SceneView sceneView = new();
+        private Unity.SceneViewGrid sceneViewGrid;
 
 
 
@@ -90,7 +92,7 @@ namespace CodeWalker.Forms
         Dictionary<DrawableBase, bool> DrawableDrawFlags = new Dictionary<DrawableBase, bool>();
 
 
-        bool enableGrid = false;
+        bool enableGrid = true;
         float gridSize = 1.0f;
         int gridCount = 40;
         List<VertexTypePC> gridVerts = new List<VertexTypePC>();
@@ -146,6 +148,7 @@ namespace CodeWalker.Forms
             Renderer.rendercollisionmeshes = false;
             Renderer.renderclouds = false;
             Renderer.rendermoon = false;
+            Renderer.renderskydome = false;
             Renderer.renderskeletons = false;
             Renderer.renderfragwindows = false;
             Renderer.SelectionFlagsTestAll = true;
@@ -165,9 +168,6 @@ namespace CodeWalker.Forms
                 Close();
                 return;
             }
-
-
-            MouseWheel += ModelForm_MouseWheel;
 
             if (!GTAFolder.UpdateGTAFolder(true))
             {
@@ -223,17 +223,21 @@ namespace CodeWalker.Forms
             //shaders.hdrLumBlendSpeed = 1000.0f;
 
 
-            camera.FollowEntity = camEntity;
-            camera.FollowEntity.Position = prevworldpos;
-            camera.FollowEntity.Orientation = Quaternion.LookAtLH(Vector3.Zero, Vector3.Up, Vector3.ForwardLH);
-            camera.TargetDistance = 2.0f;
-            camera.CurrentDistance = 2.0f;
-            camera.TargetRotation.Y = 0.2f;
-            camera.CurrentRotation.Y = 0.2f;
-            camera.TargetRotation.X = 0.5f * (float)Math.PI;
-            camera.CurrentRotation.X = 0.5f * (float)Math.PI;
+            // camera.FollowEntity = camEntity;
+            // camera.FollowEntity.Position = prevworldpos;
+            // camera.FollowEntity.Orientation = Quaternion.LookAtLH(Vector3.Zero, Vector3.Up, Vector3.ForwardLH);
+            camera.unityCamera = true;
+            camera.perspectiveFov = 90f;
+            sceneView.camera = Renderer.camera;
+            sceneView.syncRoot = Renderer.RenderSyncRoot;
+            //TODO
+            // camera.TargetRotation.Y = 0.2f;
+            // camera.CurrentRotation.Y = 0.2f;
+            // camera.TargetRotation.X = 0.5f * (float)Math.PI;
+            // camera.CurrentRotation.X = 0.5f * (float)Math.PI;
 
             Renderer.shaders.deferred = false; //no point using this here yet
+            //sceneViewGrid = new Unity.SceneViewGrid(device, "Shaders\\InfiniteGrid");
 
 
             LoadSettings();
@@ -247,7 +251,7 @@ namespace CodeWalker.Forms
         public void CleanupScene()
         {
             formopen = false;
-
+            Utilities.Dispose(ref sceneViewGrid);
             Renderer.DeviceDestroyed();
 
             //int count = 0;
@@ -269,9 +273,14 @@ namespace CodeWalker.Forms
             if (pauserendering) return;
 
             if (!Monitor.TryEnter(Renderer.RenderSyncRoot, 50))
-            { return; } //couldn't get a lock, try again next time
+            {
+                //couldn't get a lock, try again next time
+                return;
+            }
 
-            UpdateControlInputs(elapsed);
+            // UpdateControlInputs(elapsed);
+            camera.SetViewport(context.Rasterizer.GetViewports<ViewportF>()[0]);
+            sceneView.Sync();
 
             Renderer.Update(elapsed, MouseLastPoint.X, MouseLastPoint.Y);
 
@@ -284,7 +293,7 @@ namespace CodeWalker.Forms
 
             RenderSingleItem();
 
-
+            //sceneViewGrid.Draw(context, camera.ViewProjInvMatrix, camera.Position, camera.forward);
             RenderGrid(context);
 
             RenderLightSelection();
@@ -417,16 +426,16 @@ namespace CodeWalker.Forms
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new Action(() => { InitAnimation(); }));
+                BeginInvoke(InitAnimation);
             }
             else
             {
                 ClipComboBox.Items.Clear();
                 ClipDictComboBox.Items.Clear();
                 var ycds = gameFileCache.YcdDict.Values.ToList();
-                ycds.Sort((a, b) => { return a.Name.CompareTo(b.Name); });
+                ycds.Sort((a, b) => a.Name.CompareTo(b.Name));
                 ClipDictComboBox.AutoCompleteCustomSource.Clear();
-                List<string> ycdlist = new List<string>();
+                var ycdlist = new List<string>();
                 foreach (var ycde in ycds)
                 {
                     ycdlist.Add(ycde.GetShortName());
@@ -451,7 +460,7 @@ namespace CodeWalker.Forms
             WireframeCheckBox.Checked = s.Wireframe;
             HDRRenderingCheckBox.Checked = s.HDR;
             ShadowsCheckBox.Checked = s.Shadows;
-            SkydomeCheckBox.Checked = s.Skydome;
+            SkydomeCheckBox.Checked = false;
             RenderModeComboBox.SelectedIndex = Math.Max(RenderModeComboBox.FindString(s.RenderMode), 0);
             TextureSamplerComboBox.SelectedIndex = Math.Max(TextureSamplerComboBox.FindString(s.RenderTextureSampler), 0);
             TextureCoordsComboBox.SelectedIndex = Math.Max(TextureCoordsComboBox.FindString(s.RenderTextureSamplerCoord), 0);
@@ -463,17 +472,27 @@ namespace CodeWalker.Forms
 
 
 
+        class ViewCenter
+        {
+            public Vector3 pos;
+            public float radius;
+        }
 
+        private ViewCenter viewCenter;
         private void MoveCameraToView(Vector3 pos, float rad)
         {
             //move the camera to a default place where the given sphere is fully visible.
 
             rad = Math.Max(0.01f, rad);
+            viewCenter = new ViewCenter();
+            viewCenter.pos = pos;
+            viewCenter.radius = rad;
 
-            camera.FollowEntity.Position = pos;
+            // camera.FollowEntity.Position = pos;
+            // sceneView.pivot = pos;
+            sceneView.Frame(pos, rad);
             camera.TargetDistance = rad * 1.6f;
             camera.CurrentDistance = rad * 1.6f;
-
             camera.UpdateProj = true;
         }
 
@@ -781,7 +800,7 @@ namespace CodeWalker.Forms
                 Skeleton = ydr.Drawable.Skeleton;
             }
 
-            if(ydr.Drawable?.LightAttributes.data_items.Length > 0)
+            if (ydr.Drawable?.LightAttributes.data_items.Length > 0)
             {
                 DeferredShadingCheckBox.Checked = true;
             }
@@ -811,7 +830,7 @@ namespace CodeWalker.Forms
                 MoveCameraToView(Vector3.Zero, maxrad);
             }
 
-            foreach(var draw in ydd.Drawables)
+            foreach (var draw in ydd.Drawables)
             {
                 if (draw?.LightAttributes.data_items.Length > 0)
                 {
@@ -1272,7 +1291,7 @@ namespace CodeWalker.Forms
         private void AddDrawableTreeNode(DrawableBase drawable, uint hash, bool check)
         {
             MetaHash mhash = new MetaHash(hash);
-            
+
             var dnode = ModelsTreeView.Nodes.Add(mhash.ToString());
             dnode.Tag = drawable;
             dnode.Checked = check;
@@ -1743,7 +1762,7 @@ namespace CodeWalker.Forms
             if (!folderpath.EndsWith("\\")) folderpath += "\\";
 
 
-            var tryGetTextureFromYtd = new Func<uint, YtdFile, Texture>((texHash, ytd) => 
+            var tryGetTextureFromYtd = new Func<uint, YtdFile, Texture>((texHash, ytd) =>
             {
                 if (ytd == null) return null;
                 int tries = 0;
@@ -1771,7 +1790,7 @@ namespace CodeWalker.Forms
 
             var textures = new HashSet<Texture>();
             var texturesMissing = new HashSet<string>();
-            var collectTextures = new Action<DrawableBase>((d) => 
+            var collectTextures = new Action<DrawableBase>((d) =>
             {
                 if (includeEmbedded)
                 {
@@ -1970,6 +1989,8 @@ namespace CodeWalker.Forms
 
         private void ModelForm_MouseDown(object sender, MouseEventArgs e)
         {
+            sceneView.HandleMouseDown(e);
+#if FALSE
             if (ActiveControl is NumericUpDown)
             {
                 ActiveControl = null;
@@ -2008,10 +2029,13 @@ namespace CodeWalker.Forms
 
             MouseX = e.X; //to stop jumps happening on mousedown, sometimes the last MouseMove event was somewhere else... (eg after clicked a menu)
             MouseY = e.Y;
+#endif
         }
 
         private void ModelForm_MouseUp(object sender, MouseEventArgs e)
         {
+            sceneView.HandleMouseUp(e);
+#if FALSE
             switch (e.Button)
             {
                 case MouseButtons.Left: MouseLButtonDown = false; break;
@@ -2032,10 +2056,13 @@ namespace CodeWalker.Forms
             //{
             //    MouseControlButtons &= ~e.Button;
             //}
+#endif
         }
 
         private void ModelForm_MouseMove(object sender, MouseEventArgs e)
         {
+            sceneView.HandleMouseMove(e);
+#if FALSE
             int dx = e.X - MouseX;
             int dy = e.Y - MouseY;
             
@@ -2076,10 +2103,13 @@ namespace CodeWalker.Forms
             MouseX = e.X;
             MouseY = e.Y;
             MouseLastPoint = e.Location;
+#endif
         }
 
         private void ModelForm_MouseWheel(object sender, MouseEventArgs e)
         {
+            sceneView.HandleMouseWheel(e);
+#if FALSE
             if (e.Delta != 0)
             {
                 //if (ControlMode == WorldControlMode.Free)
@@ -2094,146 +2124,38 @@ namespace CodeWalker.Forms
                 //    }
                 //}
             }
-
+#endif
         }
 
         private void ModelForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (ActiveControl is TextBox)
+            if (e.KeyCode == Keys.F && viewCenter != null)
             {
-                var tb = ActiveControl as TextBox;
-                if (!tb.ReadOnly) return; //don't move the camera when typing!
+                sceneView.Frame(viewCenter.pos, viewCenter.radius, false);
             }
-            if (ActiveControl is ComboBox)
-            {
-                var cb = ActiveControl as ComboBox;
-                if (cb.DropDownStyle != ComboBoxStyle.DropDownList) return; //nontypable combobox
-            }
-
-            bool enablemove = true;// (!iseditmode) || (MouseLButtonDown && (GrabbedMarker == null) && (GrabbedWidget == null));
-
-            Input.KeyDown(e, enablemove);
-
-            var k = e.KeyCode;
-            var kb = Input.keyBindings;
-            bool ctrl = Input.CtrlPressed;
-            bool shift = Input.ShiftPressed;
-
-
-            if (!ctrl)
-            {
-                if (k == kb.MoveSlowerZoomIn)
-                {
-                    camera.MouseZoom(1);
-                }
-                if (k == kb.MoveFasterZoomOut)
-                {
-                    camera.MouseZoom(-1);
-                }
-            }
-
-
-            if (!Input.kbmoving) //don't trigger further actions if moving.
-            {
-                if (!ctrl)
-                {
-                    //switch widget modes and spaces.
-                    //if ((k == keyBindings.ExitEditMode))
-                    //{
-                    //    if (Widget.Mode == WidgetMode.Default) ToggleWidgetSpace();
-                    //    else SetWidgetMode("Default");
-                    //}
-                    //if ((k == keyBindings.EditPosition))// && !enablemove)
-                    //{
-                    //    if (Widget.Mode == WidgetMode.Position) ToggleWidgetSpace();
-                    //    else SetWidgetMode("Position");
-                    //}
-                    //if ((k == keyBindings.EditRotation))// && !enablemove)
-                    //{
-                    //    if (Widget.Mode == WidgetMode.Rotation) ToggleWidgetSpace();
-                    //    else SetWidgetMode("Rotation");
-                    //}
-                    //if ((k == keyBindings.EditScale))// && !enablemove)
-                    //{
-                    //    if (Widget.Mode == WidgetMode.Scale) ToggleWidgetSpace();
-                    //    else SetWidgetMode("Scale");
-                    //}
-                    //if (k == keyBindings.ToggleMouseSelect)
-                    //{
-                    //    SetMouseSelect(!MouseSelectEnabled);
-                    //}
-                    //if (k == keyBindings.ToggleToolbar)
-                    //{
-                    //    ToggleToolbar();
-                    //}
-                    //if (k == Keys.P)
-                    //{
-                    //    //TEMPORARY!
-                    //    SetControlMode((ControlMode == WorldControlMode.Free) ? WorldControlMode.Ped : WorldControlMode.Free);
-                    //}
-                }
-                else
-                {
-                    //switch (k)
-                    //{
-                    //    case Keys.N:
-                    //        New();
-                    //        break;
-                    //    case Keys.O:
-                    //        Open();
-                    //        break;
-                    //    case Keys.S:
-                    //        if (shift) SaveAll();
-                    //        else Save();
-                    //        break;
-                    //    case Keys.Z:
-                    //        Undo();
-                    //        break;
-                    //    case Keys.Y:
-                    //        Redo();
-                    //        break;
-                    //    case Keys.C:
-                    //        CopyItem();
-                    //        break;
-                    //    case Keys.V:
-                    //        PasteItem();
-                    //        break;
-                    //    case Keys.U:
-                    //        ToolsPanelShowButton.Visible = !ToolsPanelShowButton.Visible;
-                    //        break;
-                    //}
-                }
-                //if (k == Keys.Escape) //temporary? panic get cursor back
-                //{
-                //    if (ControlMode != WorldControlMode.Free) SetControlMode(WorldControlMode.Free);
-                //}
-            }
-
-            //if (ControlMode != WorldControlMode.Free)
-            //{
-            //    e.Handled = true;
-            //}
+            sceneView.HandleKeyDown(e);
         }
 
         private void ModelForm_KeyUp(object sender, KeyEventArgs e)
         {
-            Input.KeyUp(e);
-
-            if (ActiveControl is TextBox)
-            {
-                var tb = ActiveControl as TextBox;
-                if (!tb.ReadOnly) return; //don't move the camera when typing!
-            }
-            if (ActiveControl is ComboBox)
-            {
-                var cb = ActiveControl as ComboBox;
-                if (cb.DropDownStyle != ComboBoxStyle.DropDownList) return; //non-typable combobox
-            }
-
-            //if (ControlMode != WorldControlMode.Free)
-            //{
-            //    e.Handled = true;
-            //}
+            sceneView.HandleKeyUp(e);
+            // Input.KeyUp(e);
+            //
+            // if (ActiveControl is TextBox)
+            // {
+            //     var tb = ActiveControl as TextBox;
+            //     if (!tb.ReadOnly) return; //don't move the camera when typing!
+            // }
+            // if (ActiveControl is ComboBox)
+            // {
+            //     var cb = ActiveControl as ComboBox;
+            //     if (cb.DropDownStyle != ComboBoxStyle.DropDownList) return; //non-typable combobox
+            // }
+            //
+            // //if (ControlMode != WorldControlMode.Free)
+            // //{
+            // //    e.Handled = true;
+            // //}
         }
 
         private void ModelForm_Deactivate(object sender, EventArgs e)

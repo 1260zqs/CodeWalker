@@ -9,9 +9,9 @@ public partial class TextureModForm
 {
     static class TreeViewIcon
     {
-        public const int document = 0;
+        public const int picture = 0;
         public const int folder = 1;
-        public const int folder_open = 2;
+        public const int document = 2;
     }
 
     class NodeSorter : System.Collections.IComparer
@@ -56,7 +56,7 @@ public partial class TextureModForm
                 {
                     next = new TreeNode(part);
                     next.ImageIndex = TreeViewIcon.folder;
-                    next.SelectedImageIndex = TreeViewIcon.folder_open;
+                    next.SelectedImageIndex = TreeViewIcon.folder;
                     currentNodes.Add(next);
                 }
                 currentNodes = next.Nodes;
@@ -79,8 +79,8 @@ public partial class TextureModForm
             {
                 var node = new TreeNode();
                 node.Text = modTexture.name;
-                node.ImageIndex = TreeViewIcon.document;
-                node.SelectedImageIndex = TreeViewIcon.document;
+                node.ImageIndex = TreeViewIcon.picture;
+                node.SelectedImageIndex = TreeViewIcon.picture;
                 node.Tag = modTexture;
                 nodes.Add(node);
             }
@@ -264,16 +264,16 @@ public partial class TextureModForm
     {
         if (e.Node.Tag is ModTexture) return;
 
-        e.Node.ImageIndex = TreeViewIcon.folder_open;
-        e.Node.SelectedImageIndex = TreeViewIcon.folder_open;
+        // e.Node.ImageIndex = TreeViewIcon.folder;
+        // e.Node.SelectedImageIndex = TreeViewIcon.folder;
     }
 
     private void treeView_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
     {
         if (e.Node.Tag is ModTexture) return;
 
-        e.Node.ImageIndex = TreeViewIcon.folder;
-        e.Node.SelectedImageIndex = TreeViewIcon.folder;
+        // e.Node.ImageIndex = TreeViewIcon.folder;
+        // e.Node.SelectedImageIndex = TreeViewIcon.folder;
     }
 
     private void newFolderMenuItem_Click(object sender, EventArgs e)

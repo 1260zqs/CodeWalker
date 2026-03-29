@@ -34,7 +34,7 @@ public class D2DRenderTarget : IDisposable
 
     public D2DRenderTarget(SharpDX.Direct3D11.Device d3dDevice, SharpDX.Direct2D1.Factory1 d2dFactory)
     {
-        format = SharpDX.DXGI.Format.R8G8B8A8_UNorm;
+        format = SharpDX.DXGI.Format.B8G8R8A8_UNorm;
         this.d3dDevice = d3dDevice;
         this.d2dFactory = d2dFactory;
     }
@@ -43,12 +43,12 @@ public class D2DRenderTarget : IDisposable
     {
         mutexA.Acquire(kMutexKey, 100);
         target.BeginDraw();
-        target.Clear(new RawColor4());
+        target.Clear(new RawColor4(1, 0, 0, 1));
     }
 
     public void EndDraw()
     {
-        target.EndDraw();
+        target.EndDraw(out var a, out var y);
         mutexA.Release(kMutexKey);
     }
 
@@ -60,7 +60,7 @@ public class D2DRenderTarget : IDisposable
         {
             using var cpuTexture = new SharpDX.Direct3D11.Texture2D(d3dDevice, new()
             {
-                Format = Format.B8G8R8A8_UNorm,
+                Format = format,
                 Width = pixelSize.Width,
                 Height = pixelSize.Height,
                 ArraySize = 1,
@@ -69,8 +69,10 @@ public class D2DRenderTarget : IDisposable
                 OptionFlags = ResourceOptionFlags.None,
                 BindFlags = BindFlags.None,
                 SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Staging,
             });
             var immediateContext = d3dDevice.ImmediateContext;
+            immediateContext.Flush();
             immediateContext.CopySubresourceRegion(
                 rtTexture, 0, null,
                 cpuTexture, 0

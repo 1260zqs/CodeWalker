@@ -15,12 +15,16 @@ public struct Mathf
     public const float NegativeInfinity = float.NegativeInfinity;
     public static readonly float Epsilon = IsFlushToZeroEnabled ? FloatMinNormal : FloatMinDenormal;
 
+    public static float Pow(float f, float p) => (float)Math.Pow(f, p);
+    public static float Sin(float f) => (float)Math.Sin(f);
+    public static float Cos(float f) => (float)Math.Cos(f);
     public static float Ceil(float f) => (float)Math.Ceiling((double)f);
     public static float Floor(float f) => (float)Math.Floor((double)f);
     public static float Round(float f) => (float)Math.Round((double)f);
     public static int CeilToInt(float f) => (int)Math.Ceiling((double)f);
     public static int FloorToInt(float f) => (int)Math.Floor((double)f);
     public static int RoundToInt(float f) => (int)Math.Round((double)f);
+    public static float Sign(float f) => f >= 0F ? 1F : -1F;
 
     public static float Clamp(float value, float min, float max)
     {
@@ -65,5 +69,21 @@ public struct Mathf
     public static float InverseLerp(float a, float b, float value)
     {
         return (double)a != (double)b ? Mathf.Clamp01((float)(((double)value - (double)a) / ((double)b - (double)a))) : 0.0f;
+    }
+
+    public static float Abs(float f) => Math.Abs(f);
+    public static float Min(float a, float b) => a < b ? a : b;
+    public static float Max(float a, float b) => a > b ? a : b;
+
+    public static bool Approximately(float a, float b)
+    {
+        // If a or b is zero, compare that the other is less or equal to epsilon.
+        // If neither a or b are 0, then find an epsilon that is good for
+        // comparing numbers at the maximum magnitude of a and b.
+        // Floating points have about 7 significant digits, so
+        // 1.000001f can be represented while 1.0000001f is rounded to zero,
+        // thus we could use an epsilon of 0.000001f for comparing values close to 1.
+        // We multiply this epsilon by the biggest magnitude of a and b.
+        return Abs(b - a) < Max(0.000001f * Max(Abs(a), Abs(b)), Epsilon * 8);
     }
 }

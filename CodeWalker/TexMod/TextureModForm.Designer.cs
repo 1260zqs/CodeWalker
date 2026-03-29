@@ -40,6 +40,16 @@ namespace CodeWalker.TexMod
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.topSplitContainer = new System.Windows.Forms.SplitContainer();
             this.projectListPanel = new System.Windows.Forms.Panel();
+            this.treeView = new CodeWalker.TexModTreeView();
+            this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
@@ -49,7 +59,6 @@ namespace CodeWalker.TexMod
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
-            this.modListView = new System.Windows.Forms.ListView();
             this.imageContainer = new System.Windows.Forms.Panel();
             this.imageTabControl = new System.Windows.Forms.TabControl();
             this.gameTextureTabPage = new System.Windows.Forms.TabPage();
@@ -98,16 +107,7 @@ namespace CodeWalker.TexMod
             this.panel3 = new System.Windows.Forms.Panel();
             this.listView2 = new System.Windows.Forms.ListView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.treeView = new CodeWalker.TexModTreeView();
-            this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
+            this.modListView = new System.Windows.Forms.ListView();
             this.propertyGridFix1 = new CodeWalker.WinForms.PropertyGridFix();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -124,6 +124,7 @@ namespace CodeWalker.TexMod
             this.topSplitContainer.Panel2.SuspendLayout();
             this.topSplitContainer.SuspendLayout();
             this.projectListPanel.SuspendLayout();
+            this.m_ProjectTreeViewContextMenu.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.imageContainer.SuspendLayout();
             this.imageTabControl.SuspendLayout();
@@ -151,7 +152,6 @@ namespace CodeWalker.TexMod
             this.tabPage2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.m_ProjectTreeViewContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // columnHeader1
@@ -229,6 +229,110 @@ namespace CodeWalker.TexMod
             this.projectListPanel.Name = "projectListPanel";
             this.projectListPanel.Size = new System.Drawing.Size(314, 337);
             this.projectListPanel.TabIndex = 2;
+            // 
+            // treeView
+            // 
+            this.treeView.AllowDrop = true;
+            this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.ContextMenuStrip = this.m_ProjectTreeViewContextMenu;
+            this.treeView.FullRowSelect = true;
+            this.treeView.HideSelection = false;
+            this.treeView.ImageIndex = 0;
+            this.treeView.ImageList = this.m_ProjectTreeViewIcons;
+            this.treeView.Indent = 16;
+            this.treeView.ItemHeight = 20;
+            this.treeView.LabelEdit = true;
+            this.treeView.Location = new System.Drawing.Point(0, 25);
+            this.treeView.Name = "treeView";
+            this.treeView.PathSeparator = "/";
+            this.treeView.SelectedImageIndex = 0;
+            this.treeView.ShowLines = false;
+            this.treeView.Size = new System.Drawing.Size(312, 310);
+            this.treeView.TabIndex = 0;
+            this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
+            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
+            this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
+            this.treeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeExpand);
+            this.treeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
+            this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
+            this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
+            this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
+            this.treeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseUp);
+            // 
+            // m_ProjectTreeViewContextMenu
+            // 
+            this.m_ProjectTreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newFolderMenuItem,
+            this.renameMenuItem,
+            this.duplicateMenuItem,
+            this.toolStripSeparator1,
+            this.importMenuItem,
+            this.toolStripSeparator2,
+            this.deleteMenuItem});
+            this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
+            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
+            // 
+            // newFolderMenuItem
+            // 
+            this.newFolderMenuItem.Name = "newFolderMenuItem";
+            this.newFolderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newFolderMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.newFolderMenuItem.Text = "New Folder";
+            this.newFolderMenuItem.Click += new System.EventHandler(this.newFolderMenuItem_Click);
+            // 
+            // renameMenuItem
+            // 
+            this.renameMenuItem.Name = "renameMenuItem";
+            this.renameMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.renameMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.renameMenuItem.Text = "Rename";
+            this.renameMenuItem.Click += new System.EventHandler(this.renameMenuItem_Click);
+            // 
+            // duplicateMenuItem
+            // 
+            this.duplicateMenuItem.Name = "duplicateMenuItem";
+            this.duplicateMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.duplicateMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.duplicateMenuItem.Text = "Duplicate";
+            this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // importMenuItem
+            // 
+            this.importMenuItem.Name = "importMenuItem";
+            this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.importMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.importMenuItem.Text = "Import";
+            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
+            // 
+            // deleteMenuItem
+            // 
+            this.deleteMenuItem.Name = "deleteMenuItem";
+            this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.deleteMenuItem.Text = "Delete";
+            // 
+            // m_ProjectTreeViewIcons
+            // 
+            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
+            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "jpeg.png");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder.png");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "document.png");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "png.png");
             // 
             // toolStrip1
             // 
@@ -331,30 +435,6 @@ namespace CodeWalker.TexMod
             this.repViewModeBtn.Name = "repViewModeBtn";
             this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
             this.repViewModeBtn.ToolTipText = "View Mode";
-            // 
-            // modListView
-            // 
-            this.modListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.modListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            columnHeader1});
-            this.modListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.modListView.FullRowSelect = true;
-            this.modListView.GridLines = true;
-            this.modListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.modListView.HideSelection = false;
-            this.modListView.LabelEdit = true;
-            this.modListView.Location = new System.Drawing.Point(3, 3);
-            this.modListView.Margin = new System.Windows.Forms.Padding(0);
-            this.modListView.MultiSelect = false;
-            this.modListView.Name = "modListView";
-            this.modListView.Size = new System.Drawing.Size(617, 219);
-            this.modListView.TabIndex = 0;
-            this.modListView.UseCompatibleStateImageBehavior = false;
-            this.modListView.View = System.Windows.Forms.View.Details;
-            this.modListView.VirtualMode = true;
-            this.modListView.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.modListView_AfterLabelEdit);
-            this.modListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.modListView_RetrieveVirtualItem);
-            this.modListView.SelectedIndexChanged += new System.EventHandler(this.modListView_SelectedIndexChanged);
             // 
             // imageContainer
             // 
@@ -905,110 +985,29 @@ namespace CodeWalker.TexMod
             this.tabPage3.Text = "tabPage3";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // treeView
+            // modListView
             // 
-            this.treeView.AllowDrop = true;
-            this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.treeView.ContextMenuStrip = this.m_ProjectTreeViewContextMenu;
-            this.treeView.FullRowSelect = true;
-            this.treeView.HideSelection = false;
-            this.treeView.ImageIndex = 0;
-            this.treeView.ImageList = this.m_ProjectTreeViewIcons;
-            this.treeView.Indent = 16;
-            this.treeView.ItemHeight = 18;
-            this.treeView.LabelEdit = true;
-            this.treeView.Location = new System.Drawing.Point(0, 25);
-            this.treeView.Name = "treeView";
-            this.treeView.PathSeparator = "/";
-            this.treeView.SelectedImageIndex = 0;
-            this.treeView.ShowLines = false;
-            this.treeView.ShowRootLines = false;
-            this.treeView.Size = new System.Drawing.Size(312, 310);
-            this.treeView.TabIndex = 0;
-            this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
-            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
-            this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
-            this.treeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeExpand);
-            this.treeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
-            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
-            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
-            this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
-            this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
-            this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
-            this.treeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseUp);
-            // 
-            // m_ProjectTreeViewContextMenu
-            // 
-            this.m_ProjectTreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newFolderMenuItem,
-            this.renameMenuItem,
-            this.duplicateMenuItem,
-            this.toolStripSeparator1,
-            this.importMenuItem,
-            this.toolStripSeparator2,
-            this.deleteMenuItem});
-            this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
-            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
-            // 
-            // newFolderMenuItem
-            // 
-            this.newFolderMenuItem.Name = "newFolderMenuItem";
-            this.newFolderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newFolderMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.newFolderMenuItem.Text = "New Folder";
-            this.newFolderMenuItem.Click += new System.EventHandler(this.newFolderMenuItem_Click);
-            // 
-            // renameMenuItem
-            // 
-            this.renameMenuItem.Name = "renameMenuItem";
-            this.renameMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.renameMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.renameMenuItem.Text = "Rename";
-            this.renameMenuItem.Click += new System.EventHandler(this.renameMenuItem_Click);
-            // 
-            // duplicateMenuItem
-            // 
-            this.duplicateMenuItem.Name = "duplicateMenuItem";
-            this.duplicateMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
-            this.duplicateMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.duplicateMenuItem.Text = "Duplicate";
-            this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
-            // 
-            // importMenuItem
-            // 
-            this.importMenuItem.Name = "importMenuItem";
-            this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.importMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.importMenuItem.Text = "Import";
-            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
-            // 
-            // deleteMenuItem
-            // 
-            this.deleteMenuItem.Name = "deleteMenuItem";
-            this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.deleteMenuItem.Text = "Delete";
-            // 
-            // m_ProjectTreeViewIcons
-            // 
-            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
-            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "document.ico");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder-horizontal.ico");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "folder-horizontal-open.ico");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "document.png");
+            this.modListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.modListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            columnHeader1});
+            this.modListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modListView.FullRowSelect = true;
+            this.modListView.GridLines = true;
+            this.modListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.modListView.HideSelection = false;
+            this.modListView.LabelEdit = true;
+            this.modListView.Location = new System.Drawing.Point(3, 3);
+            this.modListView.Margin = new System.Windows.Forms.Padding(0);
+            this.modListView.MultiSelect = false;
+            this.modListView.Name = "modListView";
+            this.modListView.Size = new System.Drawing.Size(617, 219);
+            this.modListView.TabIndex = 0;
+            this.modListView.UseCompatibleStateImageBehavior = false;
+            this.modListView.View = System.Windows.Forms.View.Details;
+            this.modListView.VirtualMode = true;
+            this.modListView.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.modListView_AfterLabelEdit);
+            this.modListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.modListView_RetrieveVirtualItem);
+            this.modListView.SelectedIndexChanged += new System.EventHandler(this.modListView_SelectedIndexChanged);
             // 
             // propertyGridFix1
             // 
@@ -1048,6 +1047,7 @@ namespace CodeWalker.TexMod
             ((System.ComponentModel.ISupportInitialize)(this.topSplitContainer)).EndInit();
             this.topSplitContainer.ResumeLayout(false);
             this.projectListPanel.ResumeLayout(false);
+            this.m_ProjectTreeViewContextMenu.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.imageContainer.ResumeLayout(false);
@@ -1081,7 +1081,6 @@ namespace CodeWalker.TexMod
             this.tabPage2.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.m_ProjectTreeViewContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

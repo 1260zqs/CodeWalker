@@ -13,6 +13,7 @@ public abstract class BaseAnimValue<T>
     public float speed = 2f;
     public event Action valueChanged;
     private bool m_Animating;
+    public AnimValueDriver driver;
 
     public bool isAnimating => m_Animating;
 
@@ -69,10 +70,10 @@ public abstract class BaseAnimValue<T>
         m_Target = newTarget;
         if (!m_Animating)
         {
-            EditorApplication.update += Update;
+            driver.update += Update;
         }
         m_Animating = true;
-        m_LastTime = EditorApplication.timeSinceStartup;
+        m_LastTime = driver.timeSinceStartup;
         m_LerpPosition = 0.0;
     }
 
@@ -84,7 +85,7 @@ public abstract class BaseAnimValue<T>
             if (lerpPosition >= 1f)
             {
                 m_Animating = false;
-                EditorApplication.update += Update;
+                driver.update += Update;
             }
             valueChanged?.Invoke();
         }
@@ -101,7 +102,7 @@ public abstract class BaseAnimValue<T>
 
     private void UpdateLerpPosition()
     {
-        var timeSinceStartup = EditorApplication.timeSinceStartup;
+        var timeSinceStartup = driver.timeSinceStartup;
         var elapsed = timeSinceStartup - m_LastTime;
         m_LerpPosition = Clamp(m_LerpPosition + elapsed * m_Speed, 0.0, 1.0);
         m_LastTime = timeSinceStartup;

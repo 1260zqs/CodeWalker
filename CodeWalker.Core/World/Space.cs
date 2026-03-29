@@ -1148,7 +1148,7 @@ namespace CodeWalker.World
             if (MapDataStore == null) return;
             CurrentHour = hour;
             CurrentWeather = weather;
-            var items = MapDataStore.GetItems(ref cam.Position);
+            var items = MapDataStore.GetItems(in cam.Position);
             for (int i = 0; i < items.Count; i++)
             {
                 var item = items[i];
@@ -1767,13 +1767,13 @@ namespace CodeWalker.World
             RootNode.TrySplit(SplitThreshold);
         }
 
-        public List<MapDataStoreNode> GetItems(ref Vector3 p) //get items at a point, using the streaming extents
+        public List<MapDataStoreNode> GetItems(in Vector3 p) //get items at a point, using the streaming extents
         {
             VisibleItems.Clear();
 
             if (RootNode != null)
             {
-                RootNode.GetItems(ref p, VisibleItems);
+                RootNode.GetItems(in p, VisibleItems);
             }
 
             return VisibleItems;
@@ -1874,7 +1874,7 @@ namespace CodeWalker.World
             Items = newItems;
         }
 
-        public void GetItems(ref Vector3 p, List<MapDataStoreNode> items) //get items at a point, using the streaming extents
+        public void GetItems(in Vector3 p, List<MapDataStoreNode> items) //get items at a point, using the streaming extents
         {
             if ((p.X >= BBMin.X) && (p.X <= BBMax.X) && (p.Y >= BBMin.Y) && (p.Y <= BBMax.Y))
             {
@@ -1898,7 +1898,7 @@ namespace CodeWalker.World
                         var c = Children[i];
                         if (c != null)
                         {
-                            c.GetItems(ref p, items);
+                            c.GetItems(in p, items);
                         }
                     }
                 }

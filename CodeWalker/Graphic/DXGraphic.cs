@@ -40,9 +40,9 @@ public static class DXGraphic
         var fontCollection = new FontCollection(dwriteFactory, fontLoader, fontLoader.Key);
         fontPfArmaFive_6 = new TextFormat(
             dwriteFactory,
-            "pf_arma_five",
+            "PF Arma Five",
             fontCollection,
-            FontWeight.Regular,
+            FontWeight.Normal,
             FontStyle.Normal,
             FontStretch.Normal,
             6

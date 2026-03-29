@@ -129,6 +129,7 @@ public partial class TextureModForm : Form
                 working.mapping.rotation
             );
         }
+        drawBoxFrame = true;
         if (drawBoxFrame && working.mapping != null)
         {
             PictureBoxViewer.GetState(canvas, out var zoom, out _);
@@ -143,7 +144,7 @@ public partial class TextureModForm : Form
                         canvas.DrawRectangle(rect, color, 1f / zoom);
 
                         var text = $"{mapping.name} Left={mapping.targetRect.Left} Top={mapping.targetRect.Top} Right={mapping.targetRect.Right} Bottom={mapping.targetRect.Bottom}";
-                        var textLayout = DXGraphic.CreateTextLayout(text, DXGraphic.fontSegoeUI_12);
+                        var textLayout = DXGraphic.CreateTextLayout(text, DXGraphic.fontPfArmaFive_6);
 
                         var metrics = textLayout.Metrics;
                         var textRect = new SharpDX.Mathematics.Interop.RawRectangleF();
@@ -727,8 +728,8 @@ public partial class TextureModForm : Form
                 {
                 }
                 camera.Position = working.modTexture.position;
-                camera.TargetRotation = working.modTexture.rotation;
-                camera.CurrentRotation = working.modTexture.rotation;
+                // camera.TargetRotation = working.modTexture.rotation;
+                // camera.CurrentRotation = working.modTexture.rotation;
             }
         }
     }
@@ -748,7 +749,7 @@ public partial class TextureModForm : Form
                 {
                     working.modTexture.position = camera.Position;
                 }
-                working.modTexture.rotation = camera.TargetRotation;
+                // working.modTexture.rotation = camera.TargetRotation;
             }
         }
     }

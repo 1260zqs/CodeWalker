@@ -271,6 +271,18 @@
     <FxCompile Include="LightPS_MS.hlsl">
       <Filter>Lights</Filter>
     </FxCompile>
+    <FxCompile Include="ImagePS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
+    <FxCompile Include="InfiniteGridPS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
+    <FxCompile Include="InfiniteGridVS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
+    <FxCompile Include="ImageVS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicPS.hlsli">
@@ -358,6 +370,9 @@
     </Filter>
     <Filter Include="Lights">
       <UniqueIdentifier>{215eb704-917e-43c0-8d5b-d24e75403db3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Custom">
+      <UniqueIdentifier>{007b2968-1fb4-4220-9d55-a17018e2fe88}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

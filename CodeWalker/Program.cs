@@ -60,7 +60,6 @@ namespace CodeWalker
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             CodeWalker.Graphic.DXGraphic.Initialize();
-            EditorApplication.Startup();
 
             // Always check the GTA folder first thing
             if (!GTAFolder.UpdateGTAFolder(Properties.Settings.Default.RememberGTAFolder))
@@ -72,6 +71,8 @@ namespace CodeWalker
             try
             {
 #endif
+            AllocConsole();
+            //explorermode = true;
             if (menumode)
             {
                 Application.Run(new MenuForm());
@@ -94,9 +95,8 @@ namespace CodeWalker
             }
             else
             {
-                //Application.Run(TextureModForm.Create());
-                AllocConsole();
-                Application.Run(new WorldForm());
+                //Application.Run(new WorldForm());
+                Application.Run(new TextureModDockForm());
             }
 #if !DEBUG
             }

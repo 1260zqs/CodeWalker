@@ -8,6 +8,10 @@ public class AnimQuaternion : BaseAnimValue<Quaternion>
 {
     private Quaternion m_Value;
 
+    public AnimQuaternion() : base(Quaternion.Identity)
+    {
+    }
+
     /// <summary>
     ///   <para>Constructor.</para>
     /// </summary>

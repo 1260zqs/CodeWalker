@@ -7,6 +7,10 @@ public class AnimFloat : BaseAnimValue<float>
 {
     private float m_Value;
 
+    public AnimFloat() : base(default)
+    {
+    }
+
     /// <summary>
     ///   <para>Constructor.</para>
     /// </summary>

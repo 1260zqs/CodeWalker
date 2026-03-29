@@ -11,8 +11,8 @@ namespace CodeWalker.World
     {
         public Vector3 TargetRotation = Vector3.Zero;
         public Vector3 CurrentRotation = Vector3.Zero;
-        public float Smoothness;// 10.0f;//0.15f;
-        public float Sensitivity;// 0.005f;
+        public float Smoothness; // 10.0f;//0.15f;
+        public float Sensitivity; // 0.005f;
         public float TargetDistance = 1.0f;
         public float CurrentDistance = 1.0f;
         public float ZoomCurrentTime = 0.0f;
@@ -21,8 +21,8 @@ namespace CodeWalker.World
         public float ZoomSpeed = 0.1f;
         public float Width = 1920.0f;
         public float Height = 1080.0f;
-        public float FieldOfView;// 1.0f;
-        public float FieldOfViewFactor = 0.5f / (float)Math.Tan(/*FieldOfView*/ 1.0f * 0.5f);
+        public float FieldOfView; // 1.0f;
+        public float FieldOfViewFactor = 0.5f / (float)Math.Tan( /*FieldOfView*/ 1.0f * 0.5f);
         public float AspectRatio = 1920.0f / 1080.0f;
         public float ZNear = 0.01f;
         public float ZFar = 100000.0f;
@@ -48,19 +48,37 @@ namespace CodeWalker.World
         public Vector3 MouseRayNear = Vector3.Zero;
         public Vector3 MouseRayFar = Vector3.Zero;
         public Ray MouseRay;
+
         private float MouseX = 0;
         private float MouseY = 0;
         private object syncRoot = new object();
 
+        private float m_PerspectiveFov;
+        private ViewportF viewport;
+
+        public float perspectiveFov
+        {
+            get => m_PerspectiveFov;
+            set
+            {
+                m_PerspectiveFov = value;
+                const double kDeg2Rad = 0.017453292 * 0.5;
+                FieldOfView = (float)(1 / Math.Tan(value * kDeg2Rad));
+                UpdateProj = true;
+            }
+        }
+
+        public Vector3 forward => Vector3.Transform(Vector3.UnitY, ViewQuaternion);
+        public Vector3 up => Vector3.Transform(Vector3.UnitZ, ViewQuaternion);
+        public Vector3 right => Vector3.Transform(Vector3.UnitX, ViewQuaternion);
+        public bool unityCamera;
 
         public Camera(float smoothness, float sensitivity, float fov)
         {
             Smoothness = smoothness;
             Sensitivity = sensitivity;
             FieldOfView = fov;
-            FieldOfViewFactor = 0.5f / (float)Math.Tan(FieldOfView * 0.5f);
         }
-
 
         public void SetMousePosition(int x, int y)
         {
@@ -77,7 +95,14 @@ namespace CodeWalker.World
         {
             lock (syncRoot)
             {
-                UpdateFollow(elapsed);
+                if (unityCamera)
+                {
+                    UpdateTransform();
+                }
+                else
+                {
+                    UpdateFollow(elapsed);
+                }
                 if (UpdateProj) UpdateProjMatrix();
 
                 //float mx = (LastMouseX / Width) * 2.0f;
@@ -87,14 +112,22 @@ namespace CodeWalker.World
                 ////MousedThing = nullptr;
                 ////MousedItemSpace = nullptr;
 
-                UpdateProjection();//, mx, my);
+                UpdateProjection(); //, mx, my);
             }
         }
+
+        private void UpdateTransform()
+        {
+            ViewInvQuaternion = Quaternion.Invert(ViewQuaternion);
+            ViewMatrix = Matrix.LookAtRH(Position, Position + forward, up);
+            ViewInvMatrix = Matrix.Invert(ViewMatrix);
+        }
+
         private void UpdateFollow(float elapsed)
         {
             const float ythresh = 1.55f;
             const float nythresh = -1.55f;
-            Vector3 up = Vector3.Up;// new Vector3(0.0f, 1.0f, 0.0f);
+            Vector3 up = Vector3.Up; // new Vector3(0.0f, 1.0f, 0.0f);
             if (TargetRotation.Y > ythresh) TargetRotation.Y = ythresh;
             if (TargetRotation.Y < nythresh) TargetRotation.Y = nythresh;
             float sv = Math.Min(Smoothness * elapsed, 1.0f);
@@ -109,7 +142,7 @@ namespace CodeWalker.World
             if (currentTime < 1.0f && deltaDist > 0.0f)
             {
                 //TODO: when to properly reset ZoomCurrentTime?
-                float y = currentTime*currentTime*currentTime; //powf(currentTime, 3.0f);
+                float y = currentTime * currentTime * currentTime; //powf(currentTime, 3.0f);
                 deltaDist *= y;
             }
             CurrentDistance = CurrentDistance + deltaDist * ZoomSpeed;
@@ -121,9 +154,6 @@ namespace CodeWalker.World
                 OrthographicSize = OrthographicSize + ((OrthographicTargetSize - OrthographicSize) * sv);
                 UpdateProj = true;
             }
-
-
-
 
             if (IsMapView)
             {
@@ -164,14 +194,13 @@ namespace CodeWalker.World
                 UpDirection = up;
             }
 
-
             //M16FLookAt(LocalProjection.ViewMatrix, V3F(0.0f, 0.0f, 0.0f), LocalProjection.ViewDirection, LocalProjection.UpDirection);
             ViewQuaternion = Quaternion.LookAtRH(Vector3.Zero, ViewDirection, UpDirection);
             ViewInvQuaternion = Quaternion.Invert(ViewQuaternion);
             ViewMatrix = ViewQuaternion.ToMatrix();
             ViewInvMatrix = Matrix.Invert(ViewMatrix);
-
         }
+
         private void UpdateProjMatrix()
         {
             if (IsMapView)
@@ -190,12 +219,15 @@ namespace CodeWalker.World
             //ProjMatrix._43/=ZFar;
             UpdateProj = false;
         }
+
         private void UpdateProjection() //CameraSpaceProjection& p, float mx, float my)
         {
-            float mx = MouseX;
-            float my = MouseY;
+            var mx = MouseX;
+            var my = MouseY;
+
             ViewProjMatrix = Matrix.Multiply(ViewMatrix, ProjMatrix);
             ViewProjInvMatrix = Matrix.Invert(ViewProjMatrix);
+
             MouseRayNear = ViewProjInvMatrix.MultiplyW(new Vector3(mx, my, 1.0f));
             MouseRayFar = ViewProjInvMatrix.MultiplyW(new Vector3(mx, my, 0.0f));
             MouseRay.Position = Vector3.Zero;
@@ -207,6 +239,45 @@ namespace CodeWalker.World
             ViewFrustum.Update(ref ViewProjMatrix);
             ViewFrustum.Position = Position;
         }
+
+        public Ray ScreenPointToRay(float x, float y)
+        {
+            var viewProjMatrix = Matrix.Multiply(ViewMatrix, ProjMatrix);
+            var viewProjInvMatrix = Matrix.Invert(ViewProjMatrix);
+            var mouseRayNear = viewProjMatrix.MultiplyW(new Vector3(x, y, 1.0f));
+            var mouseRayFar = viewProjInvMatrix.MultiplyW(new Vector3(x, y, 0.0f));
+            var direction = Vector3.Normalize(mouseRayFar - mouseRayNear);
+            return new Ray(Position, direction);
+        }
+
+        public Vector3 WorldToScreenPoint(Vector3 worldPosition)
+        {
+            return Vector3.Project(
+                worldPosition,
+                viewport.X,
+                viewport.Y,
+                viewport.Width,
+                viewport.Height,
+                viewport.MinDepth, // usually 0
+                viewport.MaxDepth, // usually 1
+                ViewProjMatrix
+            );
+        }
+
+        public Vector3 ScreenToWorldPoint(Vector3 screenPos)
+        {
+            return Vector3.Unproject(
+                screenPos, // Screen point (X, Y in pixels, Z = depth 0..1)
+                viewport.X,
+                viewport.Y,
+                viewport.Width,
+                viewport.Height,
+                viewport.MinDepth, // usually 0.0f
+                viewport.MaxDepth, // usually 1.0f
+                ViewProjMatrix
+            );
+        }
+
         private void UpdateMousedItem()
         {
             //////MousedItem = nullptr;
@@ -238,6 +309,7 @@ namespace CodeWalker.World
             //////    MousedItemSpace = cp->MousedItemSpace;
             //////}
         }
+
         public void OnWindowResize(int w, int h)
         {
             lock (syncRoot)
@@ -262,7 +334,7 @@ namespace CodeWalker.World
         {
             lock (syncRoot)
             {
-                float v = (z < 0) ? (1.0f - z) : (z > 0) ? (1.0f / (1.0f + z)) : 1.0f;
+                var v = (z < 0) ? (1.0f - z) : (z > 0) ? (1.0f / (1.0f + z)) : 1.0f;
                 TargetDistance *= v;
                 OrthographicTargetSize *= v;
             }
@@ -281,12 +353,16 @@ namespace CodeWalker.World
         {
             lock (syncRoot)
             {
-                float v = (z < 0) ? 1.1f : (z > 0) ? 1.0f / 1.1f : 1.0f;
+                var v = (z < 0) ? 1.1f : (z > 0) ? 1.0f / 1.1f : 1.0f;
                 TargetDistance *= v;
                 OrthographicTargetSize *= v;
             }
         }
 
+        public void SetViewport(ViewportF viewport)
+        {
+            this.viewport = viewport;
+        }
     }
 
     public class Frustum
@@ -302,7 +378,7 @@ namespace CodeWalker.World
             Planes[2] = Plane.Normalize(new Plane((vp.M14 - vp.M12), (vp.M24 - vp.M22), (vp.M34 - vp.M32), (vp.M44 - vp.M42)));
             Planes[3] = Plane.Normalize(new Plane((vp.M14 + vp.M12), (vp.M24 + vp.M22), (vp.M34 + vp.M32), (vp.M44 + vp.M42)));
             Planes[4] = Plane.Normalize(new Plane((vp.M14 - vp.M13), (vp.M24 - vp.M23), (vp.M34 - vp.M33), (vp.M44 - vp.M43)));
-            Planes[5] = Plane.Normalize(new Plane((vp.M13), (vp.M23), (vp.M33), 0.0f));//(vp.M43));
+            Planes[5] = Plane.Normalize(new Plane((vp.M13), (vp.M23), (vp.M33), 0.0f)); //(vp.M43));
         }
 
         //public bool ContainsSphere(ref Vector3 c, float cls, float r)
@@ -324,8 +400,8 @@ namespace CodeWalker.World
         //}
         public bool ContainsSphereNoClipNoOpt(ref Vector3 c, float r)
         {
-            float nr = -r;
-            for (int i = 0; i < 5; i++)
+            var nr = -r;
+            for (var i = 0; i < 5; i++)
             {
                 if (Plane.DotCoordinate(Planes[i], c) < nr)
                 {
@@ -334,10 +410,11 @@ namespace CodeWalker.World
             }
             return true;
         }
+
         public bool ContainsAABBNoClip(ref Vector3 cen, ref Vector3 e)
         {
             var c = cen - Position;
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var pn = Planes[i].Normal;
                 var d = (c.X * pn.X) + (c.Y * pn.Y) + (c.Z * pn.Z); //Vector3.Dot(c, pn);// 
@@ -346,26 +423,12 @@ namespace CodeWalker.World
             }
             return true;
         }
+
         public bool ContainsAABBNoClipNoOpt(ref Vector3 bmin, ref Vector3 bmax)
         {
             var c = (bmax + bmin) * 0.5f - Position;
             var e = (bmax - bmin) * 0.5f;
-            for (int i = 0; i < 5; i++)
-            {
-                var pd = Planes[i].D;
-                var pn = Planes[i].Normal;
-                var d = (c.X * pn.X) + (c.Y * pn.Y) + (c.Z * pn.Z);
-                var r = (e.X * (pn.X > 0 ? pn.X : -pn.X)) + (e.Y * (pn.Y > 0 ? pn.Y : -pn.Y)) + (e.Z * (pn.Z > 0 ? pn.Z : -pn.Z));
-                if ((d + r) < -pd) return false;
-                //if ((d - r) < -pd) ; //intersecting
-            }
-            return true;
-        }
-        public bool ContainsAABBNoFrontClipNoOpt(ref Vector3 bmin, ref Vector3 bmax)
-        {
-            var c = (bmax + bmin) * 0.5f - Position;
-            var e = (bmax - bmin) * 0.5f;
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 5; i++)
             {
                 var pd = Planes[i].D;
                 var pn = Planes[i].Normal;
@@ -377,5 +440,20 @@ namespace CodeWalker.World
             return true;
         }
 
+        public bool ContainsAABBNoFrontClipNoOpt(ref Vector3 bmin, ref Vector3 bmax)
+        {
+            var c = (bmax + bmin) * 0.5f - Position;
+            var e = (bmax - bmin) * 0.5f;
+            for (var i = 0; i < 4; i++)
+            {
+                var pd = Planes[i].D;
+                var pn = Planes[i].Normal;
+                var d = (c.X * pn.X) + (c.Y * pn.Y) + (c.Z * pn.Z);
+                var r = (e.X * (pn.X > 0 ? pn.X : -pn.X)) + (e.Y * (pn.Y > 0 ? pn.Y : -pn.Y)) + (e.Z * (pn.Z > 0 ? pn.Z : -pn.Z));
+                if ((d + r) < -pd) return false;
+                //if ((d - r) < -pd) ; //intersecting
+            }
+            return true;
+        }
     }
 }
