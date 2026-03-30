@@ -1,4 +1,4 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
@@ -1247,6 +1247,7 @@ namespace CodeWalker.Rendering
         public string Name { get; private set; }
         public Texture2D Texture2D { get; set; }
         public ShaderResourceView ShaderResourceView { get; set; }
+        public bool IsHiDR { get; set; }
 
 
         public override void Init(Texture tex)

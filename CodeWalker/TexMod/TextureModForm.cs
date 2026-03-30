@@ -1,3 +1,4 @@
+using CodeWalker.GameFiles;
 using CodeWalker.Graphic;
 using CodeWalker.Properties;
 using CodeWalker.Utils;
@@ -72,7 +73,7 @@ public partial class TextureModForm : Form
             modListView.SelectedIndices.Add(0);
         }
         modListView.Refresh();
-        LoadTreeView();
+        //LoadTreeView();
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -337,7 +338,7 @@ public partial class TextureModForm : Form
 
     private void saveProjectBtn_Click(object sender, EventArgs e)
     {
-        project.directory = SaveTreeView();
+        //project.directory = SaveTreeView();
         project.Save(Settings.Default.TexModWorkingDir);
     }
 
@@ -762,7 +763,11 @@ public partial class TextureModForm : Form
             var gameFile = adapter.GetSourceFile(form.sourceFileName);
             if (gameFile != null)
             {
-                AddModSource(gameFile, form.sourceTexName);
+                var info = new AddModSourceInfo();
+                info.texName = form.sourceTexName;
+                info.gameFile = gameFile;
+                info.lod = (rage__eLodType)(-1);
+                AddModSource(info);
             }
         }
     }

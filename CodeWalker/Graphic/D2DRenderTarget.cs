@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using SharpDX;
@@ -162,7 +162,7 @@ public class D2DRenderTarget : IDisposable
         {
             return;
         }
-        this.Release();
+        this.Clear();
         this.pixelSize = pixelSize;
         targetTextureInvalid = true;
 
@@ -203,7 +203,7 @@ public class D2DRenderTarget : IDisposable
         target.FillRectangle(rectangle, solidBrush);
     }
 
-    private void Release()
+    public void Clear()
     {
         pixelSize = Size2.Zero;
         sharedHandle = IntPtr.Zero;
@@ -217,7 +217,7 @@ public class D2DRenderTarget : IDisposable
 
     public void Dispose()
     {
-        Release();
+        Clear();
         GC.SuppressFinalize(this);
     }
 }

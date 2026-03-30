@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 
 namespace CodeWalker.TexMod
 {
@@ -252,17 +252,7 @@ namespace CodeWalker.TexMod
             this.treeView.ShowLines = false;
             this.treeView.Size = new System.Drawing.Size(312, 310);
             this.treeView.TabIndex = 0;
-            this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
-            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
-            this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
-            this.treeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeExpand);
-            this.treeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
-            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
-            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
-            this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
-            this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
-            this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
-            this.treeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseUp);
+
             // 
             // m_ProjectTreeViewContextMenu
             // 
@@ -283,7 +273,6 @@ namespace CodeWalker.TexMod
             this.newFolderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newFolderMenuItem.Size = new System.Drawing.Size(190, 22);
             this.newFolderMenuItem.Text = "New Folder";
-            this.newFolderMenuItem.Click += new System.EventHandler(this.newFolderMenuItem_Click);
             // 
             // renameMenuItem
             // 
@@ -291,7 +280,6 @@ namespace CodeWalker.TexMod
             this.renameMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
             this.renameMenuItem.Size = new System.Drawing.Size(190, 22);
             this.renameMenuItem.Text = "Rename";
-            this.renameMenuItem.Click += new System.EventHandler(this.renameMenuItem_Click);
             // 
             // duplicateMenuItem
             // 
@@ -299,7 +287,6 @@ namespace CodeWalker.TexMod
             this.duplicateMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
             this.duplicateMenuItem.Size = new System.Drawing.Size(190, 22);
             this.duplicateMenuItem.Text = "Duplicate";
-            this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -312,7 +299,6 @@ namespace CodeWalker.TexMod
             this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
             this.importMenuItem.Size = new System.Drawing.Size(190, 22);
             this.importMenuItem.Text = "Import";
-            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
             // 
             // toolStripSeparator2
             // 

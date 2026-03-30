@@ -1,4 +1,4 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using CodeWalker.Rendering;
 using CodeWalker.Utils;
 using SharpDX;
@@ -329,7 +329,7 @@ namespace CodeWalker.World
                 var w = tex.Width >> cmip;
                 var h = tex.Height >> cmip;
                 var bmp = tex.CreateImage(mip);
-                
+
                 SelDrawableTexturePictureBox.Image = bmp;
                 SelTextureDimensionsLabel.Text = $"{w} x {h}";
             }
@@ -806,8 +806,12 @@ namespace CodeWalker.World
         {
             if (currentTexOwner != null)
             {
-                var position = this.WorldForm.Renderer.camera.Position;
-                TexMod.TextureModForm.ShowAddModSource(WorldForm, currentTexOwner, currentTex.Name);
+                var info = new AddModSourceInfo();
+                info.texName = currentTex.Name;
+                info.gameFile = currentTexOwner;
+                info.lod = this.WorldForm.Renderer.renderworldMaxLOD;
+                info.position = this.WorldForm.Renderer.camera.FollowEntity.Position;
+                TexMod.TextureModForm.ShowAddModSource(WorldForm, info);
             }
         }
     }

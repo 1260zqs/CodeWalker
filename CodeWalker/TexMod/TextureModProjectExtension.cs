@@ -1,4 +1,5 @@
-﻿using SharpDX;
+using CodeWalker.GameFiles;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -37,6 +38,7 @@ public static class TextureModProjectExtension
                 writer.WriteAttributeString("Id", $"{mapping.id:N}");
                 writer.WriteElementString("Name", mapping.name);
                 writer.WriteElementString("Tag", mapping.tag);
+                writer.WriteElementString("Lod", $"{mapping.lod}");
 
                 writer.WriteElementString("ModTexture", $"{mapping.modTexture:N}");
                 writer.WriteElementString("SourceTexture", $"{mapping.sourceTexture:N}");
@@ -120,6 +122,7 @@ public static class TextureModProjectExtension
                 mapping.tag = xmlElement["Tag"].InnerText;
                 mapping.name = xmlElement["Name"].InnerText;
                 mapping.comment = xmlElement["Comment"].InnerText;
+                mapping.lod = (TextureLod)Enum.Parse(typeof(TextureLod), xmlElement["Lod"].InnerText);
 
                 mapping.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
                 mapping.sourceTexture = Guid.Parse(xmlElement["SourceTexture"].InnerText);
@@ -213,5 +216,20 @@ public static class TextureModProjectExtension
             float.Parse(element.GetAttribute("Width"), CultureInfo.InvariantCulture),
             float.Parse(element.GetAttribute("Height"), CultureInfo.InvariantCulture)
         );
+    }
+
+    public static TextureLod Conv(this rage__eLodType lod)
+    {
+        return lod switch
+        {
+            rage__eLodType.LODTYPES_DEPTH_ORPHANHD => TextureLod.HD,
+            rage__eLodType.LODTYPES_DEPTH_HD => TextureLod.HD,
+            rage__eLodType.LODTYPES_DEPTH_LOD => TextureLod.LOD,
+            rage__eLodType.LODTYPES_DEPTH_SLOD1 => TextureLod.SLOD1,
+            rage__eLodType.LODTYPES_DEPTH_SLOD2 => TextureLod.SLOD2,
+            rage__eLodType.LODTYPES_DEPTH_SLOD3 => TextureLod.SLOD3,
+            rage__eLodType.LODTYPES_DEPTH_SLOD4 => TextureLod.SLOD4,
+            _=> TextureLod.Unknown
+        };
     }
 }

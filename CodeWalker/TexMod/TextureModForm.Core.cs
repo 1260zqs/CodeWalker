@@ -14,6 +14,14 @@ using SharpDX;
 
 namespace CodeWalker.TexMod;
 
+public struct AddModSourceInfo
+{
+    public GameFile gameFile;
+    public string texName;
+    public rage__eLodType lod;
+    public Vector3 position;
+}
+
 public partial class TextureModForm
 {
     class WorkingState
@@ -41,16 +49,16 @@ public partial class TextureModForm
         instance.Focus();
     }
 
-    public static void ShowAddModSource(WorldForm worldForm, GameFile gameFile, string texName)
+    public static void ShowAddModSource(WorldForm worldForm, AddModSourceInfo info)
     {
         var window = GetWindow(worldForm);
         if (window == null) return;
 
         window.Show();
         window.Focus();
-        window.Invoke(() =>
+        window.BeginInvoke(() =>
         {
-            window.AddModSource(gameFile, texName);
+            window.AddModSource(info);
         });
     }
 
@@ -254,13 +262,15 @@ public partial class TextureModForm
         propertyGridFix1.Refresh();
     }
 
-    public void AddModSource(GameFile gameFile, string texName)
+    public void AddModSource(AddModSourceInfo info)
     {
         foreach (int index in modListView.SelectedIndices)
         {
             var modTexture = project.modTextures.Values[index];
             if (modTexture != null)
             {
+                var texName = info.texName;
+                var gameFile = info.gameFile;
                 var sourceFile = adapter.MakeSourcePath(gameFile, texName);
                 if (sourceFile == null)
                 {
@@ -274,10 +284,13 @@ public partial class TextureModForm
                         return;
                     }
                 }
-                var replacement = project.CreateReplacement();
-                replacement.sourceTexture = sourceTexture.id;
-                replacement.modTexture = modTexture.id;
-                replacement.name = texName;
+                var mapping = project.CreateMapping();
+                mapping.sourceTexture = sourceTexture.id;
+                mapping.modTexture = modTexture.id;
+                mapping.position = info.position;
+                mapping.lod = info.lod.Conv();
+                mapping.name = texName;
+
                 RefreshTextureMappingView(true);
                 return;
             }

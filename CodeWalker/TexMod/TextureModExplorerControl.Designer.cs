@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.TexMod
+namespace CodeWalker.TexMod
 {
     partial class TextureModExplorerControl
     {
@@ -28,8 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModExplorerControl));
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton6 = new System.Windows.Forms.ToolStripButton();
@@ -39,14 +40,24 @@
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
             this.treeView = new CodeWalker.TexModTreeView();
-            this.toolStrip1.SuspendLayout();
+            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
+            this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip.SuspendLayout();
+            this.m_ProjectTreeViewContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
-            // toolStrip1
+            // toolStrip
             // 
-            this.toolStrip1.AutoSize = false;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStrip.AutoSize = false;
+            this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton3,
             this.toolStripButton6,
@@ -55,12 +66,12 @@
             this.toolStripButton2,
             this.toolStripButton8,
             this.repViewModeBtn});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(284, 25);
-            this.toolStrip1.TabIndex = 2;
-            this.toolStrip1.Text = "toolStrip1";
+            this.toolStrip.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.toolStrip.Size = new System.Drawing.Size(284, 25);
+            this.toolStrip.TabIndex = 2;
+            this.toolStrip.Text = "toolStrip1";
             // 
             // toolStripButton1
             // 
@@ -150,6 +161,87 @@
             this.treeView.ShowLines = false;
             this.treeView.Size = new System.Drawing.Size(284, 236);
             this.treeView.TabIndex = 3;
+            this.treeView.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_BeforeLabelEdit);
+            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
+            this.treeView.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeCollapse);
+            this.treeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView_BeforeExpand);
+            this.treeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeView_ItemDrag);
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            this.treeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView_NodeMouseClick);
+            this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
+            this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
+            this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
+            this.treeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseUp);
+            // 
+            // m_ProjectTreeViewIcons
+            // 
+            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
+            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "jpeg");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "document");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "png");
+            // 
+            // m_ProjectTreeViewContextMenu
+            // 
+            this.m_ProjectTreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newFolderMenuItem,
+            this.renameMenuItem,
+            this.duplicateMenuItem,
+            this.toolStripSeparator1,
+            this.importMenuItem,
+            this.toolStripSeparator2,
+            this.deleteMenuItem});
+            this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
+            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
+            // 
+            // newFolderMenuItem
+            // 
+            this.newFolderMenuItem.Name = "newFolderMenuItem";
+            this.newFolderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newFolderMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.newFolderMenuItem.Text = "New Folder";
+            this.newFolderMenuItem.Click += new System.EventHandler(this.newFolderMenuItem_Click);
+            // 
+            // renameMenuItem
+            // 
+            this.renameMenuItem.Name = "renameMenuItem";
+            this.renameMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+            this.renameMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.renameMenuItem.Text = "Rename";
+            this.renameMenuItem.Click += new System.EventHandler(this.renameMenuItem_Click);
+            // 
+            // duplicateMenuItem
+            // 
+            this.duplicateMenuItem.Name = "duplicateMenuItem";
+            this.duplicateMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D)));
+            this.duplicateMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.duplicateMenuItem.Text = "Duplicate";
+            this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // importMenuItem
+            // 
+            this.importMenuItem.Name = "importMenuItem";
+            this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.importMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.importMenuItem.Text = "Import";
+            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
+            // 
+            // deleteMenuItem
+            // 
+            this.deleteMenuItem.Name = "deleteMenuItem";
+            this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.deleteMenuItem.Text = "Delete";
             // 
             // TextureModExplorerControl
             // 
@@ -157,17 +249,18 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.treeView);
-            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.toolStrip);
             this.Name = "TextureModExplorerControl";
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
+            this.toolStrip.ResumeLayout(false);
+            this.toolStrip.PerformLayout();
+            this.m_ProjectTreeViewContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripButton toolStripButton3;
         private System.Windows.Forms.ToolStripButton toolStripButton6;
@@ -177,5 +270,14 @@
         private System.Windows.Forms.ToolStripButton toolStripButton8;
         private System.Windows.Forms.ToolStripDropDownButton repViewModeBtn;
         private TexModTreeView treeView;
+        private System.Windows.Forms.ImageList m_ProjectTreeViewIcons;
+        private System.Windows.Forms.ContextMenuStrip m_ProjectTreeViewContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem newFolderMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem renameMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem duplicateMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem importMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem deleteMenuItem;
     }
 }

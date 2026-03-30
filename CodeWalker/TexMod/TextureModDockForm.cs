@@ -1,4 +1,9 @@
-﻿using System;
+using CodeWalker.GameFiles;
+using CodeWalker.Graphic;
+using CodeWalker.Properties;
+using CodeWalker.Rendering;
+using SharpDX;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,19 +13,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CodeWalker.Properties;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
 
 public partial class TextureModDockForm : Form
 {
-    TextureModExplorerControl explorer;
-    TextureModImageControl image1;
-    TextureModImageControl image2;
-    TextureModMappingControl mapping;
-    TextureModPropertyControl property;
-    TextureModInspectorControl inspector;
+    class WorkingState
+    {
+        public ModTexture modTexture;
+        public TextureMapping mapping;
+        public SourceTexture sourceTexture;
+
+        public AsyncGameTextureSource gameTextureSource;
+        public SharpDX.Direct2D1.Bitmap gameTextureBitmap;
+
+        public AsyncImageFileSource modTextureSource;
+        public SharpDX.Direct2D1.Bitmap modTextureBitmap;
+    }
 
     public TextureModDockForm()
     {
@@ -37,6 +47,31 @@ public partial class TextureModDockForm : Form
         using var stream = new MemoryStream(layout);
         dockPanel.LoadFromXml(stream, DeserializeDockContent);
     }
+
+    TextureModExplorerControl explorer;
+    TextureModImageControl image1;
+    TextureModImageControl image2;
+    TextureModMappingControl mapping;
+    TextureModPropertyControl property;
+    TextureModInspectorControl inspector;
+
+    public TextureModProject project;
+    private TextureModAdapter adapter;
+    private RpfManager rpfManager;
+    private Renderer renderer;
+
+    private D2DRenderTarget d2dRenderTarget;
+    private WorkingState working = new();
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        var d3dDevice = DXGraphic.GetDevice();
+        var d2dFactory = DXGraphic.d2dFactory;
+        d2dRenderTarget = new D2DRenderTarget(d3dDevice, d2dFactory);
+        d2dRenderTarget.SetTargetSize(Guid.Empty, new Size2(1, 1));
+    }
+
 
     private IDockContent DeserializeDockContent(string persistString)
     {

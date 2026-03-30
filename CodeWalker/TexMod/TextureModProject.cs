@@ -1,4 +1,4 @@
-﻿using CodeWalker.Utils;
+using CodeWalker.Utils;
 using SharpDX;
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,7 @@ public class TextureModProject
         return modTexture;
     }
 
-    public TextureMapping CreateReplacement()
+    public TextureMapping CreateMapping()
     {
         var replacement = new TextureMapping();
         replacement.id = Guid.NewGuid();
@@ -249,6 +249,18 @@ public class SourceTexture
     public string localFile;
 }
 
+public enum TextureLod
+{
+    Unknown = -1,
+    HiDR,
+    HD,
+    LOD,
+    SLOD1,
+    SLOD2,
+    SLOD3,
+    SLOD4,
+}
+
 public class TextureMapping
 {
     public Guid id;
@@ -256,6 +268,8 @@ public class TextureMapping
     public string tag;
     public string name;
     public string comment;
+    public TextureLod lod;
+    public Vector3 position;
 
     public Guid modTexture;
     public Guid sourceTexture;

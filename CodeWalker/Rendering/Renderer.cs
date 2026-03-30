@@ -1,4 +1,4 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using CodeWalker.Properties;
 using CodeWalker.World;
 using SharpDX;
@@ -740,8 +740,8 @@ namespace CodeWalker.Rendering
                 SelectionLineVerts.Add(c[(i + 1) % c.Length]);
             }
 
-            SelectionLineVerts.Add(new VertexTypePC{Colour = col, Position = position});
-            SelectionLineVerts.Add(new VertexTypePC { Colour = col, Position = position + dir * 2f});
+            SelectionLineVerts.Add(new VertexTypePC { Colour = col, Position = position });
+            SelectionLineVerts.Add(new VertexTypePC { Colour = col, Position = position + dir * 2f });
         }
 
         public void RenderMouseHit(BoundsShaderMode mode, ref Vector3 camrel, ref Vector3 bbmin, ref Vector3 bbmax, ref Vector3 scale, ref Quaternion ori, float bsphrad)
@@ -897,7 +897,7 @@ namespace CodeWalker.Rendering
             const float DegToRad = 0.0174533f;
             float ang = DegToRad * angle / res;
 
-            var c = new VertexTypePC[res+1];
+            var c = new VertexTypePC[res + 1];
 
             for (var i = 0; i <= res; i++)
             {
@@ -910,7 +910,7 @@ namespace CodeWalker.Rendering
 
             for (var i = 1; i < c.Length; i++)
             {
-                SelectionLineVerts.Add(c[i-1]);
+                SelectionLineVerts.Add(c[i - 1]);
                 SelectionLineVerts.Add(c[i]);
             }
         }
@@ -1084,8 +1084,8 @@ namespace CodeWalker.Rendering
                     RenderSelectionCircle(pos, Vector3.UnitY, Vector3.UnitZ, extent, colwht);
                     break;
                 case LightType.Spot:
-                    RenderSelectionCone(pos, tx, ty, dir, (float)Math.Sin(outerAngle)*extent, (float)Math.Cos(outerAngle)*extent, colblu);
-                    RenderSelectionCone(pos, tx, ty, dir, (float)Math.Sin(innerAngle)*extent, (float)Math.Cos(innerAngle)*extent, colwht);
+                    RenderSelectionCone(pos, tx, ty, dir, (float)Math.Sin(outerAngle) * extent, (float)Math.Cos(outerAngle) * extent, colblu);
+                    RenderSelectionCone(pos, tx, ty, dir, (float)Math.Sin(innerAngle) * extent, (float)Math.Cos(innerAngle) * extent, colwht);
                     break;
                 case LightType.Capsule:
                     outerAngle = lodlight.ConeOuterAngleOrCapExt * 0.25f;
@@ -1495,7 +1495,7 @@ namespace CodeWalker.Rendering
                     Vector3 lbeg = Vector3.Zero;
                     Vector3 lend = bone.AnimTranslation;// bone.Rotation.Multiply();
 
-                    float starsize = (bone.AnimTransform.TranslationVector-campos).Length() * 0.011f;
+                    float starsize = (bone.AnimTransform.TranslationVector - campos).Length() * 0.011f;
                     Vector3[] starverts0 = { Vector3.UnitX * starsize, Vector3.UnitY * starsize, Vector3.UnitZ * starsize };
                     Vector3[] starverts1 = { Vector3.UnitX * -starsize, Vector3.UnitY * -starsize, Vector3.UnitZ * -starsize };
                     for (int j = 0; j < 3; j++) starverts0[j] = bone.AnimTransform.MultiplyW(starverts0[j]);
@@ -3052,9 +3052,9 @@ namespace CodeWalker.Rendering
                                     if ((v < 0) || (v > 255)) continue;
                                     var col = (uint)(new Color(v, v, v, 127).ToRgba());
                                     v0 = m.MultiplyW(new Vector3(x, y, 0));
-                                    v1 = m.MultiplyW(new Vector3(x, y+1, 0));
-                                    v2 = m.MultiplyW(new Vector3(x+1, y+1, 0));
-                                    v3 = m.MultiplyW(new Vector3(x+1, y, 0));
+                                    v1 = m.MultiplyW(new Vector3(x, y + 1, 0));
+                                    v2 = m.MultiplyW(new Vector3(x + 1, y + 1, 0));
+                                    v3 = m.MultiplyW(new Vector3(x + 1, y, 0));
                                     c0 = eori.Multiply(v0) + epos;
                                     c1 = eori.Multiply(v1) + epos;
                                     c2 = eori.Multiply(v2) + epos;
@@ -3616,7 +3616,7 @@ namespace CodeWalker.Rendering
                     {
                         if (geom == null) continue;
                         rbginst.Geom = geom;
-                        
+
                         var pos = position;
                         var ori = orientation;
                         var sca = scale;
@@ -3937,6 +3937,10 @@ namespace CodeWalker.Rendering
                                 if (hdtex != null)
                                 {
                                     rhdtex = renderableCache.GetRenderableTexture(hdtex);
+                                }
+                                if (rhdtex != null)
+                                {
+                                    rhdtex.IsHiDR = true;
                                 }
                             }
                             geom.RenderableTexturesHD[i] = rhdtex;
