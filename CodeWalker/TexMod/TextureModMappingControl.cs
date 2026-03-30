@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CodeWalker.Properties;
+using CodeWalker.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -16,5 +18,70 @@ public partial class TextureModMappingControl : DockContent
     public TextureModMappingControl()
     {
         InitializeComponent();
+        var theme = Settings.Default.GetProjectWindowTheme();
+        var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+        vsExtender.SetStyle(toolStrip, version, theme);
+
+        toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
+        toolStripButton7.SelectEnum(textureMappingView.View);
+    }
+
+    TextureModProject project => mainForm.project;
+    public TextureModDockForm mainForm;
+
+    private List<TextureMapping> listOfMappings = new();
+
+    public void Clear()
+    {
+        listOfMappings.Clear();
+        textureMappingView.VirtualListSize = 0;
+        textureMappingView.SelectedIndices.Clear();
+    }
+
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+    }
+
+    protected override void OnHandleDestroyed(EventArgs e)
+    {
+        base.OnHandleDestroyed(e);
+    }
+
+    public void RefreshListView(ModTexture modTexture)
+    {
+        if (modTexture == null)
+        {
+            Clear();
+            return;
+        }
+        project.FindTextureMapping(modTexture.id, listOfMappings);
+        listOfMappings.Sort((x, y) => x.lod - y.lod);
+        textureMappingView.VirtualListSize = listOfMappings.Count;
+        if (listOfMappings.Count == 0)
+        {
+            textureMappingView.SelectedIndices.Clear();
+        }
+        else if (textureMappingView.SelectedIndices.Count == 0)
+        {
+            textureMappingView.SelectedIndices.Add(0);
+        }
+        textureMappingView.Refresh();
+    }
+
+    private void textureMappingView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+    {
+        var replacement = listOfMappings[e.ItemIndex];
+        e.Item = new ListViewItem(replacement.name);
+        e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.lod.ToString()));
+    }
+
+    private void textureMappingView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        foreach (int index in textureMappingView.SelectedIndices)
+        {
+            mainForm.SelectTextureMapping(listOfMappings[index]);
+            return;
+        }
     }
 }

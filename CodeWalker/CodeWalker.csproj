@@ -56,14 +56,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="TexMod\TextureModForm.Packing.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
     <Compile Update="TexMod\TextureModForm.Core.cs">
       <DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.Caching.cs">
-		<DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
     <Compile Update="TexMod\TextureModForm.TreeView.cs">
 		<DependentUpon>TextureModForm.cs</DependentUpon>
@@ -74,8 +68,20 @@
     <Compile Update="Component\RectangleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Update="Component\TexModTreeView.cs">
-      <SubType>Component</SubType>
+    <Compile Update="TexMod\TextureModDockForm.Core.cs">
+      <DependentUpon>TextureModDockForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModDockForm.Caching.cs">
+      <DependentUpon>TextureModDockForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModDockForm.Packing.cs">
+      <DependentUpon>TextureModDockForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModForm.Caching.cs">
+      <DependentUpon>TextureModForm.cs</DependentUpon>
+    </Compile>
+    <Compile Update="TexMod\TextureModForm.Packing.cs">
+      <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

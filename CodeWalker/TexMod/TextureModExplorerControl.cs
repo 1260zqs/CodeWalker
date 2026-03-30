@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CodeWalker.Properties;
+using CodeWalker.Utils;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -16,6 +18,14 @@ public partial class TextureModExplorerControl : DockContent
     public TextureModExplorerControl()
     {
         InitializeComponent();
+
+        var theme = Settings.Default.GetProjectWindowTheme();
+        var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+        vsExtender.SetStyle(toolStrip, version, theme);
+        vsExtender.SetStyle(m_ProjectTreeViewContextMenu, version, theme);
+
+        // repViewModeBtn.SetEnumDrop<View>(x => treeView.View = x);
+        // repViewModeBtn.SelectEnum(modListView.View);
     }
 
     static class TreeViewIcon
@@ -43,16 +53,22 @@ public partial class TextureModExplorerControl : DockContent
     }
 
     TextureModProject project => mainForm.project;
-    TextureModDockForm mainForm;
+    public TextureModDockForm mainForm;
 
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
-        LoadTreeView();
+        BeginInvoke(LoadTreeView);
+    }
+
+    protected override void OnHandleDestroyed(EventArgs e)
+    {
+        base.OnHandleDestroyed(e);
     }
 
     private void LoadTreeView()
     {
+        if (project == null) return;
         var files = new HashSet<Guid>(project.modTextures.Keys);
         foreach (var kv in project.directory)
         {
@@ -171,8 +187,7 @@ public partial class TextureModExplorerControl : DockContent
         {
             if (e.Node.Tag is ModTexture modTexture)
             {
-                //TODO:
-                //mainForm.SelectTexMod(modTexture);
+                mainForm.SelectTexMod(modTexture);
             }
         }
     }
@@ -184,6 +199,8 @@ public partial class TextureModExplorerControl : DockContent
             treeView.SelectedNode = e.Node;
             importMenuItem.Visible = e.Node.Tag is ModTexture;
             duplicateMenuItem.Visible = e.Node.Tag is ModTexture;
+            toolStripSeparator1.Visible = true;
+            toolStripSeparator2.Visible = true;
             newFolderMenuItem.Visible = true;
             m_ProjectTreeViewContextMenu.Show(treeView, e.Location);
         }
@@ -320,6 +337,7 @@ public partial class TextureModExplorerControl : DockContent
             treeNode.Nodes.Insert(0, node);
             treeNode.Expand();
         }
+        node.BeginEdit();
         SetTreeViewDirty();
     }
 

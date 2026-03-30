@@ -40,7 +40,7 @@ namespace CodeWalker.TexMod
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.topSplitContainer = new System.Windows.Forms.SplitContainer();
             this.projectListPanel = new System.Windows.Forms.Panel();
-            this.treeView = new CodeWalker.TexModTreeView();
+            this.treeView = new CodeWalker.Forms.AeroTreeView();
             this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1133,7 +1133,7 @@ namespace CodeWalker.TexMod
         private ToolStripButton toolStripButton3;
         private ToolStripButton toolStripButton8;
         private TabPage tabPage3;
-        private CodeWalker.TexModTreeView treeView;
+        private CodeWalker.Forms.AeroTreeView treeView;
         private Button button9;
         private Button button8;
         private ToolStripButton toolStripButton6;

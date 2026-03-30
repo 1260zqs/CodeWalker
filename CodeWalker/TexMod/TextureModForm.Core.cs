@@ -49,19 +49,6 @@ public partial class TextureModForm
         instance.Focus();
     }
 
-    public static void ShowAddModSource(WorldForm worldForm, AddModSourceInfo info)
-    {
-        var window = GetWindow(worldForm);
-        if (window == null) return;
-
-        window.Show();
-        window.Focus();
-        window.BeginInvoke(() =>
-        {
-            window.AddModSource(info);
-        });
-    }
-
     public static TextureModForm GetWindow(WorldForm worldForm)
     {
         if (instance == null || instance.IsDisposed)
@@ -120,6 +107,19 @@ public partial class TextureModForm
             new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache)
         );
         return form;
+    }
+
+    public static void ShowAddModSource(WorldForm worldForm, AddModSourceInfo info)
+    {
+        var window = GetWindow(worldForm);
+        if (window == null) return;
+
+        window.Show();
+        window.Focus();
+        window.BeginInvoke(() =>
+        {
+            window.AddModSource(info);
+        });
     }
 
     private TextureModProject project;

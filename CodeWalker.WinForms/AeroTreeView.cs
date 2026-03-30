@@ -2,14 +2,11 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace CodeWalker;
+namespace CodeWalker.Forms;
 
-class TexModTreeView : TreeView
+public class AeroTreeView : TreeView
 {
-    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-    static extern int SetWindowTheme(IntPtr hWnd, string app, string id);
-
-    public TexModTreeView()
+    public AeroTreeView()
     {
         SetStyle(ControlStyles.OptimizedDoubleBuffer |
                  ControlStyles.AllPaintingInWmPaint, true);
@@ -18,7 +15,7 @@ class TexModTreeView : TreeView
 
     protected override void OnHandleCreated(EventArgs e)
     {
-        SetWindowTheme(Handle, "Explorer", null);
         base.OnHandleCreated(e);
+        UXTheme.SetWindowTheme(Handle, "Explorer", null);
     }
 }

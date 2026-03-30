@@ -28,24 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.d2DCanvas1 = new CodeWalker.D2DCanvas();
+            this.canvas = new CodeWalker.D2DCanvas();
             this.SuspendLayout();
             // 
-            // d2DCanvas1
+            // canvas
             // 
-            this.d2DCanvas1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.d2DCanvas1.Location = new System.Drawing.Point(0, 0);
-            this.d2DCanvas1.Name = "d2DCanvas1";
-            this.d2DCanvas1.Size = new System.Drawing.Size(284, 261);
-            this.d2DCanvas1.TabIndex = 0;
-            this.d2DCanvas1.Text = "d2DCanvas1";
+            this.canvas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.canvas.Location = new System.Drawing.Point(0, 0);
+            this.canvas.Name = "canvas";
+            this.canvas.Size = new System.Drawing.Size(284, 261);
+            this.canvas.TabIndex = 0;
+            this.canvas.Text = "d2DCanvas1";
             // 
             // TextureModImageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Controls.Add(this.d2DCanvas1);
+            this.Controls.Add(this.canvas);
             this.Name = "TextureModImageControl";
             this.ResumeLayout(false);
 
@@ -53,6 +53,6 @@
 
         #endregion
 
-        private D2DCanvas d2DCanvas1;
+        public D2DCanvas canvas;
     }
 }

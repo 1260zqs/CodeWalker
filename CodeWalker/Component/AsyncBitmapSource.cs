@@ -30,6 +30,7 @@ public abstract class AsyncBitmapSource : IDisposable
     public bool disposed => state == AsyncImageState.Disposed;
     public bool loading => state == AsyncImageState.Loading;
     public bool error => state == AsyncImageState.Error;
+    public bool ready => state == AsyncImageState.Ready;
 
     public abstract Bitmap CreateBitmap(RenderTarget target);
     public abstract Task LoadAsync();

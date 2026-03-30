@@ -11,7 +11,6 @@ namespace CodeWalker.Graphic;
 
 public class D2DRenderTarget : IDisposable
 {
-    private SharpDX.Direct2D1.Device d2dDevice;
     public SharpDX.Direct2D1.RenderTarget target;
 
     private SolidColorBrush solidBrush;

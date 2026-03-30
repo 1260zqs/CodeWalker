@@ -119,7 +119,7 @@ public static class TextureModProjectExtension
             {
                 var mapping = new TextureMapping();
                 mapping.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
-                mapping.tag = xmlElement["Tag"].InnerText;
+                //mapping.tag = xmlElement["Tag"].InnerText;
                 mapping.name = xmlElement["Name"].InnerText;
                 mapping.comment = xmlElement["Comment"].InnerText;
                 mapping.lod = (TextureLod)Enum.Parse(typeof(TextureLod), xmlElement["Lod"].InnerText);

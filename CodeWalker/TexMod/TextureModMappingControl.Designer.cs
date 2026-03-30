@@ -28,36 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModMappingControl));
             System.Windows.Forms.ColumnHeader Texture;
-            System.Windows.Forms.ColumnHeader Tag;
-            System.Windows.Forms.ColumnHeader Comment;
-            this.toolStrip2 = new System.Windows.Forms.ToolStrip();
+            System.Windows.Forms.ColumnHeader Lod;
+            this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
-            this.textureMappingView = new System.Windows.Forms.ListView();
+            this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.textureMappingView = new CodeWalker.Forms.AeroListView();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            Tag = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            Comment = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.toolStrip2.SuspendLayout();
+            Lod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // toolStrip2
+            // toolStrip
             // 
-            this.toolStrip2.AutoSize = false;
-            this.toolStrip2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.toolStrip2.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStrip.AutoSize = false;
+            this.toolStrip.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton4,
             this.toolStripButton5,
             this.toolStripButton7});
-            this.toolStrip2.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.toolStrip2.Size = new System.Drawing.Size(284, 25);
-            this.toolStrip2.TabIndex = 1;
-            this.toolStrip2.Text = "toolStrip2";
+            this.toolStrip.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip.Name = "toolStrip";
+            this.toolStrip.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.toolStrip.Size = new System.Drawing.Size(284, 25);
+            this.toolStrip.TabIndex = 1;
+            this.toolStrip.Text = "toolStrip";
             // 
             // toolStripButton4
             // 
@@ -86,13 +86,16 @@
             this.toolStripButton7.Size = new System.Drawing.Size(29, 22);
             this.toolStripButton7.ToolTipText = "View Mode";
             // 
+            // vsExtender
+            // 
+            this.vsExtender.DefaultRenderer = null;
+            // 
             // textureMappingView
             // 
             this.textureMappingView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textureMappingView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             Texture,
-            Tag,
-            Comment});
+            Lod});
             this.textureMappingView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textureMappingView.FullRowSelect = true;
             this.textureMappingView.GridLines = true;
@@ -105,21 +108,18 @@
             this.textureMappingView.UseCompatibleStateImageBehavior = false;
             this.textureMappingView.View = System.Windows.Forms.View.Details;
             this.textureMappingView.VirtualMode = true;
+            this.textureMappingView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.textureMappingView_RetrieveVirtualItem);
+            this.textureMappingView.SelectedIndexChanged += new System.EventHandler(this.textureMappingView_SelectedIndexChanged);
             // 
             // Texture
             // 
             Texture.Text = "Texture";
             Texture.Width = 200;
             // 
-            // Tag
+            // Lod
             // 
-            Tag.Text = "Tag";
-            Tag.Width = 80;
-            // 
-            // Comment
-            // 
-            Comment.Text = "Comment";
-            Comment.Width = 320;
+            Lod.Text = "Lod";
+            Lod.Width = 80;
             // 
             // TextureModMappingControl
             // 
@@ -127,20 +127,21 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.textureMappingView);
-            this.Controls.Add(this.toolStrip2);
+            this.Controls.Add(this.toolStrip);
             this.Name = "TextureModMappingControl";
-            this.toolStrip2.ResumeLayout(false);
-            this.toolStrip2.PerformLayout();
+            this.toolStrip.ResumeLayout(false);
+            this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip2;
+        private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private System.Windows.Forms.ToolStripButton toolStripButton5;
         private System.Windows.Forms.ToolStripDropDownButton toolStripButton7;
-        private System.Windows.Forms.ListView textureMappingView;
+        private CodeWalker.Forms.AeroListView textureMappingView;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
     }
 }

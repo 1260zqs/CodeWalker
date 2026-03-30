@@ -29,7 +29,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
             try
             {
                 var pixelFormat = new SharpDX.Direct2D1.
-                    PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Ignore);
+                    PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Premultiplied);
                 var bmpProps = new BitmapProperties(pixelFormat);
 
                 var stride = width * 4;

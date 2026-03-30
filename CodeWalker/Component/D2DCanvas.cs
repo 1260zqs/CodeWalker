@@ -6,10 +6,10 @@ using SharpDX.Mathematics.Interop;
 using SharpDX.DXGI;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
-using Bitmap = SharpDX.Direct2D1.Bitmap;
 using CodeWalker.Graphic;
 using CodeWalker.Utils;
 using Device = SharpDX.Direct3D11.Device;
+using Bitmap = SharpDX.Direct2D1.Bitmap;
 
 namespace CodeWalker;
 
@@ -259,6 +259,7 @@ public class D2DCanvas : Control
             {
                 imageSize = bitmap.PixelSize;
                 onBitmapLoaded?.Invoke(this);
+                bitmapSource = null;
             }
             Invalidate();
         }

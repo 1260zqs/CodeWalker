@@ -77,6 +77,7 @@ public static class PictureBoxViewer
 
     public static void ResetViewer(Control control)
     {
+        if (control == null) return;
         stateObjects.TryRemove(GetHandle(control), out _);
     }
 
@@ -209,7 +210,7 @@ public static class PictureBoxViewer
 
     public static void LoadState(Control control, object stateObject)
     {
-        if (stateObject is StateObject x)
+        if (control != null && stateObject is StateObject x)
         {
             stateObjects[GetHandle(control)] = x;
         }

@@ -23,14 +23,7 @@ public class TextureModProject
         var projectFile = Path.Combine(workingDir, "texturemod.xml");
         if (File.Exists(projectFile))
         {
-            try
-            {
-                project.Load(projectFile);
-            }
-            catch (Exception ex)
-            {
-                ex.ShowDialog();
-            }
+            project.Load(projectFile);
         }
         //MakesureFolder(Path.Combine(workingDir, "content"));
         MakesureFolder(Path.Combine(workingDir, "working"));

@@ -8141,7 +8141,8 @@ namespace CodeWalker
 
         private void ShowTextureModForm()
         {
-            CodeWalker.TexMod.TextureModForm.ShowWindow(this);
+            // CodeWalker.TexMod.TextureModForm.ShowWindow(this);
+            CodeWalker.TexMod.TextureModDockForm.ShowWindow(this);
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)

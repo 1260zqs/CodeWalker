@@ -38,8 +38,7 @@ namespace CodeWalker.TexMod
             this.saveProjectBtn = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
-            this.repViewModeBtn = new System.Windows.Forms.ToolStripDropDownButton();
-            this.treeView = new CodeWalker.TexModTreeView();
+            this.treeView = new CodeWalker.Forms.AeroTreeView();
             this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
             this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,6 +48,7 @@ namespace CodeWalker.TexMod
             this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.toolStrip.SuspendLayout();
             this.m_ProjectTreeViewContextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -64,14 +64,13 @@ namespace CodeWalker.TexMod
             this.toolStripButton9,
             this.saveProjectBtn,
             this.toolStripButton2,
-            this.toolStripButton8,
-            this.repViewModeBtn});
+            this.toolStripButton8});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
             this.toolStrip.Size = new System.Drawing.Size(284, 25);
             this.toolStrip.TabIndex = 2;
-            this.toolStrip.Text = "toolStrip1";
+            this.toolStrip.Text = "toolStrip";
             // 
             // toolStripButton1
             // 
@@ -135,15 +134,6 @@ namespace CodeWalker.TexMod
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton8.ToolTipText = "Pack OIV";
-            // 
-            // repViewModeBtn
-            // 
-            this.repViewModeBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.repViewModeBtn.Image = ((System.Drawing.Image)(resources.GetObject("repViewModeBtn.Image")));
-            this.repViewModeBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.repViewModeBtn.Name = "repViewModeBtn";
-            this.repViewModeBtn.Size = new System.Drawing.Size(29, 22);
-            this.repViewModeBtn.ToolTipText = "View Mode";
             // 
             // treeView
             // 
@@ -243,6 +233,10 @@ namespace CodeWalker.TexMod
             this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
             this.deleteMenuItem.Text = "Delete";
             // 
+            // vsExtender
+            // 
+            this.vsExtender.DefaultRenderer = null;
+            // 
             // TextureModExplorerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -268,8 +262,7 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripButton saveProjectBtn;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton8;
-        private System.Windows.Forms.ToolStripDropDownButton repViewModeBtn;
-        private TexModTreeView treeView;
+        private CodeWalker.Forms.AeroTreeView treeView;
         private System.Windows.Forms.ImageList m_ProjectTreeViewIcons;
         private System.Windows.Forms.ContextMenuStrip m_ProjectTreeViewContextMenu;
         private System.Windows.Forms.ToolStripMenuItem newFolderMenuItem;
@@ -279,5 +272,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripMenuItem importMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem deleteMenuItem;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
     }
 }

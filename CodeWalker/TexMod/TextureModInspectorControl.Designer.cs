@@ -121,6 +121,7 @@
             this.checkBox3.TabIndex = 1;
             this.checkBox3.Text = "Draw test color";
             this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // button7
             // 
@@ -130,6 +131,7 @@
             this.button7.TabIndex = 0;
             this.button7.Text = "Update Viewport";
             this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // groupBox1
             // 
@@ -144,7 +146,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.numericUpDown2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Location = new System.Drawing.Point(0, 112);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(594, 144);
             this.groupBox1.TabIndex = 58;
@@ -252,7 +254,7 @@
             this.groupBox2.Controls.Add(this.rectBoxW);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox2.Location = new System.Drawing.Point(0, 144);
+            this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(594, 112);
             this.groupBox2.TabIndex = 59;
