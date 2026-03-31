@@ -16,4 +16,25 @@ public partial class InputForm : Form
     {
         InitializeComponent();
     }
+
+    public string inputString { get; set; }
+
+    public static InputForm Show(string title, string text)
+    {
+        var form = new InputForm();
+        form.textBox.Text = text;
+        return form;
+    }
+
+    private void okButton_Click(object sender, EventArgs e)
+    {
+        inputString = textBox.Text;
+        Close();
+    }
+
+    private void cancelButton_Click(object sender, EventArgs e)
+    {
+        inputString = null;
+        Close();
+    }
 }
