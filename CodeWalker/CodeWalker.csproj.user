@@ -191,10 +191,16 @@
     <Compile Update="TexMod\TexModSetupForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="TexMod\TextureModDockForm.Caching.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="TexMod\TextureModDockForm.Core.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="TexMod\TextureModDockForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TexMod\TextureModDockForm.Packing.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="TexMod\TextureModExplorerControl.cs">
