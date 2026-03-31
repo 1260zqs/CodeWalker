@@ -1,6 +1,6 @@
-﻿namespace CodeWalker.TexMod
+namespace CodeWalker.TexMod
 {
-    partial class TextureModInspectorControl
+    partial class TextureModToolsControl
     {
         /// <summary> 
         /// Required designer variable.

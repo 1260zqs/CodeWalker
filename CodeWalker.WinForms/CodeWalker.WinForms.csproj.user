@@ -5,6 +5,9 @@
     <Compile Update="AeroPropertyGrid.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="InputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="MenuStripFix.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -1,3 +1,7 @@
+using CodeWalker.Graphic;
+using CodeWalker.Properties;
+using CodeWalker.Utils;
+using SharpDX.WIC;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,8 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CodeWalker.Properties;
-using CodeWalker.Utils;
+using System.Windows.Forms.DataVisualization.Charting;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -127,7 +130,7 @@ public partial class TextureModExplorerControl : DockContent
         treeView.Refresh();
     }
 
-    private Dictionary<string, ProjectDirectory> SaveTreeView()
+    public Dictionary<string, ProjectDirectory> SerializeTreeView()
     {
         var result = new Dictionary<string, ProjectDirectory>();
         foreach (TreeNode node in treeView.Nodes)
@@ -360,5 +363,43 @@ public partial class TextureModExplorerControl : DockContent
 
     private void SetTreeViewDirty()
     {
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e)
+    {
+        mainForm.NewTexMod();
+    }
+
+    private void toolStripButton3_Click(object sender, EventArgs e)
+    {
+        // delete tex mod
+        mainForm.DeleteTexMod();
+    }
+
+    private void toolStripButton6_Click(object sender, EventArgs e)
+    {
+        //import
+        mainForm.ReimportTex();
+    }
+
+    private void toolStripButton9_Click(object sender, EventArgs e)
+    {
+        // duplicate
+        mainForm.DuplicateModTexture();
+    }
+
+    private void saveProjectBtn_Click(object sender, EventArgs e)
+    {
+        mainForm.SaveProject();
+    }
+
+    private void toolStripButton2_Click(object sender, EventArgs e)
+    {
+        mainForm.BeginBuildTexMod();
+    }
+
+    private void toolStripButton8_Click(object sender, EventArgs e)
+    {
+        mainForm.BeginBuildOIVPackage();
     }
 }

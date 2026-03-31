@@ -224,7 +224,7 @@
     <Compile Update="TexMod\TextureModImageControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="TexMod\TextureModInspectorControl.cs">
+    <Compile Update="TexMod\TextureModToolsControl.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="TexMod\TextureModMappingControl.cs">

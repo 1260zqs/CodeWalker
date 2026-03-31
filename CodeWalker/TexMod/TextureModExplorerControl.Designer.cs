@@ -49,6 +49,7 @@ namespace CodeWalker.TexMod
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip.SuspendLayout();
             this.m_ProjectTreeViewContextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -80,6 +81,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton1.ToolTipText = "New";
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton3
             // 
@@ -89,6 +91,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton3.ToolTipText = "Delete";
+            this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // toolStripButton6
             // 
@@ -98,6 +101,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton6.Name = "toolStripButton6";
             this.toolStripButton6.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton6.Text = "Import Image";
+            this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
             // toolStripButton9
             // 
@@ -107,6 +111,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton9.Name = "toolStripButton9";
             this.toolStripButton9.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton9.Text = "Duplicate";
+            this.toolStripButton9.Click += new System.EventHandler(this.toolStripButton9_Click);
             // 
             // saveProjectBtn
             // 
@@ -116,6 +121,7 @@ namespace CodeWalker.TexMod
             this.saveProjectBtn.Name = "saveProjectBtn";
             this.saveProjectBtn.Size = new System.Drawing.Size(23, 22);
             this.saveProjectBtn.ToolTipText = "Save";
+            this.saveProjectBtn.Click += new System.EventHandler(this.saveProjectBtn_Click);
             // 
             // toolStripButton2
             // 
@@ -125,6 +131,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton2.Name = "toolStripButton2";
             this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton2.ToolTipText = "Build Mod";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripButton8
             // 
@@ -134,6 +141,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton8.ToolTipText = "Pack OIV";
+            this.toolStripButton8.Click += new System.EventHandler(this.toolStripButton8_Click);
             // 
             // treeView
             // 
@@ -237,6 +245,11 @@ namespace CodeWalker.TexMod
             // 
             this.vsExtender.DefaultRenderer = null;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
+            this.openFileDialog1.RestoreDirectory = true;
+            // 
             // TextureModExplorerControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -255,13 +268,6 @@ namespace CodeWalker.TexMod
         #endregion
 
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
-        private System.Windows.Forms.ToolStripButton toolStripButton3;
-        private System.Windows.Forms.ToolStripButton toolStripButton6;
-        private System.Windows.Forms.ToolStripButton toolStripButton9;
-        private System.Windows.Forms.ToolStripButton saveProjectBtn;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
-        private System.Windows.Forms.ToolStripButton toolStripButton8;
         private CodeWalker.Forms.AeroTreeView treeView;
         private System.Windows.Forms.ImageList m_ProjectTreeViewIcons;
         private System.Windows.Forms.ContextMenuStrip m_ProjectTreeViewContextMenu;
@@ -273,5 +279,13 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem deleteMenuItem;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton toolStripButton3;
+        private System.Windows.Forms.ToolStripButton toolStripButton6;
+        private System.Windows.Forms.ToolStripButton toolStripButton9;
+        private System.Windows.Forms.ToolStripButton saveProjectBtn;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private System.Windows.Forms.ToolStripButton toolStripButton8;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

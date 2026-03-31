@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,11 +11,11 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
 
-public partial class TextureModInspectorControl : DockContent
+public partial class TextureModToolsControl : DockContent
 {
     public TextureModDockForm mainForm;
 
-    public TextureModInspectorControl()
+    public TextureModToolsControl()
     {
         InitializeComponent();
     }

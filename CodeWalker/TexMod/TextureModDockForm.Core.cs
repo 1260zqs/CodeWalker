@@ -1,7 +1,3 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
 using CodeWalker.GameFiles;
 using CodeWalker.Graphic;
 using CodeWalker.Properties;
@@ -9,6 +5,11 @@ using CodeWalker.Rendering;
 using CodeWalker.Utils;
 using SharpDX;
 using SharpDX.Direct2D1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace CodeWalker.TexMod;
 
@@ -131,40 +132,10 @@ public partial class TextureModDockForm
         {
             return;
         }
-        if (working.modTexture != null && modTextureCanvas != null)
-        {
-            working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas.canvas);
-        }
-        if (working.mapping != null && gameTextureCanvas != null)
-        {
-            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas.canvas);
-        }
-        if (working.modTextureBitmap != null && working.modTexture != null)
-        {
-            var key = working.modTexture.filename;
-            imageCache.ReturnToPool(key, working.modTextureBitmap);
-            working.modTextureBitmap = null;
-        }
-        if (working.gameTextureBitmap != null && working.sourceTexture != null)
-        {
-            var key = working.sourceTexture.sourceFile;
-            imageCache.ReturnToPool(key, working.gameTextureBitmap);
-            working.gameTextureBitmap = null;
-        }
-        mappingControl?.Clear();
+        ClearTexModSelection();
+        ClearMappingSelection();
         working.modTexture = modTexture;
-        working.texNameHash = 0;
-        working.mapping = null;
 
-        Utilities.Dispose(ref working.modTextureSource);
-        Utilities.Dispose(ref working.modTextureBitmap);
-        Utilities.Dispose(ref working.gameTextureBitmap);
-        Utilities.Dispose(ref working.gameTextureSource);
-
-        modTextureCanvas?.ClearImage();
-        gameTextureCanvas?.ClearImage();
-        PictureBoxViewer.ResetViewer(modTextureCanvas?.canvas);
-        PictureBoxViewer.ResetViewer(gameTextureCanvas?.canvas);
         if (modTexture != null)
         {
             if (imageCache.TryGetFromPool(modTexture.filename, out var bitmap))
@@ -182,7 +153,6 @@ public partial class TextureModDockForm
             }
             PictureBoxViewer.LoadState(modTextureCanvas?.canvas, modTexture.editorState);
         }
-        propertyControl?.SelectObject(null);
         mappingControl?.RefreshListView(modTexture);
     }
 
@@ -192,26 +162,8 @@ public partial class TextureModDockForm
         {
             return;
         }
-        if (working.mapping != null && gameTextureCanvas != null)
-        {
-            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas.canvas);
-        }
-        if (working.sourceTexture != null && working.gameTextureBitmap != null)
-        {
-            var key = working.sourceTexture.sourceFile;
-            imageCache.ReturnToPool(key, working.gameTextureBitmap);
-            working.gameTextureBitmap = null;
-        }
-
-        working.texNameHash = 0;
+        ClearMappingSelection();
         working.mapping = mapping;
-        working.sourceTexture = null;
-        propertyControl?.SelectObject(null);
-
-        Utilities.Dispose(ref working.gameTextureBitmap);
-        Utilities.Dispose(ref working.gameTextureSource);
-        PictureBoxViewer.ResetViewer(gameTextureCanvas?.canvas);
-        gameTextureCanvas?.ClearImage();
 
         if (mapping != null && project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
         {
@@ -237,7 +189,54 @@ public partial class TextureModDockForm
         propertyControl?.Refresh();
     }
 
-    private void OnModTextureReady(Bitmap bitmap)
+    private void ClearTexModSelection()
+    {
+        if (working.modTexture != null && modTextureCanvas != null)
+        {
+            working.modTexture.editorState = PictureBoxViewer.SaveState(modTextureCanvas.canvas);
+        }
+        if (working.modTextureBitmap != null && working.modTexture != null)
+        {
+            var key = working.modTexture.filename;
+            imageCache.ReturnToPool(key, working.modTextureBitmap);
+            working.modTextureBitmap = null;
+        }
+
+        working.modTexture = null;
+        Utilities.Dispose(ref working.modTextureSource);
+        Utilities.Dispose(ref working.modTextureBitmap);
+        modTextureCanvas?.ClearImage();
+
+        PictureBoxViewer.ResetViewer(modTextureCanvas?.canvas);
+    }
+
+    private void ClearMappingSelection()
+    {
+        if (working.mapping != null && gameTextureCanvas != null)
+        {
+            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas.canvas);
+        }
+        if (working.sourceTexture != null && working.gameTextureBitmap != null)
+        {
+            var key = working.sourceTexture.sourceFile;
+            imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            working.gameTextureBitmap = null;
+        }
+
+        working.mapping = null;
+        working.texNameHash = 0;
+        working.sourceTexture = null;
+        propertyControl?.SelectObject(null);
+
+        Utilities.Dispose(ref working.gameTextureBitmap);
+        Utilities.Dispose(ref working.gameTextureSource);
+        gameTextureCanvas?.ClearImage();
+        mappingControl?.Clear();
+
+        PictureBoxViewer.ResetViewer(gameTextureCanvas?.canvas);
+    }
+
+    private void OnModTextureReady(SharpDX.Direct2D1.Bitmap bitmap)
     {
         if (working.modTexture.editorState == null && modTextureCanvas != null)
         {
@@ -248,7 +247,7 @@ public partial class TextureModDockForm
         UpdateTexturePainting();
     }
 
-    private void OnGameTextureReady(Bitmap bitmap)
+    private void OnGameTextureReady(SharpDX.Direct2D1.Bitmap bitmap)
     {
         if (working.mapping.editorState == null && gameTextureCanvas != null)
         {
@@ -374,5 +373,120 @@ public partial class TextureModDockForm
             srcRect.Raw()
         );
         target.Transform = matrix;
+    }
+
+    public void SaveProject()
+    {
+        project.directory = SaveTreeView();
+        project.Save(Settings.Default.TexModWorkingDir);
+    }
+
+    internal void DuplicateModTexture()
+    {
+        if (working.modTexture == null) return;
+
+        var modTexture = working.modTexture.Clone();
+        var mappings = project.FindTextureMapping(modTexture.id);
+        modTexture.id = Guid.NewGuid();
+        modTexture.createdAt = DateTimeOffset.Now;
+        modTexture.name = $"{modTexture.name} (Clone)";
+        var newMappings = new List<TextureMapping>();
+        foreach (var mapping in mappings)
+        {
+            var clone = mapping.Clone();
+            clone.id = Guid.NewGuid();
+            clone.modTexture = modTexture.id;
+            newMappings.Add(clone);
+        }
+        project.modTextures.Add(modTexture.id, modTexture);
+        foreach (var mapping in newMappings)
+        {
+            project.textureMappings.Add(mapping);
+        }
+        RefreshModListView();
+    }
+
+    internal void ReimportTex()
+    {
+        if (working.modTexture == null) return;
+        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                var fileName = openFileDialog1.FileName;
+                if (string.IsNullOrEmpty(fileName)) return;
+                working.modTexture.filename = fileName;
+                working.modTexture.name = Path.GetFileName(fileName);
+                RefreshModListView();
+            }
+            catch (Exception exception)
+            {
+                exception.ShowDialog();
+            }
+        }
+    }
+
+    internal void NewTexMod()
+    {
+        if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+        {
+            try
+            {
+                var fileName = openFileDialog1.FileName;
+                if (string.IsNullOrEmpty(fileName)) return;
+
+                using var decoder = new BitmapDecoder(DXGraphic.wicFactory, fileName, DecodeOptions.CacheOnLoad);
+                using var converter = new FormatConverter(DXGraphic.wicFactory);
+                using var frame = decoder.GetFrame(0);
+
+                converter.Initialize(
+                    frame,
+                    SharpDX.WIC.PixelFormat.Format32bppRGBA,
+                    BitmapDitherType.None,
+                    null,
+                    0,
+                    BitmapPaletteType.Custom
+                );
+
+                var width = converter.Size.Width;
+                var height = converter.Size.Height;
+
+                var modTexture = project.CreateTextureMod(fileName);
+                modTexture.sourceRect = new System.Drawing.RectangleF(0, 0, width, height);
+                RefreshModListView();
+            }
+            catch (Exception exception)
+            {
+                exception.ShowDialog();
+            }
+        }
+    }
+
+    internal void DeleteTexMod()
+    {
+        foreach (int selectedIndex in treeView.SelectedIndices)
+        {
+            var modTexture = project.modTextures.Values[selectedIndex];
+            if (MessageBox.Show($"Delete {modTexture.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            project.DeleteModTexture(modTexture);
+        }
+        modListView.VirtualListSize = 0;
+        modListView.SelectedIndices.Clear();
+        RefreshModListView();
+        if (modListView.SelectedIndices.Count == 0)
+        {
+            SelectTexMod(null);
+        }
+    }
+
+    internal void DeleteTexMapping(TextureMapping textureMapping)
+    {
+        project.DeleteTextureMapping(textureMapping);
+        ClearMappingSelection();
+
+        mappingControl?.RefreshListView(working.modTexture);
     }
 }

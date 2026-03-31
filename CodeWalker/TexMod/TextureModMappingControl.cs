@@ -1,4 +1,9 @@
-﻿using System;
+using CodeWalker.GameFiles;
+using CodeWalker.Properties;
+using CodeWalker.Utils;
+using SharpDX;
+using SharpDX.DXGI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,8 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CodeWalker.Properties;
-using CodeWalker.Utils;
+using System.Windows.Forms.DataVisualization.Charting;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -81,6 +85,38 @@ public partial class TextureModMappingControl : DockContent
         foreach (int index in textureMappingView.SelectedIndices)
         {
             mainForm.SelectTextureMapping(listOfMappings[index]);
+            return;
+        }
+    }
+
+    private void toolStripButton4_Click(object sender, EventArgs e)
+    {
+        var form = new AddTexModSourceForm();
+        if (form.ShowDialog(this) == DialogResult.OK)
+        {
+            //var gameFile = adapter.GetSourceFile(form.sourceFileName);
+            //if (gameFile != null)
+            //{
+            //    var info = new AddModSourceInfo();
+            //    info.texName = form.sourceTexName;
+            //    info.gameFile = gameFile;
+            //    info.lod = (rage__eLodType)(-1);
+            //    AddModSource(info);
+            //}
+        }
+    }
+
+    private void toolStripButton5_Click(object sender, EventArgs e)
+    {
+        // delete mapping
+        foreach (int selectedIndex in textureMappingView.SelectedIndices)
+        {
+            var textureMapping = listOfMappings[selectedIndex];
+            if (MessageBox.Show($"Delete {textureMapping.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            mainForm.DeleteTexMapping(textureMapping);
             return;
         }
     }

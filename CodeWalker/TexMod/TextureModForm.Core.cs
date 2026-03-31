@@ -213,25 +213,8 @@ public partial class TextureModForm
         {
             return;
         }
-        if (working.mapping != null)
-        {
-            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
-        }
-        if (working.gameTextureBitmap != null && working.sourceTexture != null)
-        {
-            var key = working.sourceTexture.sourceFile;
-            imageCache.ReturnToPool(key, working.gameTextureBitmap);
-            working.gameTextureBitmap = null;
-        }
-
+        ClearMapping();
         working.mapping = mapping;
-        working.sourceTexture = null;
-        propertyGridFix1.SelectedObject = null;
-
-        Utilities.Dispose(ref working.gameTextureBitmap);
-        Utilities.Dispose(ref working.gameTextureSource);
-        PictureBoxViewer.ResetViewer(gameTextureCanvas);
-        gameTextureCanvas.ClearImage();
 
         if (mapping != null && project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
         {
@@ -260,6 +243,29 @@ public partial class TextureModForm
             propertyGridFix1.SelectedObject = TextureReplacementPropertyObject.From(project, mapping, OnPropertyGridChanged);
         }
         propertyGridFix1.Refresh();
+    }
+
+    private void ClearMapping()
+    {
+        if (working.mapping != null)
+        {
+            working.mapping.editorState = PictureBoxViewer.SaveState(gameTextureCanvas);
+        }
+        if (working.gameTextureBitmap != null && working.sourceTexture != null)
+        {
+            var key = working.sourceTexture.sourceFile;
+            imageCache.ReturnToPool(key, working.gameTextureBitmap);
+            working.gameTextureBitmap = null;
+        }
+
+        working.mapping = null;
+        working.sourceTexture = null;
+        propertyGridFix1.SelectedObject = null;
+
+        Utilities.Dispose(ref working.gameTextureBitmap);
+        Utilities.Dispose(ref working.gameTextureSource);
+        PictureBoxViewer.ResetViewer(gameTextureCanvas);
+        gameTextureCanvas.ClearImage();
     }
 
     public void AddModSource(AddModSourceInfo info)
