@@ -25,7 +25,9 @@ public class TextureModProject
         {
             project.Load(projectFile);
         }
-        //MakesureFolder(Path.Combine(workingDir, "content"));
+        MakesureFolder(Path.Combine(workingDir, "backup"));
+        MakesureFolder(Path.Combine(workingDir, "cache"));
+        MakesureFolder(Path.Combine(workingDir, "assets"));
         MakesureFolder(Path.Combine(workingDir, "working"));
         return project;
     }
@@ -207,7 +209,12 @@ public class ProjectDirectory
     public HashSet<Guid> files = new();
 }
 
-public class ModTexture
+public class EditorExtension
+{
+    public object editorState;
+}
+
+public class ModTexture : EditorExtension
 {
     public Guid id;
     public DateTimeOffset createdAt;
@@ -218,7 +225,6 @@ public class ModTexture
     public Vector3 position;
     public Vector3 rotation;
 
-    public object editorState;
 
     public ModTexture Clone()
     {
@@ -254,7 +260,7 @@ public enum TextureLod
     SLOD4,
 }
 
-public class TextureMapping
+public class TextureMapping : EditorExtension
 {
     public Guid id;
 
@@ -271,8 +277,6 @@ public class TextureMapping
     public bool flipX;
     public bool flipY;
     public float rotation;
-
-    public object editorState;
 
     public TextureMapping Clone()
     {

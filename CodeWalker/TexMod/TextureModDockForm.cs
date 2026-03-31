@@ -47,7 +47,7 @@ public partial class TextureModDockForm : Form
     TextureModImageControl gameTextureCanvas;
     TextureModMappingControl mappingControl;
     TextureModPropertyControl propertyControl;
-    TextureModInspectorControl inspectorControl;
+    TextureModToolsControl toolsControl;
 
     protected override void OnLoad(EventArgs e)
     {
@@ -62,7 +62,7 @@ public partial class TextureModDockForm : Form
             layout = Convert.FromBase64String(Settings.Default.texModFormLayout);
         }
         using var stream = new MemoryStream(layout);
-        dockPanel.LoadFromXml(stream, DeserializeDockContent);
+        dockPanel.LoadFromXml(stream, CreateDockContent);
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -114,9 +114,9 @@ public partial class TextureModDockForm : Form
             propertyControl = property;
             propertyControl.onPropertyGridChanged = OnPropertyGridChanged;
         }
-        else if (content is TextureModInspectorControl inspector)
+        else if (content is TextureModToolsControl inspector)
         {
-            inspectorControl = inspector;
+            toolsControl = inspector;
         }
     }
 
@@ -135,6 +135,7 @@ public partial class TextureModDockForm : Form
         {
             if (ReferenceEquals(explorerControl, content))
             {
+                project.directory = explorerControl.SerializeTreeView();
                 explorerControl = null;
             }
         }
@@ -146,11 +147,7 @@ public partial class TextureModDockForm : Form
                 {
                     modTextureCanvas = null;
                     var bitmap = imageControl.GetImage();
-                    if (ReferenceEquals(working.modTextureBitmap, bitmap))
-                    {
-                        // transfer the bitmap ownership
-                        // bitmap.CopyFromBitmap();
-                    }
+                    // transfer the bitmap ownership
                 }
             }
             else if (imageControl.Name == "Preview")
@@ -175,25 +172,25 @@ public partial class TextureModDockForm : Form
                 propertyControl = null;
             }
         }
-        else if (content is TextureModInspectorControl)
+        else if (content is TextureModToolsControl)
         {
-            if (ReferenceEquals(inspectorControl, content))
+            if (ReferenceEquals(toolsControl, content))
             {
-                inspectorControl = null;
+                toolsControl = null;
             }
         }
     }
 
     //@formatter:off
-    private static readonly string kPersistExplorer  = typeof(TextureModExplorerControl).ToString();
-    private static readonly string kPersistPreview   = $"{typeof(TextureModImageControl)}:Preview";
-    private static readonly string kPersistTexture   = $"{typeof(TextureModImageControl)}:Texture";
-    private static readonly string kPersistMapping   = typeof(TextureModMappingControl).ToString();
-    private static readonly string kPersistProperty  = typeof(TextureModPropertyControl).ToString();
-    private static readonly string kPersistInspector = typeof(TextureModInspectorControl).ToString();
+    private static readonly string kPersistExplorer = typeof(TextureModExplorerControl).ToString();
+    private static readonly string kPersistPreview = $"{typeof(TextureModImageControl)}:Preview";
+    private static readonly string kPersistTexture = $"{typeof(TextureModImageControl)}:Texture";
+    private static readonly string kPersistMapping = typeof(TextureModMappingControl).ToString();
+    private static readonly string kPersistProperty = typeof(TextureModPropertyControl).ToString();
+    private static readonly string kPersistInspector = typeof(TextureModToolsControl).ToString();
     //@formatter:on
 
-    private IDockContent DeserializeDockContent(string persistString)
+    private IDockContent CreateDockContent(string persistString)
     {
         DockContent content = null;
         if (persistString == kPersistExplorer)
@@ -241,7 +238,7 @@ public partial class TextureModDockForm : Form
         }
         else if (persistString == kPersistInspector)
         {
-            var dockContent = new TextureModInspectorControl();
+            var dockContent = new TextureModToolsControl();
             dockContent.Text = "Inspector";
             dockContent.mainForm = this;
             content = dockContent;
@@ -336,16 +333,21 @@ public partial class TextureModDockForm : Form
         PictureBoxRectTool.Paint(canvas);
     }
 
-    private void xxxxToolStripMenuItem_Click(object sender, EventArgs e)
+    private void saveLayoutToolStripMenuItem_Click(object sender, EventArgs e)
     {
         var stream = new MemoryStream();
         dockPanel.SaveAsXml(stream, Encoding.UTF8);
         stream.Position = 0;
         Settings.Default.texModFormLayout = Convert.ToBase64String(stream.ToArray());
 #if DEBUG
-        Console.WriteLine($"{Width}x{Height}");
+        // Console.WriteLine($"{Width}x{Height}");
         // File.WriteAllBytes("c:\\layout.xml", stream.ToArray());
 #endif
+    }
+
+    private void loadLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
     }
 
     private void timer1_Tick(object sender, EventArgs e)
@@ -361,6 +363,16 @@ public partial class TextureModDockForm : Form
             if (modTextureCanvas != null)
             {
                 working.modTextureBitmap = modTextureCanvas.GetImage();
+                if (working.modTextureBitmap != null)
+                {
+                    //var bitmap = new SharpDX.Direct2D1.Bitmap(
+                    //    d2dRenderTarget.target,
+                    //    working.modTextureBitmap
+                    //);
+                    //Utilities.Dispose(ref working.modTextureBitmap);
+                    //working.modTextureBitmap = bitmap;
+                    //modTextureCanvas.SetImage(bitmap);
+                }
             }
             else
             {
@@ -391,6 +403,90 @@ public partial class TextureModDockForm : Form
                 OnGameTextureReady(working.gameTextureBitmap);
                 gameTextureCanvas?.Repaint();
             }
+        }
+    }
+
+    private void packToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        BeginBuildTexMod();
+    }
+
+    private void buildOIVPackageToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        BeginBuildOIVPackage();
+    }
+
+    private void newToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        NewTexMod();
+    }
+
+    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        SaveProject();
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        //Close();
+    }
+
+    private void importToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        ReimportTex();
+    }
+
+    private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        DuplicateModTexture();
+    }
+
+    private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        DeleteTexMod();
+    }
+
+    private void exporerToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (explorerControl == null)
+        {
+            explorerControl = (TextureModExplorerControl)CreateDockContent(kPersistExplorer);
+            explorerControl.Show(dockPanel, DockState.Float);
+        }
+    }
+
+    private void propertyToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (propertyControl == null)
+        {
+            propertyControl = (TextureModPropertyControl)CreateDockContent(kPersistProperty);
+            propertyControl.Show(dockPanel, DockState.Float);
+        }
+    }
+    private void mappingWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (mappingControl == null)
+        {
+            mappingControl = (TextureModMappingControl)CreateDockContent(kPersistMapping);
+            mappingControl.Show(dockPanel, DockState.Float);
+        }
+    }
+
+    private void textureWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (modTextureCanvas == null)
+        {
+            modTextureCanvas = (TextureModImageControl)CreateDockContent(kPersistTexture);
+            modTextureCanvas.Show(dockPanel, DockState.Float);
+        }
+    }
+
+    private void previewWindowToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (gameTextureCanvas == null)
+        {
+            gameTextureCanvas = (TextureModImageControl)CreateDockContent(kPersistPreview);
+            gameTextureCanvas.Show(dockPanel, DockState.Float);
         }
     }
 }

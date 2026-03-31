@@ -1,4 +1,4 @@
-﻿using CodeWalker.GameFiles;
+using CodeWalker.GameFiles;
 using CodeWalker.Project;
 using CodeWalker.Properties;
 using CodeWalker.Rendering;
@@ -397,6 +397,7 @@ namespace CodeWalker
 
             prevworldpos = FloatUtil.ParseVector3String(Settings.Default.StartPosition);
             camera.FollowEntity = camEntity;
+            camera.FollowEntity.Position = prevworldpos;
             camera.CurrentRotation = camera.TargetRotation = FloatUtil.ParseVector3String(Settings.Default.StartRotation);
             camEntity.Position = (startupviewmode != 2) ? prevworldpos : Vector3.Zero;
             camEntity.Orientation = Quaternion.LookAtLH(Vector3.Zero, Vector3.Up, Vector3.ForwardLH);

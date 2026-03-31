@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -14,7 +14,17 @@ namespace CodeWalker.TexMod;
 
 public partial class TextureModDockForm
 {
-    private void BuildMod()
+    public void BeginBuildTexMod()
+    {
+        BeginInvoke(BuildTexMod);
+    }
+
+    public void BeginBuildOIVPackage()
+    {
+        BeginInvoke(BuildOIVPackage);
+    }
+
+    private void BuildTexMod()
     {
         var result = new ActionResult();
         var cts = new CancellationTokenSource();
@@ -23,7 +33,7 @@ public partial class TextureModDockForm
         {
             try
             {
-                await BuildModAsync(cts.Token, progressForm, result);
+                await BuildTexModAsync(cts.Token, progressForm, result);
             }
             catch (OperationCanceledException)
             {
@@ -98,7 +108,7 @@ public partial class TextureModDockForm
         }
     }
 
-    private async Task BuildModAsync(CancellationToken cts, ProgressForm progress, ActionResult result)
+    private async Task BuildTexModAsync(CancellationToken cts, ProgressForm progress, ActionResult result)
     {
         void Log(string msg)
         {
@@ -303,7 +313,7 @@ public partial class TextureModDockForm
         Console.WriteLine("mod pack ok");
     }
 
-    private void PackMod()
+    private void BuildOIVPackage()
     {
         var folder = Path.GetDirectoryName(project.manifestFile)!;
 
@@ -320,7 +330,7 @@ public partial class TextureModDockForm
             var progress = ProgressForm.Create("Create OpenIV Package", cts);
             Task.Run(() =>
             {
-                PackModTask(fileName, cts.Token, progress, result);
+                BuildOIVPackageTask(fileName, cts.Token, progress, result);
                 cts.Dispose();
             }, cts.Token);
             progress.ShowDialog(this);
@@ -328,7 +338,7 @@ public partial class TextureModDockForm
         }
     }
 
-    private void PackModTask(string zipPath, CancellationToken cts, ProgressForm progress, ActionResult result)
+    private void BuildOIVPackageTask(string zipPath, CancellationToken cts, ProgressForm progress, ActionResult result)
     {
         // pack oiv
         var folder = Path.GetDirectoryName(project.manifestFile)!;

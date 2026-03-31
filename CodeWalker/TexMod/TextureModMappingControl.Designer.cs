@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.TexMod
+namespace CodeWalker.TexMod
 {
     partial class TextureModMappingControl
     {
@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModMappingControl));
             System.Windows.Forms.ColumnHeader Texture;
             System.Windows.Forms.ColumnHeader Lod;
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModMappingControl));
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
@@ -42,6 +42,16 @@
             Lod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // Texture
+            // 
+            Texture.Text = "Texture";
+            Texture.Width = 200;
+            // 
+            // Lod
+            // 
+            Lod.Text = "Lod";
+            Lod.Width = 80;
             // 
             // toolStrip
             // 
@@ -67,6 +77,7 @@
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton4.ToolTipText = "New";
+            this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
             // toolStripButton5
             // 
@@ -76,6 +87,7 @@
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
             this.toolStripButton5.ToolTipText = "Delete";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
             // 
             // toolStripButton7
             // 
@@ -110,16 +122,6 @@
             this.textureMappingView.VirtualMode = true;
             this.textureMappingView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.textureMappingView_RetrieveVirtualItem);
             this.textureMappingView.SelectedIndexChanged += new System.EventHandler(this.textureMappingView_SelectedIndexChanged);
-            // 
-            // Texture
-            // 
-            Texture.Text = "Texture";
-            Texture.Width = 200;
-            // 
-            // Lod
-            // 
-            Lod.Text = "Lod";
-            Lod.Width = 80;
             // 
             // TextureModMappingControl
             // 
