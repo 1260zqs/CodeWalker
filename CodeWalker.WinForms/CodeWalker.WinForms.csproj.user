@@ -50,6 +50,9 @@
     <Compile Update="TextBoxScrollSyncFix.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="ToastWidget.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="ToolStripFix.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -173,7 +173,7 @@ public class TextureModProject
 
     public void DeleteTextureMapping(TextureMapping mapping)
     {
-        for (var i = 0; i < textureMappings.Count; i++)
+        for (var i = textureMappings.Count - 1; i >= 0; i--)
         {
             if (textureMappings[i].id == mapping.id)
             {
@@ -224,7 +224,6 @@ public class ModTexture : EditorExtension
 
     public Vector3 position;
     public Vector3 rotation;
-
 
     public ModTexture Clone()
     {
@@ -284,9 +283,11 @@ public class TextureMapping : EditorExtension
         clone.id = id;
 
         clone.tag = tag;
+        clone.lod = lod;
         clone.name = name;
         clone.comment = comment;
         clone.modTexture = modTexture;
+        clone.position = position;
 
         clone.sourceTexture = sourceTexture;
         clone.targetRect = targetRect;

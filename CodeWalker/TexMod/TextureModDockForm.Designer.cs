@@ -51,15 +51,15 @@ namespace CodeWalker.TexMod
             this.loadLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.exporerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mappingWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.propertyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.textureWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previewWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.mappingWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textureWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.previewWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -235,12 +235,33 @@ namespace CodeWalker.TexMod
             this.exporerToolStripMenuItem.Text = "Exporer Window";
             this.exporerToolStripMenuItem.Click += new System.EventHandler(this.exporerToolStripMenuItem_Click);
             // 
+            // mappingWindowToolStripMenuItem
+            // 
+            this.mappingWindowToolStripMenuItem.Name = "mappingWindowToolStripMenuItem";
+            this.mappingWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mappingWindowToolStripMenuItem.Text = "Mapping Window";
+            this.mappingWindowToolStripMenuItem.Click += new System.EventHandler(this.mappingWindowToolStripMenuItem_Click);
+            // 
             // propertyToolStripMenuItem
             // 
             this.propertyToolStripMenuItem.Name = "propertyToolStripMenuItem";
             this.propertyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.propertyToolStripMenuItem.Text = "Property Window";
             this.propertyToolStripMenuItem.Click += new System.EventHandler(this.propertyToolStripMenuItem_Click);
+            // 
+            // textureWindowToolStripMenuItem
+            // 
+            this.textureWindowToolStripMenuItem.Name = "textureWindowToolStripMenuItem";
+            this.textureWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.textureWindowToolStripMenuItem.Text = "Texture Window";
+            this.textureWindowToolStripMenuItem.Click += new System.EventHandler(this.textureWindowToolStripMenuItem_Click);
+            // 
+            // previewWindowToolStripMenuItem
+            // 
+            this.previewWindowToolStripMenuItem.Name = "previewWindowToolStripMenuItem";
+            this.previewWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.previewWindowToolStripMenuItem.Text = "Preview Window";
+            this.previewWindowToolStripMenuItem.Click += new System.EventHandler(this.previewWindowToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -266,27 +287,6 @@ namespace CodeWalker.TexMod
             // 
             this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
             this.openFileDialog1.RestoreDirectory = true;
-            // 
-            // mappingWindowToolStripMenuItem
-            // 
-            this.mappingWindowToolStripMenuItem.Name = "mappingWindowToolStripMenuItem";
-            this.mappingWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.mappingWindowToolStripMenuItem.Text = "Mapping Window";
-            this.mappingWindowToolStripMenuItem.Click += new System.EventHandler(this.mappingWindowToolStripMenuItem_Click);
-            // 
-            // textureWindowToolStripMenuItem
-            // 
-            this.textureWindowToolStripMenuItem.Name = "textureWindowToolStripMenuItem";
-            this.textureWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.textureWindowToolStripMenuItem.Text = "Texture Window";
-            this.textureWindowToolStripMenuItem.Click += new System.EventHandler(this.textureWindowToolStripMenuItem_Click);
-            // 
-            // previewWindowToolStripMenuItem
-            // 
-            this.previewWindowToolStripMenuItem.Name = "previewWindowToolStripMenuItem";
-            this.previewWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.previewWindowToolStripMenuItem.Text = "Preview Window";
-            this.previewWindowToolStripMenuItem.Click += new System.EventHandler(this.previewWindowToolStripMenuItem_Click);
             // 
             // TextureModDockForm
             // 

@@ -51,7 +51,7 @@ public partial class TextureModDockForm
             return null;
         }
 
-        public bool TryGetFromPool(string key, out SharpDX.Direct2D1.Bitmap bitmap)
+        public bool TryGetFromCache(string key, out SharpDX.Direct2D1.Bitmap bitmap)
         {
             if (cache.TryGetValue(key, out var cacheItem))
             {
@@ -63,7 +63,7 @@ public partial class TextureModDockForm
             return false;
         }
 
-        public void ReturnToPool(string key, SharpDX.Direct2D1.Bitmap bitmap)
+        public void ReturnToCache(string key, SharpDX.Direct2D1.Bitmap bitmap)
         {
             if (!cache.TryGetValue(key, out var cacheItem))
             {

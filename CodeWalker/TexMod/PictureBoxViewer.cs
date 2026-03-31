@@ -229,7 +229,7 @@ public static class PictureBoxViewer
         var maxView = Math.Min(control.Width, control.Height);
         if (maxSize > 0)
         {
-            stateObject.zoom = (maxView * 0.8f) / maxSize;
+            stateObject.zoom = (maxView * 0.9f) / maxSize;
 
             var scaledWidth = width * stateObject.zoom;
             var scaledHeight = height * stateObject.zoom;

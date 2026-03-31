@@ -47,9 +47,7 @@ public partial class TextureModExplorerControl : DockContent
 
             var aFolder = a.Tag is not ModTexture;
             var bFolder = b.Tag is not ModTexture;
-
-            if (aFolder && !bFolder) return -1;
-            if (!aFolder && bFolder) return 1;
+            if (aFolder != bFolder) return aFolder ? -1 : 1;
 
             return string.Compare(a.Text, b.Text, StringComparison.OrdinalIgnoreCase);
         }
@@ -126,7 +124,6 @@ public partial class TextureModExplorerControl : DockContent
         }
         treeView.ImageList = m_ProjectTreeViewIcons;
         treeView.TreeViewNodeSorter = new NodeSorter();
-        treeView.Sort();
         treeView.Refresh();
     }
 
@@ -317,6 +314,27 @@ public partial class TextureModExplorerControl : DockContent
         // e.Node.SelectedImageIndex = TreeViewIcon.folder;
     }
 
+    private TreeNode CreateNodeAtParent(TreeNode node, string text)
+    {
+        var treeNode = new TreeNode(text);
+        AddNodeAfter(node, treeNode);
+        return treeNode;
+    }
+
+    private void AddNodeAfter(TreeNode baseNode, TreeNode newNode)
+    {
+        TreeNodeCollection collection = null;
+        if (baseNode.Parent != null)
+        {
+            collection = baseNode.Parent.Nodes;
+        }
+        else
+        {
+            collection = treeView.Nodes;
+        }
+        collection.Add(newNode);
+    }
+
     private void newFolderMenuItem_Click(object sender, EventArgs e)
     {
         var treeNode = treeView.SelectedNode;
@@ -326,14 +344,7 @@ public partial class TextureModExplorerControl : DockContent
         node.SelectedImageIndex = TreeViewIcon.folder;
         if (treeNode.Tag is ModTexture)
         {
-            if (treeNode.Parent == null)
-            {
-                treeView.Nodes.Insert(0, node);
-            }
-            else
-            {
-                treeNode.Parent.Nodes.Add(node);
-            }
+            AddNodeAfter(treeNode, node);
         }
         else
         {
@@ -346,6 +357,7 @@ public partial class TextureModExplorerControl : DockContent
 
     private void duplicateMenuItem_Click(object sender, EventArgs e)
     {
+        Action_Duplicate();
     }
 
     private void renameMenuItem_Click(object sender, EventArgs e)
@@ -359,6 +371,7 @@ public partial class TextureModExplorerControl : DockContent
 
     private void importMenuItem_Click(object sender, EventArgs e)
     {
+        Action_ReimportTex();
     }
 
     private void SetTreeViewDirty()
@@ -372,20 +385,19 @@ public partial class TextureModExplorerControl : DockContent
 
     private void toolStripButton3_Click(object sender, EventArgs e)
     {
-        // delete tex mod
-        mainForm.DeleteTexMod();
+        Action_Delete();
     }
 
     private void toolStripButton6_Click(object sender, EventArgs e)
     {
         //import
-        mainForm.ReimportTex();
+        Action_ReimportTex();
     }
 
     private void toolStripButton9_Click(object sender, EventArgs e)
     {
         // duplicate
-        mainForm.DuplicateModTexture();
+        Action_Duplicate();
     }
 
     private void saveProjectBtn_Click(object sender, EventArgs e)
@@ -401,5 +413,111 @@ public partial class TextureModExplorerControl : DockContent
     private void toolStripButton8_Click(object sender, EventArgs e)
     {
         mainForm.BeginBuildOIVPackage();
+    }
+
+    private void deleteMenuItem_Click(object sender, EventArgs e)
+    {
+        Action_Delete();
+    }
+
+    public void Action_ReimportTex()
+    {
+        if (treeView.SelectedNode is { } treeNode)
+        {
+            if (treeNode.Tag is ModTexture modTexture)
+            {
+                mainForm.ReimportTex(modTexture);
+                treeNode.Text = modTexture.name;
+            }
+        }
+    }
+
+    public void Action_Delete()
+    {
+        // delete tex mod
+        if (treeView.SelectedNode is { } node)
+        {
+            if (node.Tag is ModTexture modTexture)
+            {
+                var text = $"Delete {modTexture.name}?";
+                if (MessageBox.Show(text, "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    mainForm.DeleteTexMod(modTexture);
+                    node.Remove();
+                }
+            }
+            else
+            {
+                var list = new List<ModTexture>();
+                Traverse(list, node);
+                var text = $"Delete {node.Text} with {list.Count} mod textures?";
+                if (MessageBox.Show(text, "Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    foreach (var texture in list)
+                    {
+                        mainForm.DeleteTexMod(texture);
+                    }
+                    node.Remove();
+                }
+            }
+        }
+
+        static void Traverse(List<ModTexture> list, TreeNode treeNode)
+        {
+            foreach (TreeNode node in treeNode.Nodes)
+            {
+                if (node.Tag is ModTexture modTexture)
+                {
+                    list.Add(modTexture);
+                    continue;
+                }
+                Traverse(list, node);
+            }
+        }
+    }
+
+    public void Action_Duplicate()
+    {
+        if (treeView.SelectedNode is { } node)
+        {
+            if (node.Tag is ModTexture modTexture)
+            {
+                modTexture = mainForm.DuplicateModTexture(modTexture);
+                var treeNode = CreateNodeAtParent(node, modTexture.name);
+                treeNode.Tag = modTexture;
+                treeView.SelectedNode = treeNode;
+            }
+            else
+            {
+                var clone = CloneTreeNode(node);
+                // ReSharper disable once LocalizableElement
+                clone.Text = $"{node.Text} (Clone)";
+                AddNodeAfter(node, clone);
+            }
+        }
+
+        TreeNode CloneTreeNode(TreeNode treeNode)
+        {
+            var modTexture = treeNode.Tag as ModTexture;
+            if (modTexture != null)
+            {
+                var clone = mainForm.DuplicateModTexture(modTexture);
+                clone.name = modTexture.name;
+                modTexture = clone;
+            }
+            var newNode = new TreeNode(treeNode.Text)
+            {
+                Name = treeNode.Name,
+                Tag = modTexture,
+                ImageIndex = treeNode.ImageIndex,
+                SelectedImageIndex = treeNode.SelectedImageIndex,
+                StateImageIndex = treeNode.StateImageIndex,
+            };
+            foreach (TreeNode child in treeNode.Nodes)
+            {
+                newNode.Nodes.Add(CloneTreeNode(child));
+            }
+            return newNode;
+        }
     }
 }

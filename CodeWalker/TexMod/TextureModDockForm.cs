@@ -84,7 +84,7 @@ public partial class TextureModDockForm : Form
     private void OnPropertyGridChanged()
     {
         gameTextureCanvas?.Repaint();
-        UpdateTexturePainting();
+        RequestTexturePaintingUpdate();
     }
 
     private void dockPanel_ContentAdded(object sender, DockContentEventArgs e)
@@ -147,7 +147,18 @@ public partial class TextureModDockForm : Form
                 {
                     modTextureCanvas = null;
                     var bitmap = imageControl.GetImage();
-                    // transfer the bitmap ownership
+                    if (bitmap != null && ReferenceEquals(working.modTextureBitmap, bitmap))
+                    {
+                        if (!ReferenceEquals(bitmap.Tag, d2dRenderTarget))
+                        {
+                            // transfer the bitmap ownership
+                            working.modTextureBitmap = new SharpDX.Direct2D1.Bitmap(
+                                d2dRenderTarget.target,
+                                bitmap
+                            );
+                            Utilities.Dispose(ref bitmap);
+                        }
+                    }
                 }
             }
             else if (imageControl.Name == "Preview")
@@ -155,6 +166,19 @@ public partial class TextureModDockForm : Form
                 if (ReferenceEquals(gameTextureCanvas, imageControl))
                 {
                     gameTextureCanvas = null;
+                    var bitmap = imageControl.GetImage();
+                    if (bitmap != null && ReferenceEquals(working.gameTextureBitmap, bitmap))
+                    {
+                        if (!ReferenceEquals(bitmap.Tag, d2dRenderTarget))
+                        {
+                            // transfer the bitmap ownership
+                            working.gameTextureBitmap = new SharpDX.Direct2D1.Bitmap(
+                                d2dRenderTarget.target,
+                                bitmap
+                            );
+                            Utilities.Dispose(ref bitmap);
+                        }
+                    }
                 }
             }
         }
@@ -209,6 +233,8 @@ public partial class TextureModDockForm : Form
             dockContent.canvas.onPaint = PaintPreviewPicture;
             dockContent.canvas.onBitmapLoaded = OnBitmapLoaded;
             dockContent.onRectDrawingChange = OnDestRectDrawingChange;
+            dockContent.SetImage(working.gameTextureBitmap);
+            PictureBoxRectTool.AddFeature(dockContent.canvas, OnDrawPreviewRect);
             content = dockContent;
         }
         else if (persistString == kPersistTexture)
@@ -220,6 +246,8 @@ public partial class TextureModDockForm : Form
             dockContent.canvas.onPaint = PaintTexturePicture;
             dockContent.canvas.onBitmapLoaded = OnBitmapLoaded;
             dockContent.onRectDrawingChange = OnSrcRectDrawingChange;
+            dockContent.SetImage(working.modTextureBitmap);
+            PictureBoxRectTool.AddFeature(dockContent.canvas, OnDrawTextureRect);
             content = dockContent;
         }
         else if (persistString == kPersistMapping)
@@ -239,7 +267,7 @@ public partial class TextureModDockForm : Form
         else if (persistString == kPersistInspector)
         {
             var dockContent = new TextureModToolsControl();
-            dockContent.Text = "Inspector";
+            dockContent.Text = "Tools";
             dockContent.mainForm = this;
             content = dockContent;
         }
@@ -250,13 +278,34 @@ public partial class TextureModDockForm : Form
         return content;
     }
 
+    private void OnDrawTextureRect(System.Drawing.RectangleF rectangle)
+    {
+        if (working.modTexture != null)
+        {
+            working.modTexture.sourceRect = rectangle;
+            gameTextureCanvas?.Repaint();
+            modTextureCanvas?.Refresh();
+            RequestTexturePaintingUpdate();
+        }
+    }
+
+    private void OnDrawPreviewRect(System.Drawing.RectangleF rectangle)
+    {
+        if (working.mapping != null)
+        {
+            working.mapping.targetRect = rectangle;
+            gameTextureCanvas?.Repaint();
+            RequestTexturePaintingUpdate();
+        }
+    }
+
     private void OnSrcRectDrawingChange(D2DCanvas canvas, System.Drawing.RectangleF rect)
     {
         if (working.modTexture != null)
         {
             working.modTexture.sourceRect = rect;
             gameTextureCanvas?.Repaint();
-            UpdateTexturePainting();
+            RequestTexturePaintingUpdate();
         }
     }
 
@@ -265,7 +314,7 @@ public partial class TextureModDockForm : Form
         if (working.mapping != null)
         {
             working.mapping.targetRect = rect;
-            UpdateTexturePainting();
+            RequestTexturePaintingUpdate();
         }
     }
 
@@ -347,7 +396,6 @@ public partial class TextureModDockForm : Form
 
     private void loadLayoutToolStripMenuItem_Click(object sender, EventArgs e)
     {
-
     }
 
     private void timer1_Tick(object sender, EventArgs e)
@@ -363,20 +411,14 @@ public partial class TextureModDockForm : Form
             if (modTextureCanvas != null)
             {
                 working.modTextureBitmap = modTextureCanvas.GetImage();
-                if (working.modTextureBitmap != null)
-                {
-                    //var bitmap = new SharpDX.Direct2D1.Bitmap(
-                    //    d2dRenderTarget.target,
-                    //    working.modTextureBitmap
-                    //);
-                    //Utilities.Dispose(ref working.modTextureBitmap);
-                    //working.modTextureBitmap = bitmap;
-                    //modTextureCanvas.SetImage(bitmap);
-                }
             }
             else
             {
                 working.modTextureBitmap = working.modTextureSource.CreateBitmap(d2dRenderTarget.target);
+                if (working.modTextureBitmap != null)
+                {
+                    working.modTextureBitmap.Tag = d2dRenderTarget;
+                }
             }
             if (working.modTextureBitmap != null)
             {
@@ -395,6 +437,10 @@ public partial class TextureModDockForm : Form
             else
             {
                 working.gameTextureBitmap = working.gameTextureSource.CreateBitmap(d2dRenderTarget.target);
+                if (working.gameTextureBitmap != null)
+                {
+                    working.gameTextureBitmap.Tag = d2dRenderTarget;
+                }
             }
             if (working.gameTextureBitmap != null)
             {
@@ -433,17 +479,17 @@ public partial class TextureModDockForm : Form
 
     private void importToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        ReimportTex();
+        explorerControl?.Action_ReimportTex();
     }
 
     private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        DuplicateModTexture();
+        explorerControl?.Action_Duplicate();
     }
 
     private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        DeleteTexMod();
+        explorerControl?.Action_Delete();
     }
 
     private void exporerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -453,6 +499,7 @@ public partial class TextureModDockForm : Form
             explorerControl = (TextureModExplorerControl)CreateDockContent(kPersistExplorer);
             explorerControl.Show(dockPanel, DockState.Float);
         }
+        explorerControl.Focus();
     }
 
     private void propertyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -462,7 +509,9 @@ public partial class TextureModDockForm : Form
             propertyControl = (TextureModPropertyControl)CreateDockContent(kPersistProperty);
             propertyControl.Show(dockPanel, DockState.Float);
         }
+        propertyControl.Focus();
     }
+
     private void mappingWindowToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (mappingControl == null)
@@ -470,6 +519,7 @@ public partial class TextureModDockForm : Form
             mappingControl = (TextureModMappingControl)CreateDockContent(kPersistMapping);
             mappingControl.Show(dockPanel, DockState.Float);
         }
+        mappingControl.Focus();
     }
 
     private void textureWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -479,6 +529,7 @@ public partial class TextureModDockForm : Form
             modTextureCanvas = (TextureModImageControl)CreateDockContent(kPersistTexture);
             modTextureCanvas.Show(dockPanel, DockState.Float);
         }
+        modTextureCanvas.Focus();
     }
 
     private void previewWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -488,5 +539,6 @@ public partial class TextureModDockForm : Form
             gameTextureCanvas = (TextureModImageControl)CreateDockContent(kPersistPreview);
             gameTextureCanvas.Show(dockPanel, DockState.Float);
         }
+        gameTextureCanvas.Focus();
     }
 }

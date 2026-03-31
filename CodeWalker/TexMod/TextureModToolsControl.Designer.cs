@@ -349,7 +349,7 @@ namespace CodeWalker.TexMod
             this.label7.TabIndex = 53;
             this.label7.Text = "h:";
             // 
-            // TextureModInspectorControl
+            // TextureModToolsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -358,7 +358,7 @@ namespace CodeWalker.TexMod
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
-            this.Name = "TextureModInspectorControl";
+            this.Name = "TextureModToolsControl";
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);

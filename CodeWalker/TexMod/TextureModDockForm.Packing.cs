@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using CodeWalker.GameFiles;
+using CodeWalker.Properties;
 using CodeWalker.Utils;
 using SharpDX;
 using SharpDX.Direct2D1;
@@ -16,7 +17,16 @@ public partial class TextureModDockForm
 {
     public void BeginBuildTexMod()
     {
-        BeginInvoke(BuildTexMod);
+        var result = MessageBox.Show(
+            this,
+            Resources.Msg_BuildModConfirm,
+            "Build",
+            MessageBoxButtons.OKCancel,
+            MessageBoxIcon.Question);
+        if (result == DialogResult.OK)
+        {
+            BeginInvoke(BuildTexMod);
+        }
     }
 
     public void BeginBuildOIVPackage()

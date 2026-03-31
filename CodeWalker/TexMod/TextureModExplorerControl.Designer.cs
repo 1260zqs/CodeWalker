@@ -191,7 +191,7 @@ namespace CodeWalker.TexMod
             this.toolStripSeparator2,
             this.deleteMenuItem});
             this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
-            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
+            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 148);
             // 
             // newFolderMenuItem
             // 
@@ -240,6 +240,7 @@ namespace CodeWalker.TexMod
             this.deleteMenuItem.Name = "deleteMenuItem";
             this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
             this.deleteMenuItem.Text = "Delete";
+            this.deleteMenuItem.Click += new System.EventHandler(this.deleteMenuItem_Click);
             // 
             // vsExtender
             // 

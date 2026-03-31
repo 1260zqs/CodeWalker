@@ -217,6 +217,12 @@ public static class PictureBoxRectTool
         return stateObjects.GetOrAdd(GetHandle(control), valueFactory);
     }
 
+    public static void Clear(Control control)
+    {
+        if (control == null) return;
+        stateObjects.TryRemove(GetHandle(control), out _);
+    }
+
     private static int GetHandle(Control control)
     {
         return RuntimeHelpers.GetHashCode(control);
@@ -233,6 +239,7 @@ public static class PictureBoxRectTool
 
     public static void SetRect(Control control, System.Drawing.RectangleF rect)
     {
+        if (control == null) return;
         var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
         stateObject.rect = rect;
         control.Invalidate();
