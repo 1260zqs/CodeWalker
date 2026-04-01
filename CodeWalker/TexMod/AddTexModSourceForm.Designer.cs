@@ -39,6 +39,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(95, 55);
+            this.textBox2.MaxLength = 256;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(297, 21);
             this.textBox2.TabIndex = 14;
@@ -55,9 +56,9 @@
             // 
             // okBtn
             // 
-            this.okBtn.Location = new System.Drawing.Point(236, 101);
+            this.okBtn.Location = new System.Drawing.Point(210, 99);
             this.okBtn.Name = "okBtn";
-            this.okBtn.Size = new System.Drawing.Size(75, 23);
+            this.okBtn.Size = new System.Drawing.Size(88, 30);
             this.okBtn.TabIndex = 11;
             this.okBtn.Text = "OK";
             this.okBtn.UseVisualStyleBackColor = true;
@@ -66,9 +67,9 @@
             // cancelBtn
             // 
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(317, 101);
+            this.cancelBtn.Location = new System.Drawing.Point(304, 99);
             this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.cancelBtn.Size = new System.Drawing.Size(88, 30);
             this.cancelBtn.TabIndex = 10;
             this.cancelBtn.Text = "Cancel";
             this.cancelBtn.UseVisualStyleBackColor = true;
@@ -77,6 +78,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(95, 17);
+            this.textBox1.MaxLength = 256;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(297, 21);
             this.textBox1.TabIndex = 9;
@@ -93,8 +95,8 @@
             // AddTexModSourceForm
             // 
             this.AcceptButton = this.okBtn;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96f, 96f);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancelBtn;
             this.ClientSize = new System.Drawing.Size(404, 141);
             this.Controls.Add(this.textBox2);

@@ -70,6 +70,14 @@ public partial class TextureModMappingControl : DockContent
         {
             textureMappingView.SelectedIndices.Add(0);
         }
+        else
+        {
+            foreach (int index in textureMappingView.SelectedIndices)
+            {
+                mainForm.SelectTextureMapping(listOfMappings[index]);
+                return;
+            }
+        }
         textureMappingView.Refresh();
     }
 

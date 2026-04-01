@@ -435,7 +435,8 @@ public partial class TextureModExplorerControl : DockContent
     public void Action_Delete()
     {
         // delete tex mod
-        if (treeView.SelectedNode is { } node)
+        var selectedNode = treeView.SelectedNode;
+        if (selectedNode is { } node)
         {
             if (node.Tag is ModTexture modTexture)
             {
@@ -458,6 +459,15 @@ public partial class TextureModExplorerControl : DockContent
                         mainForm.DeleteTexMod(texture);
                     }
                     node.Remove();
+                }
+            }
+            var currentSelect = treeView.SelectedNode;
+            if (currentSelect != null && !ReferenceEquals(currentSelect, selectedNode))
+            {
+                if (currentSelect.Tag is ModTexture modTexture2)
+                {
+
+                    mainForm.SelectTexMod(modTexture2);
                 }
             }
         }

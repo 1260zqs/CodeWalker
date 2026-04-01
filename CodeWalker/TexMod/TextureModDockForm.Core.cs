@@ -430,8 +430,23 @@ public partial class TextureModDockForm
             {
                 var fileName = openFileDialog1.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
+                var key = modTexture.filename;
                 modTexture.filename = fileName;
                 modTexture.name = Path.GetFileName(fileName);
+                if (working.modTexture != null && working.modTexture.id == modTexture.id)
+                {
+                    if (working.modTextureBitmap != null)
+                    {
+                        imageCache.ReturnToCache(key, working.modTextureBitmap);
+                        working.modTextureBitmap = null;
+                        working.modTextureSource = new AsyncImageFileSource(fileName);
+                        working.modTextureSource.shared = true;
+                        working.modTextureSource.LoadAsync();
+                        modTextureCanvas?.SetImage(working.modTextureSource);
+                        gameTextureCanvas?.Repaint();
+                        RequestTexturePaintingUpdate();
+                    }
+                }
                 // RefreshModListView();
             }
             catch (Exception exception)
@@ -483,37 +498,19 @@ public partial class TextureModDockForm
     internal void DeleteTexMod(ModTexture modTexture)
     {
         project.DeleteModTexture(modTexture);
-    }
-
-    internal void DeleteTexMod()
-    {
-        if (working.modTexture != null)
+        if (working.modTexture != null && working.modTexture.id == modTexture.id)
         {
-            var modTexture = working.modTexture;
-            if (MessageBox.Show($"Delete {modTexture.name}?", "Delete", MessageBoxButtons.YesNo) != DialogResult.Yes)
-            {
-                return;
-            }
-            project.DeleteModTexture(modTexture);
+            SelectTexMod(null);
         }
-        // foreach (int selectedIndex in treeView.SelectedIndices)
-        // {
-        //     var modTexture = project.modTextures.Values[selectedIndex];
-        // }
-        // modListView.VirtualListSize = 0;
-        // modListView.SelectedIndices.Clear();
-        // RefreshModListView();
-        // if (modListView.SelectedIndices.Count == 0)
-        // {
-        //     SelectTexMod(null);
-        // }
     }
 
     internal void DeleteTexMapping(TextureMapping textureMapping)
     {
         project.DeleteTextureMapping(textureMapping);
-        ClearMappingSelection();
-
+        if (working.mapping != null && working.mapping.id == textureMapping.id)
+        {
+            ClearMappingSelection();
+        }
         mappingControl?.RefreshListView(working.modTexture);
     }
 }

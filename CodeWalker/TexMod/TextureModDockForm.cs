@@ -408,7 +408,7 @@ public partial class TextureModDockForm : Form
     {
         if (working.modTextureSource != null && working.modTextureSource.ready)
         {
-            if (modTextureCanvas != null)
+            if (modTextureCanvas != null && modTextureCanvas.Visible)
             {
                 working.modTextureBitmap = modTextureCanvas.GetImage();
             }
@@ -424,13 +424,14 @@ public partial class TextureModDockForm : Form
             {
                 Utilities.Dispose(ref working.modTextureSource);
                 imageCache.AddToCache(working.modTexture.filename, working.modTextureBitmap);
+                modTextureCanvas?.SetImage(working.modTextureBitmap);
                 OnModTextureReady(working.modTextureBitmap);
                 gameTextureCanvas?.Repaint();
             }
         }
         if (working.gameTextureSource != null && working.gameTextureSource.ready)
         {
-            if (gameTextureCanvas != null)
+            if (gameTextureCanvas != null && gameTextureCanvas.Visible)
             {
                 working.gameTextureBitmap = gameTextureCanvas.GetImage();
             }
@@ -446,6 +447,7 @@ public partial class TextureModDockForm : Form
             {
                 Utilities.Dispose(ref working.gameTextureSource);
                 imageCache.AddToCache(working.sourceTexture.sourceFile, working.gameTextureBitmap);
+                gameTextureCanvas?.SetImage(working.gameTextureBitmap);
                 OnGameTextureReady(working.gameTextureBitmap);
                 gameTextureCanvas?.Repaint();
             }

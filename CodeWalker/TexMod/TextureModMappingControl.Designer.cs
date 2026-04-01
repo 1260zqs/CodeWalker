@@ -46,12 +46,12 @@ namespace CodeWalker.TexMod
             // Texture
             // 
             Texture.Text = "Texture";
-            Texture.Width = 200;
+            Texture.Width = 260;
             // 
             // Lod
             // 
             Lod.Text = "Lod";
-            Lod.Width = 80;
+            Lod.Width = 120;
             // 
             // toolStrip
             // 

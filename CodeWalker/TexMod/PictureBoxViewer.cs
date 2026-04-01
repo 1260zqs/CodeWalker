@@ -138,20 +138,36 @@ public static class PictureBoxViewer
     {
         if (sender is Control control)
         {
-            var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
+            Zoom(control, e.Delta > 0, e.X, e.Y);
+            //var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
 
-            var oldZoom = stateObject.zoom;
-            if (e.Delta > 0) stateObject.zoom *= 1.2f;
-            else stateObject.zoom /= 1.2f;
-            //stateObject.zoom = Mathf.Clamp(stateObject.zoom, stateObject.miniZoom, stateObject.maxZoom);
+            //var oldZoom = stateObject.zoom;
+            //if (e.Delta > 0) stateObject.zoom *= 1.2f;
+            //else stateObject.zoom /= 1.2f;
+            ////stateObject.zoom = Mathf.Clamp(stateObject.zoom, stateObject.miniZoom, stateObject.maxZoom);
 
-            float mx = e.X;
-            float my = e.Y;
-            stateObject.pan.X = mx - (mx - stateObject.pan.X) * (stateObject.zoom / oldZoom);
-            stateObject.pan.Y = my - (my - stateObject.pan.Y) * (stateObject.zoom / oldZoom);
+            //float mx = e.X;
+            //float my = e.Y;
+            //stateObject.pan.X = mx - (mx - stateObject.pan.X) * (stateObject.zoom / oldZoom);
+            //stateObject.pan.Y = my - (my - stateObject.pan.Y) * (stateObject.zoom / oldZoom);
 
-            control.Invalidate();
+            //control.Invalidate();
         }
+    }
+
+    public static void Zoom(Control control, bool zoomIn, float x, float y)
+    {
+        var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
+
+        var oldZoom = stateObject.zoom;
+        if (zoomIn) stateObject.zoom *= 1.2f;
+        else stateObject.zoom /= 1.2f;
+        //stateObject.zoom = Mathf.Clamp(stateObject.zoom, stateObject.miniZoom, stateObject.maxZoom);
+
+        stateObject.pan.X = x - (x - stateObject.pan.X) * (stateObject.zoom / oldZoom);
+        stateObject.pan.Y = y - (y - stateObject.pan.Y) * (stateObject.zoom / oldZoom);
+
+        control.Invalidate();
     }
 
     private static void OnMouseUp(object sender, MouseEventArgs e)
