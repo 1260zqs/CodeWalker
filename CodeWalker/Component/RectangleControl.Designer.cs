@@ -1,4 +1,4 @@
-﻿namespace CodeWalker
+namespace CodeWalker
 {
     partial class RectangleControl
     {
@@ -59,6 +59,8 @@
             this.rectBoxX.Size = new System.Drawing.Size(80, 21);
             this.rectBoxX.TabIndex = 57;
             this.rectBoxX.ValueChanged += new System.EventHandler(this.rectBoxX_ValueChanged);
+            this.rectBoxX.Minimum = decimal.MinValue;
+            this.rectBoxX.Maximum = decimal.MaxValue;
             // 
             // rectBoxY
             // 
@@ -68,6 +70,8 @@
             this.rectBoxY.Size = new System.Drawing.Size(80, 21);
             this.rectBoxY.TabIndex = 58;
             this.rectBoxY.ValueChanged += new System.EventHandler(this.rectBoxY_ValueChanged);
+            this.rectBoxY.Minimum = decimal.MinValue;
+            this.rectBoxY.Maximum = decimal.MaxValue;
             // 
             // label5
             // 
@@ -86,6 +90,8 @@
             this.rectBoxH.Size = new System.Drawing.Size(80, 21);
             this.rectBoxH.TabIndex = 63;
             this.rectBoxH.ValueChanged += new System.EventHandler(this.rectBoxH_ValueChanged);
+            this.rectBoxH.Minimum = decimal.MinValue;
+            this.rectBoxH.Maximum = decimal.MaxValue;
             // 
             // label6
             // 
@@ -104,6 +110,8 @@
             this.rectBoxW.Size = new System.Drawing.Size(80, 21);
             this.rectBoxW.TabIndex = 62;
             this.rectBoxW.ValueChanged += new System.EventHandler(this.rectBoxW_ValueChanged);
+            this.rectBoxW.Minimum = decimal.MinValue;
+            this.rectBoxW.Maximum = decimal.MaxValue;
             // 
             // label7
             // 
