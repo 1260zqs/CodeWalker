@@ -34,7 +34,12 @@ public class D2DCanvas : Control
     public SharpDX.Direct3D11.Device d3dDevice;
     public SharpDX.DXGI.Factory d3dFactory;
 
-    public RawMatrix3x2 transform => target.Transform;
+    public RawMatrix3x2 transform
+    {
+        get => target.Transform;
+        set => target.Transform = value;
+    }
+
     public D2DCanvasPaintHandler onPaint;
     public D2DCanvasBitmapLoadedHandler onBitmapLoaded;
     private bool isError;
