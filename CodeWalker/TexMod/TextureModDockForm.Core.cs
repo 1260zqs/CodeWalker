@@ -189,7 +189,14 @@ public partial class TextureModDockForm
     public bool isDrawTestColor
     {
         get => m_IsDrawTestColor;
-        set => m_IsDrawTestColor = value;
+        set
+        {
+            if (m_IsDrawTestColor != value)
+            {
+                m_IsDrawTestColor = value;
+                RequestTexturePaintingUpdate();
+            }
+        }
     }
 
     public bool isSyncLod
@@ -390,10 +397,10 @@ public partial class TextureModDockForm
     private void ExecuteTexturePaintingUpdate()
     {
         Interlocked.Exchange(ref texturePaintingUpdatePending, 0);
-        UpdateTexturePaintingCore();
+        UpdateTexturePaintingNow();
     }
 
-    private void UpdateTexturePaintingCore()
+    private void UpdateTexturePaintingNow()
     {
         if (working.modTexture == null || working.mapping == null) return;
 

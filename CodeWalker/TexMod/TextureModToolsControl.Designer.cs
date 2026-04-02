@@ -179,7 +179,6 @@ namespace CodeWalker.TexMod
             this.checkBox3.TabIndex = 1;
             this.checkBox3.Text = "Draw test color";
             this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // checkBox2
             // 
