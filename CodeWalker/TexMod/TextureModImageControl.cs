@@ -42,7 +42,7 @@ public partial class TextureModImageControl : DockContent
         onRectDrawingChange?.Invoke(canvas, rectangle);
     }
 
-    public void Repaint() => canvas.Invalidate(true);
+    public void Repaint() => canvas.Invalidate();
 
     public Bitmap GetImage() => canvas.GetImage();
 
@@ -53,6 +53,7 @@ public partial class TextureModImageControl : DockContent
 
     private void toolStripButton1_Click(object sender, EventArgs e)
     {
+        ActiveControl = null;
         if (canvas.HasImage())
         {
             var pixelSize = canvas.GetImageSize();
@@ -63,12 +64,14 @@ public partial class TextureModImageControl : DockContent
 
     private void toolStripButton2_Click(object sender, EventArgs e)
     {
+        ActiveControl = null;
         PictureBoxViewer.ResetViewer(canvas);
         canvas.Invalidate(true);
     }
 
     private void toolStripButton3_Click(object sender, EventArgs e)
     {
+        ActiveControl = null;
         var x = (canvas.Right - canvas.Left) / 2f;
         var y = (canvas.Bottom - canvas.Top) / 2f;
         PictureBoxViewer.Zoom(canvas, false, x, y);
@@ -84,6 +87,7 @@ public partial class TextureModImageControl : DockContent
 
     private void toolStripComboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
+        ActiveControl = null;
         var zoom = (float)toolStripComboBox1.SelectedItem;
         var x = (canvas.Right - canvas.Left) / 2f;
         var y = (canvas.Bottom - canvas.Top) / 2f;

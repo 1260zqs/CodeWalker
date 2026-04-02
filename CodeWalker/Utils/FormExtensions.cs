@@ -100,7 +100,7 @@ public static class FormExtensions
         }
     }
 
-    public static void SelecetValueDrop<TValue>(this System.Windows.Forms.ComboBox comboBox, TValue[] values, TValue value)
+    public static void SelectValueDrop<TValue>(this System.Windows.Forms.ComboBox comboBox, TValue[] values, TValue value)
     {
         comboBox.SelectedIndex = Array.IndexOf(values, value);
     }

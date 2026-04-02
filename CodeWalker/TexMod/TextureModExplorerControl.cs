@@ -466,7 +466,6 @@ public partial class TextureModExplorerControl : DockContent
             {
                 if (currentSelect.Tag is ModTexture modTexture2)
                 {
-
                     mainForm.SelectTexMod(modTexture2);
                 }
             }
@@ -528,6 +527,27 @@ public partial class TextureModExplorerControl : DockContent
                 newNode.Nodes.Add(CloneTreeNode(child));
             }
             return newNode;
+        }
+    }
+
+    public void NewTexModNode(ModTexture modTexture)
+    {
+        if (treeView.SelectedNode is { } node)
+        {
+            var treeNode = new TreeNode();
+            treeNode.Tag = modTexture;
+            treeNode.Text = modTexture.name;
+            treeNode.ImageIndex = TreeViewIcon.picture;
+            treeNode.SelectedImageIndex = TreeViewIcon.picture;
+            if (node.Tag is ModTexture)
+            {
+                AddNodeAfter(node, treeNode);
+            }
+            else
+            {
+                node.Nodes.Add(treeNode);
+            }
+            treeView.SelectedNode = treeNode;
         }
     }
 }

@@ -107,15 +107,10 @@ public partial class TextureModMappingControl : DockContent
         var form = new AddTexModSourceForm();
         if (form.ShowDialog(this) == DialogResult.OK)
         {
-            //var gameFile = adapter.GetSourceFile(form.sourceFileName);
-            //if (gameFile != null)
-            //{
-            //    var info = new AddModSourceInfo();
-            //    info.texName = form.sourceTexName;
-            //    info.gameFile = gameFile;
-            //    info.lod = (rage__eLodType)(-1);
-            //    AddModSource(info);
-            //}
+            mainForm.AddModSource(
+                form.sourceFileName,
+                form.sourceTexName
+            );
         }
     }
 
@@ -136,6 +131,8 @@ public partial class TextureModMappingControl : DockContent
 
     private void toolStripButton1_Click(object sender, EventArgs e)
     {
-        mainForm.isSyncLod = toolStripButton1.Checked;
+        var isChecked = !toolStripButton1.Checked;
+        toolStripButton1.Checked = isChecked;
+        mainForm.isSyncLod = isChecked;
     }
 }

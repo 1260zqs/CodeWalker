@@ -92,6 +92,8 @@ public partial class TextureModDockForm
             worldForm.GameFileCache.RpfMan,
             new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache)
         );
+        form.setRenderLod = worldForm.SetRenderLod;
+        form.setRenderHdTex = worldForm.SetRenderHdTex;
         return form;
     }
 
@@ -106,6 +108,20 @@ public partial class TextureModDockForm
         {
             window.AddModSource(info);
         });
+    }
+
+    public void AddModSource(string sourceFileName, string sourceTexName)
+    {
+        var gameFile = adapter.GetSourceFile(sourceFileName);
+        if (gameFile != null)
+        {
+            var info = new AddModSourceInfo();
+            info.texName = sourceTexName;
+            info.gameFile = gameFile;
+            info.lod = (rage__eLodType)(-1);
+            info.hasCameraInfo = false;
+            AddModSource(info);
+        }
     }
 
     public void AddModSource(AddModSourceInfo info)
@@ -134,8 +150,11 @@ public partial class TextureModDockForm
             mapping.lod = info.lod.Conv();
             mapping.name = texName;
 
-            modTexture.position = info.position;
-            modTexture.rotation = info.rotation;
+            if (info.hasCameraInfo)
+            {
+                modTexture.position = info.position;
+                modTexture.rotation = info.rotation;
+            }
 
             mappingControl?.RefreshListView(modTexture);
         }
@@ -182,6 +201,7 @@ public partial class TextureModDockForm
             {
                 m_IsPainting = value;
                 gameTextureCanvas?.Repaint();
+                RequestTexturePaintingUpdate();
             }
         }
     }
@@ -348,8 +368,8 @@ public partial class TextureModDockForm
             }
             try
             {
-                renderer.renderworldMaxLOD = lod;
-                renderer.renderhdtextures = mapping.lod == TextureLod.HiDR;
+                setRenderLod?.Invoke(lod);
+                setRenderHdTex?.Invoke(mapping.lod == TextureLod.HiDR);
             }
             catch (Exception ex)
             {
@@ -385,6 +405,8 @@ public partial class TextureModDockForm
     }
 
     private volatile int texturePaintingUpdatePending;
+    private Action<rage__eLodType> setRenderLod;
+    private Action<bool> setRenderHdTex;
 
     public void RequestTexturePaintingUpdate()
     {
@@ -514,8 +536,11 @@ public partial class TextureModDockForm
 
     public void SaveProject()
     {
-        // project.directory = SaveTreeView();
-        // project.Save(Settings.Default.TexModWorkingDir);
+        if (explorerControl != null)
+        {
+            project.directory = explorerControl.SerializeTreeView();
+        }
+        project.Save(Settings.Default.TexModWorkingDir);
     }
 
     internal ModTexture DuplicateModTexture(ModTexture srcModTexture)
@@ -608,6 +633,7 @@ public partial class TextureModDockForm
 
                 var modTexture = project.CreateTextureMod(fileName);
                 modTexture.sourceRect = new System.Drawing.RectangleF(0, 0, width, height);
+                explorerControl?.NewTexModNode(modTexture);
                 // RefreshModListView();
             }
             catch (Exception exception)
@@ -663,10 +689,11 @@ public partial class TextureModDockForm
         if (working.modTexture is { } modTexture)
         {
             modTexture.sourceRect = rect;
-            RequestTexturePaintingUpdate();
+            toolsControl?.SetSrcRectWithoutNotify(rect);
             PictureBoxRectTool.SetRect(modTextureCanvas?.canvas, rect);
             gameTextureCanvas?.Repaint();
             modTextureCanvas?.Repaint();
+            RequestTexturePaintingUpdate();
         }
     }
 
@@ -675,23 +702,15 @@ public partial class TextureModDockForm
         if (working.mapping is { } mapping)
         {
             mapping.targetRect = rect;
-            RequestTexturePaintingUpdate();
+            toolsControl?.SetDestRect(rect);
             PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, rect);
             gameTextureCanvas?.Repaint();
+            RequestTexturePaintingUpdate();
         }
     }
 
     internal void FitSrcRectByDestWidth()
     {
-        //var imageSize = modTextureCanvas.GetImageSize();
-
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (width <= 0) return;
-
-        //rectBoxX.Value = 0;
-        //rectBoxW.Value = imageSize.Width;
-        //rectBoxH.Value = height / width * imageSize.Width;
         if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
         {
             if (descRect.Width <= 0) return;
@@ -702,6 +721,7 @@ public partial class TextureModDockForm
                 srcRect.X = 0;
                 srcRect.Width = imageSize.Width;
                 srcRect.Height = (descRect.Height / descRect.Width) * imageSize.Width;
+                toolsControl?.SetSrcRectWithoutNotify(srcRect);
                 SetSrcImageRect(srcRect);
             }
         }
@@ -709,16 +729,6 @@ public partial class TextureModDockForm
 
     internal void FitSrcRectByDestHeight()
     {
-        //if (!modTextureCanvas.HasImage()) return;
-        //var imageSize = modTextureCanvas.GetImageSize();
-
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (height <= 0) return;
-
-        //rectBoxY.Value = 0;
-        //rectBoxH.Value = imageSize.Height;
-        //rectBoxW.Value = width / height * imageSize.Width;
         if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
         {
             if (descRect.Height <= 0) return;
@@ -728,7 +738,8 @@ public partial class TextureModDockForm
 
                 srcRect.Y = 0;
                 srcRect.Height = imageSize.Height;
-                srcRect.Width = (descRect.Width / descRect.Height) * imageSize.Width;
+                srcRect.Width = (descRect.Width / descRect.Height) * imageSize.Height;
+                toolsControl?.SetSrcRectWithoutNotify(srcRect);
                 SetSrcImageRect(srcRect);
             }
         }
@@ -736,16 +747,13 @@ public partial class TextureModDockForm
 
     internal void ClipSrcRectByDestWidth()
     {
-        // clip by width
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (width <= 0) return;
-
-        //var w = rectBoxW.Value;
-        //rectBoxH.Value = height / width * w;
         if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
         {
+            if (descRect.Width <= 0) return;
 
+            srcRect.Height = (descRect.Height / descRect.Width) * srcRect.Width;
+            toolsControl?.SetSrcRectWithoutNotify(srcRect);
+            SetSrcImageRect(srcRect);
         }
     }
 
@@ -753,7 +761,11 @@ public partial class TextureModDockForm
     {
         if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
         {
+            if (descRect.Height <= 0) return;
 
+            srcRect.Width = (descRect.Width / descRect.Height) * srcRect.Height;
+            toolsControl?.SetSrcRectWithoutNotify(srcRect);
+            SetSrcImageRect(srcRect);
         }
     }
 
@@ -782,11 +794,13 @@ public partial class TextureModDockForm
             {
                 followEntity.Position = modTexture.position;
                 renderer.camera.TargetRotation = modTexture.rotation;
+                renderer.camera.CurrentRotation = modTexture.rotation;
             }
             else
             {
                 renderer.camera.Position = modTexture.position;
                 renderer.camera.TargetRotation = modTexture.rotation;
+                renderer.camera.CurrentRotation = modTexture.rotation;
             }
         }
     }
