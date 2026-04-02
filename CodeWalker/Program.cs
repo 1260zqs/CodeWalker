@@ -1,4 +1,4 @@
-﻿using CodeWalker.Properties;
+using CodeWalker.Properties;
 using CodeWalker.TexMod;
 using CodeWalker.Tools;
 using System;
@@ -96,7 +96,6 @@ namespace CodeWalker
             else
             {
                 Application.Run(new WorldForm());
-                //Application.Run(new TextureModDockForm());
             }
 #if !DEBUG
             }

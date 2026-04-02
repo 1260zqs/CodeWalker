@@ -38,6 +38,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton7 = new System.Windows.Forms.ToolStripDropDownButton();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.textureMappingView = new CodeWalker.Forms.AeroListView();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Lod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.toolStrip.SuspendLayout();
@@ -61,6 +62,7 @@ namespace CodeWalker.TexMod
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton4,
             this.toolStripButton5,
+            this.toolStripButton1,
             this.toolStripButton7});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
@@ -123,6 +125,15 @@ namespace CodeWalker.TexMod
             this.textureMappingView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.textureMappingView_RetrieveVirtualItem);
             this.textureMappingView.SelectedIndexChanged += new System.EventHandler(this.textureMappingView_SelectedIndexChanged);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
+            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton1.Text = "Sync Lod";
+            // 
             // TextureModMappingControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -145,5 +156,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripDropDownButton toolStripButton7;
         private CodeWalker.Forms.AeroListView textureMappingView;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
+        private System.Windows.Forms.ToolStripButton toolStripButton1;
     }
 }

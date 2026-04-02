@@ -55,28 +55,42 @@ namespace CodeWalker
             // 
             this.rectBoxX.DecimalPlaces = 2;
             this.rectBoxX.Location = new System.Drawing.Point(22, 1);
+            this.rectBoxX.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.rectBoxX.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.rectBoxX.Name = "rectBoxX";
             this.rectBoxX.Size = new System.Drawing.Size(80, 21);
             this.rectBoxX.TabIndex = 57;
-            this.rectBoxX.ValueChanged += new System.EventHandler(this.rectBoxX_ValueChanged);
-            this.rectBoxX.Minimum = decimal.MinValue;
-            this.rectBoxX.Maximum = decimal.MaxValue;
             // 
             // rectBoxY
             // 
             this.rectBoxY.DecimalPlaces = 2;
             this.rectBoxY.Location = new System.Drawing.Point(137, 1);
+            this.rectBoxY.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.rectBoxY.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.rectBoxY.Name = "rectBoxY";
             this.rectBoxY.Size = new System.Drawing.Size(80, 21);
             this.rectBoxY.TabIndex = 58;
-            this.rectBoxY.ValueChanged += new System.EventHandler(this.rectBoxY_ValueChanged);
-            this.rectBoxY.Minimum = decimal.MinValue;
-            this.rectBoxY.Maximum = decimal.MaxValue;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 24);
+            this.label5.Location = new System.Drawing.Point(3, 34);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(17, 12);
             this.label5.TabIndex = 59;
@@ -85,13 +99,20 @@ namespace CodeWalker
             // rectBoxH
             // 
             this.rectBoxH.DecimalPlaces = 2;
-            this.rectBoxH.Location = new System.Drawing.Point(137, 21);
+            this.rectBoxH.Location = new System.Drawing.Point(137, 31);
+            this.rectBoxH.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.rectBoxH.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.rectBoxH.Name = "rectBoxH";
             this.rectBoxH.Size = new System.Drawing.Size(80, 21);
             this.rectBoxH.TabIndex = 63;
-            this.rectBoxH.ValueChanged += new System.EventHandler(this.rectBoxH_ValueChanged);
-            this.rectBoxH.Minimum = decimal.MinValue;
-            this.rectBoxH.Maximum = decimal.MaxValue;
             // 
             // label6
             // 
@@ -105,18 +126,25 @@ namespace CodeWalker
             // rectBoxW
             // 
             this.rectBoxW.DecimalPlaces = 2;
-            this.rectBoxW.Location = new System.Drawing.Point(22, 21);
+            this.rectBoxW.Location = new System.Drawing.Point(22, 31);
+            this.rectBoxW.Maximum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            0});
+            this.rectBoxW.Minimum = new decimal(new int[] {
+            -1,
+            -1,
+            -1,
+            -2147483648});
             this.rectBoxW.Name = "rectBoxW";
             this.rectBoxW.Size = new System.Drawing.Size(80, 21);
             this.rectBoxW.TabIndex = 62;
-            this.rectBoxW.ValueChanged += new System.EventHandler(this.rectBoxW_ValueChanged);
-            this.rectBoxW.Minimum = decimal.MinValue;
-            this.rectBoxW.Maximum = decimal.MaxValue;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(118, 24);
+            this.label7.Location = new System.Drawing.Point(118, 34);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(17, 12);
             this.label7.TabIndex = 61;
@@ -135,7 +163,7 @@ namespace CodeWalker
             this.Controls.Add(this.rectBoxW);
             this.Controls.Add(this.label7);
             this.Name = "RectangleControl";
-            this.Size = new System.Drawing.Size(222, 44);
+            this.Size = new System.Drawing.Size(222, 54);
             ((System.ComponentModel.ISupportInitialize)(this.rectBoxX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectBoxY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectBoxH)).EndInit();

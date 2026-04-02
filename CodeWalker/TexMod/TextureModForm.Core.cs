@@ -20,6 +20,7 @@ public struct AddModSourceInfo
     public string texName;
     public rage__eLodType lod;
     public Vector3 position;
+    public Vector3 rotation;
 }
 
 public partial class TextureModForm

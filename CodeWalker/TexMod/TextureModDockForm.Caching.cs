@@ -14,9 +14,8 @@ public partial class TextureModDockForm
         class CacheItem
         {
             public int refCount;
-            public DateTime lastUseAt;
+            public DateTime lastTime;
             public SharpDX.Direct2D1.Bitmap bitmap;
-            public SharpDX.Direct2D1.Bitmap d2dBitmap;
         }
 
         private List<string> keys = new();
@@ -30,7 +29,7 @@ public partial class TextureModDockForm
             foreach (var pair in cache)
             {
                 var item = pair.Value;
-                if (item.refCount <= 0 && now - item.lastUseAt >= maxCacheAge)
+                if (item.refCount <= 0 && now - item.lastTime >= maxCacheAge)
                 {
                     keys.Add(pair.Key);
                 }
@@ -72,7 +71,7 @@ public partial class TextureModDockForm
             }
             cacheItem.refCount--;
             cacheItem.bitmap = bitmap;
-            cacheItem.lastUseAt = DateTime.Now;
+            cacheItem.lastTime = DateTime.Now;
         }
 
         public void AddToCache(string key, Bitmap bitmap)
@@ -83,6 +82,14 @@ public partial class TextureModDockForm
                 cacheItem.refCount = 1;
                 cacheItem.bitmap = bitmap;
                 cache.Add(key, cacheItem);
+            }
+        }
+
+        public void UpdateCacheItem(string key, Bitmap bitmap)
+        {
+            if (cache.TryGetValue(key, out var cacheItem))
+            {
+                cacheItem.bitmap = bitmap;
             }
         }
 

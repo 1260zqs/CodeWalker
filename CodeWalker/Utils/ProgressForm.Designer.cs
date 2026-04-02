@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.Utils
+namespace CodeWalker.Utils
 {
     partial class ProgressForm
     {
@@ -37,9 +37,9 @@
             // cancelBtn
             // 
             this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelBtn.Location = new System.Drawing.Point(337, 71);
+            this.cancelBtn.Location = new System.Drawing.Point(324, 64);
             this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.Size = new System.Drawing.Size(75, 23);
+            this.cancelBtn.Size = new System.Drawing.Size(88, 30);
             this.cancelBtn.TabIndex = 0;
             this.cancelBtn.Text = "Cancel";
             this.cancelBtn.UseVisualStyleBackColor = true;
@@ -54,16 +54,16 @@
             // 
             // statusText
             // 
-            this.statusText.Location = new System.Drawing.Point(11, 71);
+            this.statusText.Location = new System.Drawing.Point(13, 71);
             this.statusText.Name = "statusText";
-            this.statusText.Size = new System.Drawing.Size(318, 23);
+            this.statusText.Size = new System.Drawing.Size(305, 23);
             this.statusText.TabIndex = 2;
             this.statusText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ProgressForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(424, 106);
             this.Controls.Add(this.statusText);
             this.Controls.Add(this.progressBar1);

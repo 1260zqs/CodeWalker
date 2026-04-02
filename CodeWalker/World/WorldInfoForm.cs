@@ -811,7 +811,8 @@ namespace CodeWalker.World
                 info.gameFile = currentTexOwner;
                 info.lod = this.WorldForm.Renderer.renderworldMaxLOD;
                 info.position = this.WorldForm.Renderer.camera.FollowEntity.Position;
-                TexMod.TextureModForm.ShowAddModSource(WorldForm, info);
+                info.rotation = this.WorldForm.Renderer.camera.CurrentRotation;
+                TexMod.TextureModDockForm.ShowAddModSource(WorldForm, info);
             }
         }
     }

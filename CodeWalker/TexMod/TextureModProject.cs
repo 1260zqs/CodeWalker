@@ -267,7 +267,6 @@ public class TextureMapping : EditorExtension
     public string name;
     public string comment;
     public TextureLod lod;
-    public Vector3 position;
 
     public Guid modTexture;
     public Guid sourceTexture;
@@ -287,7 +286,6 @@ public class TextureMapping : EditorExtension
         clone.name = name;
         clone.comment = comment;
         clone.modTexture = modTexture;
-        clone.position = position;
 
         clone.sourceTexture = sourceTexture;
         clone.targetRect = targetRect;

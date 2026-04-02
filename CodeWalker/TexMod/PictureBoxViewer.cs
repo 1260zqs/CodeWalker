@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -163,6 +163,19 @@ public static class PictureBoxViewer
         if (zoomIn) stateObject.zoom *= 1.2f;
         else stateObject.zoom /= 1.2f;
         //stateObject.zoom = Mathf.Clamp(stateObject.zoom, stateObject.miniZoom, stateObject.maxZoom);
+
+        stateObject.pan.X = x - (x - stateObject.pan.X) * (stateObject.zoom / oldZoom);
+        stateObject.pan.Y = y - (y - stateObject.pan.Y) * (stateObject.zoom / oldZoom);
+
+        control.Invalidate();
+    }
+
+    public static void SetZoom(Control control, float zoom, float x, float y)
+    {
+        var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
+
+        var oldZoom = stateObject.zoom;
+        stateObject.zoom = zoom;
 
         stateObject.pan.X = x - (x - stateObject.pan.X) * (stateObject.zoom / oldZoom);
         stateObject.pan.Y = y - (y - stateObject.pan.Y) * (stateObject.zoom / oldZoom);

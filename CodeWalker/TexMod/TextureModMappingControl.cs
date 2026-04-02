@@ -19,21 +19,26 @@ namespace CodeWalker.TexMod;
 
 public partial class TextureModMappingControl : DockContent
 {
-    public TextureModMappingControl()
+    public TextureModMappingControl(TextureModDockForm mainForm)
     {
         InitializeComponent();
+        this.Text = "Mapping";
+        this.mainForm = mainForm;
+
         var theme = Settings.Default.GetProjectWindowTheme();
         var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
         vsExtender.SetStyle(toolStrip, version, theme);
 
         toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
         toolStripButton7.SelectEnum(textureMappingView.View);
+
+        this.toolStripButton1.Checked = mainForm.isSyncLod;
+        this.toolStripButton1.Click += this.toolStripButton1_Click;
     }
 
+    TextureModDockForm mainForm;
     TextureModProject project => mainForm.project;
-    public TextureModDockForm mainForm;
-
-    private List<TextureMapping> listOfMappings = new();
+    List<TextureMapping> listOfMappings = new();
 
     public void Clear()
     {
@@ -127,5 +132,10 @@ public partial class TextureModMappingControl : DockContent
             mainForm.DeleteTexMapping(textureMapping);
             return;
         }
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e)
+    {
+        mainForm.isSyncLod = toolStripButton1.Checked;
     }
 }

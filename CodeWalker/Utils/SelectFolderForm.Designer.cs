@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.Utils
+namespace CodeWalker.Utils
 {
     partial class SelectFolderForm
     {
@@ -43,9 +43,9 @@
             // OkButton
             // 
             this.OkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.OkButton.Location = new System.Drawing.Point(319, 128);
+            this.OkButton.Location = new System.Drawing.Point(306, 108);
             this.OkButton.Name = "OkButton";
-            this.OkButton.Size = new System.Drawing.Size(75, 23);
+            this.OkButton.Size = new System.Drawing.Size(88, 30);
             this.OkButton.TabIndex = 64;
             this.OkButton.Text = "Ok";
             this.OkButton.UseVisualStyleBackColor = true;
@@ -54,18 +54,18 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(15, 11);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(157, 13);
+            this.label1.Size = new System.Drawing.Size(191, 12);
             this.label1.TabIndex = 63;
             this.label1.Text = "Please select your GTAV folder:";
             // 
             // FolderBrowseButton
             // 
             this.FolderBrowseButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.FolderBrowseButton.Location = new System.Drawing.Point(367, 35);
+            this.FolderBrowseButton.Location = new System.Drawing.Point(367, 32);
             this.FolderBrowseButton.Name = "FolderBrowseButton";
-            this.FolderBrowseButton.Size = new System.Drawing.Size(27, 23);
+            this.FolderBrowseButton.Size = new System.Drawing.Size(27, 21);
             this.FolderBrowseButton.TabIndex = 62;
             this.FolderBrowseButton.Text = "...";
             this.FolderBrowseButton.UseVisualStyleBackColor = true;
@@ -75,9 +75,9 @@
             // 
             this.FolderTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FolderTextBox.Location = new System.Drawing.Point(12, 36);
+            this.FolderTextBox.Location = new System.Drawing.Point(12, 33);
             this.FolderTextBox.Name = "FolderTextBox";
-            this.FolderTextBox.Size = new System.Drawing.Size(345, 20);
+            this.FolderTextBox.Size = new System.Drawing.Size(349, 21);
             this.FolderTextBox.TabIndex = 61;
             this.FolderTextBox.TextChanged += new System.EventHandler(this.FolderTextBox_TextChanged);
             // 
@@ -85,9 +85,9 @@
             // 
             this.CancelButt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.CancelButt.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButt.Location = new System.Drawing.Point(238, 128);
+            this.CancelButt.Location = new System.Drawing.Point(212, 108);
             this.CancelButt.Name = "CancelButt";
-            this.CancelButt.Size = new System.Drawing.Size(75, 23);
+            this.CancelButt.Size = new System.Drawing.Size(88, 30);
             this.CancelButt.TabIndex = 65;
             this.CancelButt.Text = "Cancel";
             this.CancelButt.UseVisualStyleBackColor = true;
@@ -96,9 +96,9 @@
             // RememberFolderCheckbox
             // 
             this.RememberFolderCheckbox.AutoSize = true;
-            this.RememberFolderCheckbox.Location = new System.Drawing.Point(12, 132);
+            this.RememberFolderCheckbox.Location = new System.Drawing.Point(15, 122);
             this.RememberFolderCheckbox.Name = "RememberFolderCheckbox";
-            this.RememberFolderCheckbox.Size = new System.Drawing.Size(118, 17);
+            this.RememberFolderCheckbox.Size = new System.Drawing.Size(126, 16);
             this.RememberFolderCheckbox.TabIndex = 66;
             this.RememberFolderCheckbox.Text = "Remember Settings";
             this.RememberFolderCheckbox.UseVisualStyleBackColor = true;
@@ -108,9 +108,9 @@
             // 
             this.LegacyRadioButton.AutoSize = true;
             this.LegacyRadioButton.Checked = true;
-            this.LegacyRadioButton.Location = new System.Drawing.Point(15, 68);
+            this.LegacyRadioButton.Location = new System.Drawing.Point(15, 63);
             this.LegacyRadioButton.Name = "LegacyRadioButton";
-            this.LegacyRadioButton.Size = new System.Drawing.Size(92, 17);
+            this.LegacyRadioButton.Size = new System.Drawing.Size(89, 16);
             this.LegacyRadioButton.TabIndex = 67;
             this.LegacyRadioButton.TabStop = true;
             this.LegacyRadioButton.Text = "GTAV Legacy";
@@ -119,9 +119,9 @@
             // EnhancedRadioButton
             // 
             this.EnhancedRadioButton.AutoSize = true;
-            this.EnhancedRadioButton.Location = new System.Drawing.Point(15, 91);
+            this.EnhancedRadioButton.Location = new System.Drawing.Point(15, 85);
             this.EnhancedRadioButton.Name = "EnhancedRadioButton";
-            this.EnhancedRadioButton.Size = new System.Drawing.Size(106, 17);
+            this.EnhancedRadioButton.Size = new System.Drawing.Size(101, 16);
             this.EnhancedRadioButton.TabIndex = 68;
             this.EnhancedRadioButton.Text = "GTAV Enhanced";
             this.EnhancedRadioButton.UseVisualStyleBackColor = true;
@@ -130,10 +130,10 @@
             // SelectFolderForm
             // 
             this.AcceptButton = this.OkButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.CancelButt;
-            this.ClientSize = new System.Drawing.Size(406, 163);
+            this.ClientSize = new System.Drawing.Size(406, 150);
             this.Controls.Add(this.EnhancedRadioButton);
             this.Controls.Add(this.LegacyRadioButton);
             this.Controls.Add(this.RememberFolderCheckbox);
@@ -145,7 +145,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(422, 152);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(422, 143);
             this.Name = "SelectFolderForm";
             this.Text = "Select GTAV folder - CodeWalker by dexyfex";
             this.Load += new System.EventHandler(this.SelectFolderForm_Load);

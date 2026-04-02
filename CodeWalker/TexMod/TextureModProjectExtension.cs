@@ -232,4 +232,19 @@ public static class TextureModProjectExtension
             _=> TextureLod.Unknown
         };
     }
+
+    public static rage__eLodType Conv(this TextureLod lod)
+    {
+        return lod switch
+        {
+            TextureLod.HiDR => rage__eLodType.LODTYPES_DEPTH_ORPHANHD,
+            TextureLod.HD => rage__eLodType.LODTYPES_DEPTH_HD,
+            TextureLod.LOD => rage__eLodType.LODTYPES_DEPTH_LOD,
+            TextureLod.SLOD1 => rage__eLodType.LODTYPES_DEPTH_SLOD1,
+            TextureLod.SLOD2 => rage__eLodType.LODTYPES_DEPTH_SLOD2,
+            TextureLod.SLOD3 => rage__eLodType.LODTYPES_DEPTH_SLOD3,
+            TextureLod.SLOD4 => rage__eLodType.LODTYPES_DEPTH_SLOD4,
+            _ => rage__eLodType.LODTYPES_DEPTH_HD
+        };
+    }
 }

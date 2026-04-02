@@ -95,6 +95,52 @@ public partial class TextureModDockForm
         return form;
     }
 
+    public static void ShowAddModSource(WorldForm worldForm, AddModSourceInfo info)
+    {
+        var window = GetWindow(worldForm);
+        if (window == null) return;
+
+        window.Show();
+        window.Focus();
+        window.BeginInvoke(() =>
+        {
+            window.AddModSource(info);
+        });
+    }
+
+    public void AddModSource(AddModSourceInfo info)
+    {
+        var modTexture = working.modTexture;
+        if (modTexture != null)
+        {
+            var texName = info.texName;
+            var gameFile = info.gameFile;
+            var sourceFile = adapter.MakeSourcePath(gameFile, texName);
+            if (sourceFile == null)
+            {
+                return;
+            }
+            var sourceTexture = project.GetOrAddSourceTexture(sourceFile);
+            foreach (var item in project.textureMappings)
+            {
+                if (item.modTexture == modTexture.id && item.sourceTexture == sourceTexture.id)
+                {
+                    return;
+                }
+            }
+            var mapping = project.CreateMapping();
+            mapping.sourceTexture = sourceTexture.id;
+            mapping.modTexture = modTexture.id;
+            mapping.lod = info.lod.Conv();
+            mapping.name = texName;
+
+            modTexture.position = info.position;
+            modTexture.rotation = info.rotation;
+
+            mappingControl?.RefreshListView(modTexture);
+        }
+    }
+
     private TextureModDockForm(TextureModProject workingProject, Renderer renderer, RpfManager rpfMan, TextureModAdapter adapter) : this()
     {
         this.project = workingProject;
@@ -111,10 +157,33 @@ public partial class TextureModDockForm
     private D2DRenderTarget d2dRenderTarget;
     private WorkingState working = new();
 
+    public bool isSolidColor
+    {
+        get => m_IsSolidColor;
+        set
+        {
+            if (m_IsSolidColor != value)
+            {
+                m_IsSolidColor = value;
+                PictureBoxRectTool.SetSolid(modTextureCanvas?.canvas, value);
+                PictureBoxRectTool.SetSolid(gameTextureCanvas?.canvas, value);
+                modTextureCanvas?.Repaint();
+                gameTextureCanvas?.Repaint();
+            }
+        }
+    }
+
     public bool isPainting
     {
         get => m_IsPainting;
-        set => m_IsPainting = value;
+        set
+        {
+            if (m_IsPainting != value)
+            {
+                m_IsPainting = value;
+                gameTextureCanvas?.Repaint();
+            }
+        }
     }
 
     public bool isDrawTestColor
@@ -123,8 +192,23 @@ public partial class TextureModDockForm
         set => m_IsDrawTestColor = value;
     }
 
+    public bool isSyncLod
+    {
+        get => m_IsSyncLod;
+        set
+        {
+            m_IsSyncLod = value;
+            if (value)
+            {
+                SyncRenderLod();
+            }
+        }
+    }
+
     private bool m_IsPainting = true;
+    private bool m_IsSolidColor;
     private bool m_IsDrawTestColor;
+    private bool m_IsSyncLod;
 
     public void SelectTexMod(ModTexture modTexture)
     {
@@ -151,8 +235,10 @@ public partial class TextureModDockForm
                 working.modTextureSource.LoadAsync();
                 modTextureCanvas?.SetImage(working.modTextureSource);
             }
+            PictureBoxRectTool.SetSolid(modTextureCanvas?.canvas, isSolidColor);
             PictureBoxRectTool.SetRect(modTextureCanvas?.canvas, modTexture.sourceRect);
             PictureBoxViewer.LoadState(modTextureCanvas?.canvas, modTexture.editorState);
+            toolsControl?.SetSrcRect(modTexture.sourceRect);
         }
         mappingControl?.RefreshListView(modTexture);
     }
@@ -185,8 +271,11 @@ public partial class TextureModDockForm
                 gameTextureCanvas?.SetImage(working.gameTextureSource);
             }
             PictureBoxViewer.LoadState(gameTextureCanvas?.canvas, mapping.editorState);
+            PictureBoxRectTool.SetSolid(gameTextureCanvas?.canvas, isSolidColor);
             PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, mapping.targetRect);
+            toolsControl?.SetDestRect(mapping.targetRect);
             propertyControl?.SelectObject(mapping);
+            if (isSyncLod) SyncRenderLod();
         }
         propertyControl?.Refresh();
     }
@@ -238,6 +327,32 @@ public partial class TextureModDockForm
 
         PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, default);
         PictureBoxViewer.ResetViewer(gameTextureCanvas?.canvas);
+    }
+
+    private void SyncRenderLod()
+    {
+        if (working.mapping is { } mapping)
+        {
+            var lod = mapping.lod.Conv();
+            var syncRoot = renderer.DXMan.syncroot;
+            if (!Monitor.TryEnter(syncRoot, 50))
+            {
+                return;
+            }
+            try
+            {
+                renderer.renderworldMaxLOD = lod;
+                renderer.renderhdtextures = mapping.lod == TextureLod.HiDR;
+            }
+            catch (Exception ex)
+            {
+                ex.ShowDialog();
+            }
+            finally
+            {
+                Monitor.Exit(syncRoot);
+            }
+        }
     }
 
     private void OnModTextureReady(SharpDX.Direct2D1.Bitmap bitmap)
@@ -512,5 +627,160 @@ public partial class TextureModDockForm
             ClearMappingSelection();
         }
         mappingControl?.RefreshListView(working.modTexture);
+    }
+
+    internal bool GetSrcImageRect(out System.Drawing.RectangleF rect)
+    {
+        if (working.modTexture is { } modTexture)
+        {
+            rect = modTexture.sourceRect;
+            return true;
+        }
+        rect = default;
+        return false;
+    }
+
+    internal bool GetDestTextureRect(out System.Drawing.RectangleF rect)
+    {
+        if (working.mapping is { } mapping)
+        {
+            rect = mapping.targetRect;
+            return true;
+        }
+        rect = default;
+        return false;
+    }
+
+    internal void SetSrcImageRect(System.Drawing.RectangleF rect)
+    {
+        if (working.modTexture is { } modTexture)
+        {
+            modTexture.sourceRect = rect;
+            RequestTexturePaintingUpdate();
+            PictureBoxRectTool.SetRect(modTextureCanvas?.canvas, rect);
+            gameTextureCanvas?.Repaint();
+            modTextureCanvas?.Repaint();
+        }
+    }
+
+    internal void SetDestTextureRect(System.Drawing.RectangleF rect)
+    {
+        if (working.mapping is { } mapping)
+        {
+            mapping.targetRect = rect;
+            RequestTexturePaintingUpdate();
+            PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, rect);
+            gameTextureCanvas?.Repaint();
+        }
+    }
+
+    internal void FitSrcRectByDestWidth()
+    {
+        //var imageSize = modTextureCanvas.GetImageSize();
+
+        //var width = numericUpDown1.Value;
+        //var height = numericUpDown2.Value;
+        //if (width <= 0) return;
+
+        //rectBoxX.Value = 0;
+        //rectBoxW.Value = imageSize.Width;
+        //rectBoxH.Value = height / width * imageSize.Width;
+        if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
+        {
+            if (descRect.Width <= 0) return;
+            if (working.modTextureBitmap != null)
+            {
+                var imageSize = working.modTextureBitmap.PixelSize;
+
+                srcRect.X = 0;
+                srcRect.Width = imageSize.Width;
+                srcRect.Height = (descRect.Height / descRect.Width) * imageSize.Width;
+                SetSrcImageRect(srcRect);
+            }
+        }
+    }
+
+    internal void FitSrcRectByDestHeight()
+    {
+        //if (!modTextureCanvas.HasImage()) return;
+        //var imageSize = modTextureCanvas.GetImageSize();
+
+        //var width = numericUpDown1.Value;
+        //var height = numericUpDown2.Value;
+        //if (height <= 0) return;
+
+        //rectBoxY.Value = 0;
+        //rectBoxH.Value = imageSize.Height;
+        //rectBoxW.Value = width / height * imageSize.Width;
+        if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
+        {
+            if (descRect.Height <= 0) return;
+            if (working.modTextureBitmap != null)
+            {
+                var imageSize = working.modTextureBitmap.PixelSize;
+
+                srcRect.Y = 0;
+                srcRect.Height = imageSize.Height;
+                srcRect.Width = (descRect.Width / descRect.Height) * imageSize.Width;
+                SetSrcImageRect(srcRect);
+            }
+        }
+    }
+
+    internal void ClipSrcRectByDestWidth()
+    {
+        // clip by width
+        //var width = numericUpDown1.Value;
+        //var height = numericUpDown2.Value;
+        //if (width <= 0) return;
+
+        //var w = rectBoxW.Value;
+        //rectBoxH.Value = height / width * w;
+        if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
+        {
+
+        }
+    }
+
+    internal void ClipSrcRectByDestHeight()
+    {
+        if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
+        {
+
+        }
+    }
+
+    internal void SetTextureLocation()
+    {
+        if (working.modTexture is { } modTexture)
+        {
+            if (renderer.camera.FollowEntity is { } followEntity)
+            {
+                modTexture.position = followEntity.Position;
+                modTexture.rotation = renderer.camera.TargetRotation;
+            }
+            else
+            {
+                modTexture.position = renderer.camera.Position;
+                modTexture.rotation = renderer.camera.TargetRotation;
+            }
+        }
+    }
+
+    internal void GotoTextureLocation()
+    {
+        if (working.modTexture is { } modTexture)
+        {
+            if (renderer.camera.FollowEntity is { } followEntity)
+            {
+                followEntity.Position = modTexture.position;
+                renderer.camera.TargetRotation = modTexture.rotation;
+            }
+            else
+            {
+                renderer.camera.Position = modTexture.position;
+                renderer.camera.TargetRotation = modTexture.rotation;
+            }
+        }
     }
 }

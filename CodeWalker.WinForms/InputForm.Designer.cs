@@ -31,11 +31,12 @@ namespace CodeWalker.WinForms
             this.textBox = new System.Windows.Forms.TextBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox
             // 
-            this.textBox.Location = new System.Drawing.Point(79, 29);
+            this.textBox.Location = new System.Drawing.Point(79, 28);
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(229, 21);
             this.textBox.TabIndex = 0;
@@ -44,9 +45,9 @@ namespace CodeWalker.WinForms
             // 
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.okButton.Location = new System.Drawing.Point(152, 68);
+            this.okButton.Location = new System.Drawing.Point(126, 64);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(75, 26);
+            this.okButton.Size = new System.Drawing.Size(88, 30);
             this.okButton.TabIndex = 1;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -56,13 +57,22 @@ namespace CodeWalker.WinForms
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(233, 68);
+            this.cancelButton.Location = new System.Drawing.Point(220, 64);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 26);
+            this.cancelButton.Size = new System.Drawing.Size(88, 30);
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(13, 28);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 21);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Text:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // InputForm
             // 
@@ -71,6 +81,7 @@ namespace CodeWalker.WinForms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(320, 106);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.textBox);
@@ -89,5 +100,6 @@ namespace CodeWalker.WinForms
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Label label1;
     }
 }

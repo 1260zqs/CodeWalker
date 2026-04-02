@@ -114,9 +114,9 @@ public partial class TextureModDockForm : Form
             propertyControl = property;
             propertyControl.onPropertyGridChanged = OnPropertyGridChanged;
         }
-        else if (content is TextureModToolsControl inspector)
+        else if (content is TextureModToolsControl tools)
         {
-            toolsControl = inspector;
+            toolsControl = tools;
         }
     }
 
@@ -252,9 +252,7 @@ public partial class TextureModDockForm : Form
         }
         else if (persistString == kPersistMapping)
         {
-            var dockContent = new TextureModMappingControl();
-            dockContent.Text = "Mapping";
-            dockContent.mainForm = this;
+            var dockContent = new TextureModMappingControl(this);
             content = dockContent;
         }
         else if (persistString == kPersistProperty)
@@ -266,9 +264,7 @@ public partial class TextureModDockForm : Form
         }
         else if (persistString == kPersistInspector)
         {
-            var dockContent = new TextureModToolsControl();
-            dockContent.Text = "Tools";
-            dockContent.mainForm = this;
+            var dockContent = new TextureModToolsControl(this);
             content = dockContent;
         }
         if (content != null)

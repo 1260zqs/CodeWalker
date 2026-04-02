@@ -1,4 +1,4 @@
-﻿namespace CodeWalker.Utils
+namespace CodeWalker.Utils
 {
     partial class ColourPickerForm
     {
@@ -29,58 +29,56 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ColourPickerForm));
-            Picker = new ColourPicker();
-            ButtonOk = new System.Windows.Forms.Button();
-            ButtonCancel = new System.Windows.Forms.Button();
-            SuspendLayout();
+            this.Picker = new CodeWalker.Utils.ColourPicker();
+            this.ButtonOk = new System.Windows.Forms.Button();
+            this.ButtonCancel = new System.Windows.Forms.Button();
+            this.SuspendLayout();
             // 
             // Picker
             // 
-            Picker.Location = new System.Drawing.Point(0, 0);
-            Picker.Name = "Picker";
-            Picker.Size = new System.Drawing.Size(450, 360);
-            Picker.TabIndex = 0;
+            this.Picker.Location = new System.Drawing.Point(0, 0);
+            this.Picker.Name = "Picker";
+            this.Picker.SelectedColour = System.Drawing.Color.Black;
+            this.Picker.Size = new System.Drawing.Size(450, 332);
+            this.Picker.TabIndex = 0;
             // 
             // ButtonOk
             // 
-            ButtonOk.Location = new System.Drawing.Point(229, 362);
-            ButtonOk.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            ButtonOk.Name = "ButtonOk";
-            ButtonOk.Size = new System.Drawing.Size(88, 27);
-            ButtonOk.TabIndex = 4;
-            ButtonOk.Text = "Ok";
-            ButtonOk.UseVisualStyleBackColor = true;
-            ButtonOk.Click += ButtonOk_Click;
+            this.ButtonOk.Location = new System.Drawing.Point(257, 342);
+            this.ButtonOk.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonOk.Name = "ButtonOk";
+            this.ButtonOk.Size = new System.Drawing.Size(88, 25);
+            this.ButtonOk.TabIndex = 4;
+            this.ButtonOk.Text = "Ok";
+            this.ButtonOk.UseVisualStyleBackColor = true;
             // 
             // ButtonCancel
             // 
-            ButtonCancel.Location = new System.Drawing.Point(352, 362);
-            ButtonCancel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            ButtonCancel.Name = "ButtonCancel";
-            ButtonCancel.Size = new System.Drawing.Size(88, 27);
-            ButtonCancel.TabIndex = 3;
-            ButtonCancel.Text = "Cancel";
-            ButtonCancel.UseVisualStyleBackColor = true;
-            ButtonCancel.Click += ButtonCancel_Click;
+            this.ButtonCancel.Location = new System.Drawing.Point(353, 342);
+            this.ButtonCancel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.Size = new System.Drawing.Size(88, 25);
+            this.ButtonCancel.TabIndex = 3;
+            this.ButtonCancel.Text = "Cancel";
+            this.ButtonCancel.UseVisualStyleBackColor = true;
             // 
             // ColourPickerForm
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(454, 398);
-            Controls.Add(ButtonOk);
-            Controls.Add(ButtonCancel);
-            Controls.Add(Picker);
-            DoubleBuffered = true;
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            MaximizeBox = false;
-            MinimizeBox = false;
-            Name = "ColourPickerForm";
-            Text = "Colour Picker - CodeWalker by dexyfex";
-            FormClosing += ColourPickerForm_FormClosing;
-            Load += ColourPickerForm_Load;
-            ResumeLayout(false);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96, 96);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.ClientSize = new System.Drawing.Size(454, 379);
+            this.Controls.Add(this.ButtonOk);
+            this.Controls.Add(this.ButtonCancel);
+            this.Controls.Add(this.Picker);
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "ColourPickerForm";
+            this.Text = "Colour Picker - CodeWalker by dexyfex";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
