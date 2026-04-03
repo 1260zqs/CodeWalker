@@ -60,21 +60,25 @@ public partial class RectangleControl : UserControl
 
     private void rectBoxX_ValueChanged(object sender, EventArgs e)
     {
+        m_Rectangle.X = (float)rectBoxX.Value;
         MarkValueChanged();
     }
 
     private void rectBoxY_ValueChanged(object sender, EventArgs e)
     {
+        m_Rectangle.Y = (float)rectBoxY.Value;
         MarkValueChanged();
     }
 
     private void rectBoxW_ValueChanged(object sender, EventArgs e)
     {
+        m_Rectangle.Width = (float)rectBoxW.Value;
         MarkValueChanged();
     }
 
     private void rectBoxH_ValueChanged(object sender, EventArgs e)
     {
+        m_Rectangle.Height = (float)rectBoxH.Value;
         MarkValueChanged();
     }
 

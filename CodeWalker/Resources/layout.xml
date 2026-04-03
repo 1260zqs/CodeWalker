@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
 <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
-<DockPanel FormatVersion="1.0" DockLeftPortion="0.218928863450532" DockRightPortion="0.25" DockTopPortion="0.25" DockBottomPortion="0.39877329337953" ActiveDocumentPane="9" ActivePane="9">
+<DockPanel FormatVersion="1.0" DockLeftPortion="0.218928863450532" DockRightPortion="0.25" DockTopPortion="0.25" DockBottomPortion="0.39877329337953" ActiveDocumentPane="9" ActivePane="0">
   <Contents Count="6">
     <Content ID="0" PersistString="CodeWalker.TexMod.TextureModExplorerControl" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="1" PersistString="CodeWalker.TexMod.TextureModImageControl:Preview" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -78,7 +78,7 @@
     <DockWindow ID="2" DockState="DockRight" ZOrderIndex="3">
       <NestedPanes Count="2">
         <Pane ID="0" RefID="7" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
-        <Pane ID="1" RefID="6" PrevPane="7" Alignment="Bottom" Proportion="0.473770491803279" />
+        <Pane ID="1" RefID="6" PrevPane="7" Alignment="Bottom" Proportion="0.296869907007957" />
       </NestedPanes>
     </DockWindow>
     <DockWindow ID="3" DockState="DockTop" ZOrderIndex="5">

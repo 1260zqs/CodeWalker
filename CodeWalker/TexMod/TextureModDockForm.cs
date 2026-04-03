@@ -279,8 +279,9 @@ public partial class TextureModDockForm : Form
         if (working.modTexture != null)
         {
             working.modTexture.sourceRect = rectangle;
+            toolsControl?.SetSrcRect(rectangle);
             gameTextureCanvas?.Repaint();
-            modTextureCanvas?.Refresh();
+            modTextureCanvas?.Repaint();
             RequestTexturePaintingUpdate();
         }
     }
@@ -290,6 +291,7 @@ public partial class TextureModDockForm : Form
         if (working.mapping != null)
         {
             working.mapping.targetRect = rectangle;
+            toolsControl?.SetDestRect(rectangle);
             gameTextureCanvas?.Repaint();
             RequestTexturePaintingUpdate();
         }

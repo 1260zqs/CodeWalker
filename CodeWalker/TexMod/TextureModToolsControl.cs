@@ -50,6 +50,11 @@ public partial class TextureModToolsControl : DockContent
         srcRectangleControl.SetRect(rect);
     }
 
+    public void SetSrcRectWithoutNotify(in System.Drawing.RectangleF rect)
+    {
+        srcRectangleControl.SetRectWithoutNotify(rect);
+    }
+
     public void SetDestRect(in System.Drawing.RectangleF rect)
     {
         destRectangleControl.SetRect(rect);

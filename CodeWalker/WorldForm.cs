@@ -8160,6 +8160,16 @@ namespace CodeWalker
         {
             this.HDTexturesCheckBox.Checked = checkBox1.Checked;
         }
+
+        public void SetRenderLod(rage__eLodType lod)
+        {
+            WorldMaxLodComboBox.SelectValueDrop(Settings.renderLodValues, lod);
+        }
+
+        public void SetRenderHdTex(bool isChecked)
+        {
+            HDTexturesCheckBox.Checked = isChecked;
+        }
     }
 
     public enum WorldControlMode

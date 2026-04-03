@@ -188,6 +188,9 @@
     <Compile Update="TexMod\AddTexModSourceForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="TexMod\TestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="TexMod\TexModSetupForm.cs">
       <SubType>Form</SubType>
     </Compile>

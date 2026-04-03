@@ -21,6 +21,7 @@ public struct AddModSourceInfo
     public rage__eLodType lod;
     public Vector3 position;
     public Vector3 rotation;
+    public bool hasCameraInfo;
 }
 
 public partial class TextureModForm
@@ -294,7 +295,6 @@ public partial class TextureModForm
                 var mapping = project.CreateMapping();
                 mapping.sourceTexture = sourceTexture.id;
                 mapping.modTexture = modTexture.id;
-                mapping.position = info.position;
                 mapping.lod = info.lod.Conv();
                 mapping.name = texName;
 

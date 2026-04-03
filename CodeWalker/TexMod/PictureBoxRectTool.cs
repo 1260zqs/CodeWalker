@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SharpDX;
+using SharpDX.Mathematics.Interop;
+using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using SharpDX;
-using SharpDX.Mathematics.Interop;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using Color = System.Drawing.Color;
 using Matrix = System.Drawing.Drawing2D.Matrix;
 using Point = System.Drawing.Point;
@@ -17,6 +19,7 @@ public static class PictureBoxRectTool
     class StateObject
     {
         public bool drawing;
+        public bool editing;
         public bool solid;
         public bool enable;
         public Point start;
@@ -28,6 +31,12 @@ public static class PictureBoxRectTool
         public Matrix matrix;
         public bool matrixInvert;
         public Matrix3x2 matrix3x2;
+
+        public Matrix3x2 matrixNew;
+        public float rotate;
+
+        // tool
+        public Vector2[] vertex = new Vector2[4];
 
         public Action<System.Drawing.RectangleF> notify;
     }
@@ -63,7 +72,25 @@ public static class PictureBoxRectTool
         {
             if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
             {
-                if (stateObject.enable && stateObject.drawing)
+                if (!stateObject.enable) return;
+                if (stateObject.editing)
+                {
+                    var current = new Vector2(e.X, e.Y);
+                    var start = new Vector2(stateObject.start.X, stateObject.start.Y);
+                    var center = GetCenter(stateObject.vertex);
+
+
+                    Vector2 v1 = start - center;
+                    Vector2 v2 = current - center;
+
+                    var a1 = Math.Atan2(v1.Y, v1.X);
+                    var a2 = Math.Atan2(v2.Y, v2.X);
+
+                    float angle = (float)(a2 - a1);
+                    stateObject.rotate = angle * Mathf.Rad2Deg;
+                    control.Invalidate();
+                }
+                else if (stateObject.drawing)
                 {
                     var cur = ScreenToImage(stateObject, e.Location);
                     var x = Math.Min(stateObject.start.X, cur.X);
@@ -74,6 +101,12 @@ public static class PictureBoxRectTool
                     stateObject.rect = new Rectangle(x, y, w, h);
                     stateObject.notify?.Invoke(stateObject.rect);
                     control.Invalidate();
+                }
+                else
+                {
+                    var point = new Vector2(e.X, e.Y);
+                    var inSide = PointInRect(point, stateObject.vertex);
+                    Console.WriteLine($"{inSide}, {point} {stateObject.vertex[0]}");
                 }
             }
         }
@@ -87,9 +120,22 @@ public static class PictureBoxRectTool
             stateObject.gdi = false;
             stateObject.matrixInvert = false;
             stateObject.matrix3x2 = canvas.transform;
+            stateObject.matrixNew = canvas.transform;
+            var clippedDest = stateObject.rect;
+            var center = new Vector2(
+                (clippedDest.Left + clippedDest.Right) * 0.5f,
+                (clippedDest.Top + clippedDest.Bottom) * 0.5f
+            );
+            var rotation = stateObject.rotate;
+            Matrix3x2 m = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * canvas.transform;
+            TransformRect(stateObject.vertex, stateObject.rect, ref m);
+
             var rect = stateObject.rect;
             if (rect.Width > 0 && rect.Height > 0)
             {
+                var matrix = canvas.transform;
+                canvas.transform = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
+
                 if (stateObject.solid)
                 {
                     canvas.FillRectangle(rect, new RawColor4(1f, 0, 0, 0.5f));
@@ -99,6 +145,7 @@ public static class PictureBoxRectTool
                     var scaleVector = stateObject.matrix3x2.ScaleVector;
                     canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f / scaleVector.X);
                 }
+                canvas.transform = matrix;
             }
         }
     }
@@ -141,6 +188,7 @@ public static class PictureBoxRectTool
             {
                 if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
                 {
+                    stateObject.editing = false;
                     stateObject.drawing = false;
                     control.Invalidate();
                 }
@@ -157,6 +205,14 @@ public static class PictureBoxRectTool
                 var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
                 if (stateObject.enable)
                 {
+                    var point = new Vector2(e.X, e.Y);
+                    if (PointInRect(point, stateObject.vertex))
+                    {
+                        stateObject.drawing = false;
+                        stateObject.editing = true;
+                        stateObject.start = e.Location;
+                        return;
+                    }
                     stateObject.drawing = true;
                     stateObject.solid = e.Button == MouseButtons.Right;
                     stateObject.start = ScreenToImage(stateObject, e.Location);
@@ -288,5 +344,44 @@ public static class PictureBoxRectTool
             return stateObject.enable;
         }
         return false;
+    }
+
+    public static Vector2 GetCenter(Vector2[] v)
+    {
+        Vector2 center = Vector2.Zero;
+
+        for (int i = 0; i < v.Length; i++)
+            center += v[i];
+
+        return center / v.Length;
+    }
+
+    public static void TransformRect(Vector2[] vertex, in System.Drawing.RectangleF rect, ref Matrix3x2 matrix3X2)
+    {
+        vertex[0] = new Vector2(rect.Left, rect.Top);
+        vertex[1] = new Vector2(rect.Right, rect.Top);
+        vertex[2] = new Vector2(rect.Right, rect.Bottom);
+        vertex[3] = new Vector2(rect.Left, rect.Bottom);
+
+        for (var i = 0; i < 4; i++)
+        {
+            var p = vertex[i];
+            Matrix3x2.TransformPoint(ref matrix3X2, ref p, out vertex[i]);
+        }
+    }
+
+    static bool PointInRect(Vector2 p, Vector2[] v)
+    {
+        static float Sign(Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
+        }
+
+        var b1 = Sign(p, v[0], v[1]) < 0.0f;
+        var b2 = Sign(p, v[1], v[2]) < 0.0f;
+        var b3 = Sign(p, v[2], v[3]) < 0.0f;
+        var b4 = Sign(p, v[3], v[0]) < 0.0f;
+
+        return (b1 == b2) && (b2 == b3) && (b3 == b4);
     }
 }
