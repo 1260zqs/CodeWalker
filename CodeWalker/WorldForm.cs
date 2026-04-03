@@ -1261,8 +1261,7 @@ namespace CodeWalker
         {
             //immediately render the bounding box of the currently moused entity.
 
-            if (!MouseSelectEnabled)
-            { return; }
+            if (!MouseSelectEnabled) return;
 
             PrevMouseHit = LastMouseHit;
             LastMouseHit = CurMouseHit;
@@ -1279,8 +1278,7 @@ namespace CodeWalker
                 UpdateMousedLabel(text);
             }
 
-            if (!CurMouseHit.HasHit)
-            { return; }
+            if (!CurMouseHit.HasHit) return;
 
 
             var mode = BoundsShaderMode.Box;

@@ -1,7 +1,8 @@
-﻿using SharpDX;
+using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -3950,6 +3951,29 @@ namespace CodeWalker.GameFiles
             {
                 IndexBuffer = new IndexBuffer();
                 IndexBuffer.ReadXml(inode);
+            }
+        }
+
+        public void WriteObj(StreamWriter writer)
+        {
+            var vertexBytes = VertexData.VertexBytes;
+            for (var i = 0; i < VerticesCount; i++)
+            {
+                var offset = i * VertexStride;
+                var x = BitConverter.ToSingle(vertexBytes, offset + 0); 
+                var y = BitConverter.ToSingle(vertexBytes, offset + 4); 
+                var z = BitConverter.ToSingle(vertexBytes, offset + 8);
+                writer.Write("v {0} {1} {2}", x, y, z);
+            }
+            writer.WriteLine();
+
+            var indices = IndexBuffer.Indices;
+            for (var i = 0; i < IndicesCount; i++)
+            {
+                var a = indices[i] + 1; 
+                var b = indices[i + 1] + 1; 
+                var c = indices[i + 2] + 1;
+                writer.Write("f {0} {1} {2}", a, b, c);
             }
         }
 
