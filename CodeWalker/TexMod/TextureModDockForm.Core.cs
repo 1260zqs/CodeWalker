@@ -413,11 +413,14 @@ public partial class TextureModDockForm
         {
             return;
         }
+
+        var drawing = false;
         try
         {
             var baseImagePixelSize = baseImage.PixelSize;
             d2dRenderTarget.SetTargetSize(working.mapping.id, baseImagePixelSize);
             d2dRenderTarget.BeginDraw();
+            drawing = true;
 
             var overlay = working.modTextureBitmap;
             if (!isPainting || isDrawTestColor) overlay = null;
@@ -437,6 +440,7 @@ public partial class TextureModDockForm
                 d2dRenderTarget.FillRectangle(targetRect.Raw());
             }
             d2dRenderTarget.EndDraw();
+            drawing = false;
 
             var nameHash = working.texNameHash;
             renderer.RenderableCache.FindRenderableTexture(x =>
@@ -451,6 +455,7 @@ public partial class TextureModDockForm
         }
         catch (Exception e)
         {
+            if (drawing) d2dRenderTarget.EndDraw();
             Console.WriteLine(e);
         }
         finally
