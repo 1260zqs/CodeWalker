@@ -955,11 +955,11 @@ namespace CodeWalker.World
                 var info = new AddModSourceInfo();
                 info.texName = currentTex.Name;
                 info.gameFile = currentTexOwner;
-                info.lod = this.WorldForm.Renderer.renderworldMaxLOD;
-                info.position = this.WorldForm.Renderer.camera.FollowEntity.Position;
-                info.rotation = this.WorldForm.Renderer.camera.CurrentRotation;
+                info.lod = WorldForm.Renderer.renderworldMaxLOD;
+                info.position = WorldForm.Renderer.camera.FollowEntity.Position;
+                info.rotation = WorldForm.Renderer.camera.CurrentRotation;
                 info.hasCameraInfo = true;
-                TexMod.TextureModDockForm.ShowAddModSource(WorldForm, info);
+                TextureModDockForm.ShowAddModSource(WorldForm, info);
             }
         }
 

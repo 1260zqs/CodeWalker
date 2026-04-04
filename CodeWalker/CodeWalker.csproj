@@ -56,12 +56,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="TexMod\TextureModForm.Core.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.TreeView.cs">
-		<DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
     <Compile Update="Component\D2DCanvas.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -76,12 +70,6 @@
     </Compile>
     <Compile Update="TexMod\TextureModDockForm.Packing.cs">
       <DependentUpon>TextureModDockForm.cs</DependentUpon>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.Caching.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.Packing.cs">
-      <DependentUpon>TextureModForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 

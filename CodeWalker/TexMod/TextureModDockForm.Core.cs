@@ -13,6 +13,16 @@ using System.Windows.Forms;
 
 namespace CodeWalker.TexMod;
 
+public struct AddModSourceInfo
+{
+    public GameFile gameFile;
+    public string texName;
+    public rage__eLodType lod;
+    public Vector3 position;
+    public Vector3 rotation;
+    public bool hasCameraInfo;
+}
+
 public partial class TextureModDockForm
 {
     static TextureModDockForm instance;
