@@ -14,9 +14,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CodeWalker.Properties;
 using CodeWalker.TexMod;
+using WeifenLuo.WinFormsUI.Docking;
 using Color = System.Drawing.Color;
 using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
@@ -25,19 +28,159 @@ namespace CodeWalker.World
 {
     public partial class WorldInfoForm : Form
     {
+        class ImageListAsync
+        {
+            public object syncRoot = new();
+
+            private WorldInfoForm owner;
+            private Archetype arch;
+            private ListView listView;
+            private ImageList smallImageList;
+            private ImageList largeImageList;
+            private CancellationTokenSource cts = new();
+            public List<TextureBase> texturesToLoad = new();
+
+            public ImageListAsync(WorldInfoForm form)
+            {
+                this.owner = form;
+                this.arch = form.Selection.Archetype;
+                this.smallImageList = form.smallImageList;
+                this.largeImageList = form.largeImageList;
+                this.listView = form.SelDrawableTexturesListView;
+            }
+
+            public void Cancel()
+            {
+                if (!cts.IsCancellationRequested)
+                {
+                    cts.Cancel();
+                }
+            }
+
+            public Task LoadAsync()
+            {
+                return Task.Run(Load);
+            }
+
+            private void Load()
+            {
+                var smallImages = new Dictionary<uint, Image>();
+                var largeImages = new Dictionary<uint, Image>();
+                var smallImageSize = smallImageList.ImageSize;
+                var largeImageSize = largeImageList.ImageSize;
+                for (var i = 0; i < texturesToLoad.Count; i++)
+                {
+                    var index = i;
+                    if (cts.IsCancellationRequested) break;
+                    var textureBase = texturesToLoad[i];
+                    var texture = textureBase as Texture;
+                    if (texture == null)
+                    {
+                        var errorString = string.Empty;
+                        texture = owner.TryGetTexture(arch, textureBase, out var ytd, ref errorString);
+                    }
+                    if (texture == null) continue;
+                    if (!smallImages.TryGetValue(texture.NameHash, out var smallImage))
+                    {
+                        smallImage = LoadImage(smallImageSize, texture);
+                        smallImages.Add(texture.NameHash, smallImage);
+                    }
+                    if (!largeImages.TryGetValue(texture.NameHash, out var largeImage))
+                    {
+                        largeImage = LoadImage(largeImageSize, texture);
+                        largeImages.Add(texture.NameHash, largeImage);
+                    }
+                    owner.Invoke(() =>
+                    {
+                        if (cts.IsCancellationRequested)
+                        {
+                            smallImage?.Dispose();
+                            largeImage?.Dispose();
+                            return;
+                        }
+                        var oldSmall = smallImageList.Images[index];
+                        smallImageList.Images[index] = smallImage;
+                        oldSmall?.Dispose();
+
+                        var oldLarge = largeImageList.Images[index];
+                        largeImageList.Images[index] = largeImage;
+                        oldLarge?.Dispose();
+                        listView.RedrawItems(index, index, false);
+                    });
+                }
+            }
+
+            private Image LoadImage(Size imageSize, Texture texture)
+            {
+                var mip = FindMpis(
+                    texture.Width,
+                    texture.Height,
+                    imageSize.Width,
+                    imageSize.Height,
+                    texture.Levels
+                );
+                return texture.CreateImage(mip);
+            }
+
+            private static int FindMpis(int width, int height, int targetWidth, int targetHeight, int maxMips)
+            {
+                var mip = 0;
+                while (mip < maxMips - 1)
+                {
+                    var w = width >> (mip + 1);
+                    var h = height >> (mip + 1);
+                    if (w <= targetWidth && h <= targetHeight)
+                    {
+                        break;
+                    }
+                    mip++;
+                }
+                return mip;
+            }
+
+            public void GeneratePlaceholder()
+            {
+                var placeholder = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+                for (var i = 0; i < texturesToLoad.Count; i++)
+                {
+                    smallImageList.Images.Add((Image)placeholder.Clone());
+                    largeImageList.Images.Add((Image)placeholder.Clone());
+                }
+                placeholder.Dispose();
+            }
+        }
+
         WorldForm WorldForm;
         MapSelection Selection;
         string SelectionMode = "";
         bool MouseSelectEnable = false;
         Texture currentTex; // Used by save button
         GameFile currentTexOwner;
+        private Image displayingImage;
+        private ImageListAsync imageListAsync;
 
         public WorldInfoForm(WorldForm worldForm)
         {
             WorldForm = worldForm;
             InitializeComponent();
+            SelDrawableTexturesListView.UseCompatibleStateImageBehavior = false;
 
-            //SelectionModeComboBox.SelectedIndex = 0;
+            var theme = Settings.Default.GetProjectWindowTheme();
+            var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
+            vsExtender.SetStyle(toolStrip1, version, theme);
+
+            UpdateViewModeButton();
+        }
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+        }
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            Utilities.Dispose(ref displayingImage);
+            base.OnHandleDestroyed(e);
         }
 
         private void MouseSelectCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -76,10 +219,14 @@ namespace CodeWalker.World
             SelDrawablePropertyGrid.SelectedObject = item.Drawable;
             SelDrawableModelPropertyGrid.SelectedObject = null;
             SelDrawableModelsTreeView.Nodes.Clear();
-            SelDrawableTexturesTreeView.Nodes.Clear();
+            SelDrawableTexturesListView.Items.Clear();
             SelDrawableTexturePropertyGrid.SelectedObject = null;
             SelDrawableTexturePictureBox.Image = null;
             HierarchyTreeView.Nodes.Clear();
+            imageListAsync?.Cancel();
+            smallImageList.Images.Clear();
+            largeImageList.Images.Clear();
+            imageListAsync = new ImageListAsync(this);
             if (item.Drawable != null)
             {
                 AddSelectionDrawableModelsTreeNodes(item.Drawable.DrawableModels?.High, "High Detail", true);
@@ -88,6 +235,12 @@ namespace CodeWalker.World
                 AddSelectionDrawableModelsTreeNodes(item.Drawable.DrawableModels?.VLow, "Very Low Detail", false);
                 //AddSelectionDrawableModelsTreeNodes(item.Drawable.DrawableModels?.Extra, "X Detail", false);
             }
+            foreach (ListViewItem listViewItem in SelDrawableTexturesListView.Items)
+            {
+                imageListAsync.texturesToLoad.Add((TextureBase)listViewItem.Tag);
+            }
+            imageListAsync.GeneratePlaceholder();
+            imageListAsync.LoadAsync();
 
             if (item.EntityDef != null)
             {
@@ -229,20 +382,13 @@ namespace CodeWalker.World
                 mnode.Tag = model;
                 mnode.Checked = check;
 
-                var tmnode = SelDrawableTexturesTreeView.Nodes.Add(mprefix + " " + model.ToString());
-                tmnode.Tag = model;
-
                 if (model.Geometries == null) continue;
-
                 foreach (var geom in model.Geometries)
                 {
                     var gname = geom.ToString();
                     var gnode = mnode.Nodes.Add(gname);
                     gnode.Tag = geom;
                     gnode.Checked = true; // check;
-
-                    var tgnode = tmnode.Nodes.Add(gname);
-                    tgnode.Tag = geom;
 
                     if ((geom.Shader != null) && (geom.Shader.ParametersList != null) && (geom.Shader.ParametersList.Hashes != null))
                     {
@@ -253,25 +399,21 @@ namespace CodeWalker.World
                         {
                             var hash = pl.Hashes[ip];
                             var parm = pl.Parameters[ip];
-                            var tex = parm.Data as TextureBase;
-                            if (tex != null)
+                            if (parm.Data is TextureBase tex)
                             {
                                 var t = tex as Texture;
-                                var tstr = tex.Name.Trim();
-                                if (t != null)
-                                {
-                                    tstr = string.Format("{0} ({1}x{2}, embedded)", tex.Name, t.Width, t.Height);
-                                }
-                                var tnode = tgnode.Nodes.Add(hash.ToString().Trim() + ": " + tstr);
-                                tnode.Tag = tex;
+                                var listItem = new ListViewItem(tex.Name.Trim());
+                                listItem.Tag = tex;
+                                listItem.SubItems.Add($"{tex.Width}x{tex.Height}");
+                                listItem.SubItems.Add(t != null ? "embedded" : string.Empty);
+                                listItem.ImageIndex = SelDrawableTexturesListView.Items.Count;
+                                SelDrawableTexturesListView.Items.Add(listItem);
                             }
                         }
-                        tgnode.Expand();
                     }
                 }
 
                 mnode.Expand();
-                tmnode.Expand();
             }
         }
 
@@ -328,9 +470,11 @@ namespace CodeWalker.World
                 var cmip = Math.Min(Math.Max(mip, 0), tex.Levels - 1);
                 var w = tex.Width >> cmip;
                 var h = tex.Height >> cmip;
-                var bmp = tex.CreateImage(mip);
+                var image = tex.CreateImage(mip);
 
-                SelDrawableTexturePictureBox.Image = bmp;
+                Utilities.Dispose(ref displayingImage);
+                displayingImage = image;
+                SelDrawableTexturePictureBox.Image = image;
                 SelTextureDimensionsLabel.Text = $"{w} x {h}";
             }
             catch (Exception ex)
@@ -348,7 +492,8 @@ namespace CodeWalker.World
             currentTexOwner = null;
             if ((tex == null) && (texbase != null))
             {
-                tex = TryGetTexture(texbase, out ytd, ref errstr);
+                var arch = Selection.Archetype;
+                tex = TryGetTexture(arch, texbase, out ytd, ref errstr);
             }
             if (tex != null)
             {
@@ -363,8 +508,8 @@ namespace CodeWalker.World
                 {
                     SelTextureMipTrackBar.Maximum = tex.Levels - 1;
                 }
-                ResetPictureBox();
                 DisplayTexture(tex, mip);
+                ResetPictureBox();
 
                 //try get owner drawable to get the name for the dictionary textbox...
                 object owner = null;
@@ -378,7 +523,8 @@ namespace CodeWalker.World
 
                 SelTextureNameTextBox.Text = tex.Name;
                 SelTextureDictionaryTextBox.Text = (ytd != null) ? ytd.Name : (ydr != null) ? ydr.Name : (ydd != null) ? ydd.Name : (yft != null) ? yft.Name : string.Empty;
-                SaveTextureButton.Enabled = true;
+                toolStripSaveButton.Enabled = true;
+                toolStripSaveAllButton.Enabled = true;
                 if (ytd != null)
                 {
                     currentTexOwner = ytd;
@@ -404,15 +550,15 @@ namespace CodeWalker.World
                 SelTextureMipTrackBar.Value = 0;
                 SelTextureMipTrackBar.Maximum = 0;
                 SelTextureDimensionsLabel.Text = "-";
-                SaveTextureButton.Enabled = false;
+                toolStripSaveButton.Enabled = false;
+                toolStripSaveAllButton.Enabled = false;
                 currentTex = null;
             }
         }
 
-        private Texture TryGetTexture(TextureBase texbase, out YtdFile ytd, ref string errstr)
+        private Texture TryGetTexture(Archetype arch, TextureBase texbase, out YtdFile ytd, ref string errstr)
         {
             //need to load from txd.
-            var arch = Selection.Archetype;
             var texhash = texbase.NameHash;
             var txdHash = (arch != null) ? arch.TextureDict.Hash : 0;
             var tex = TryGetTextureFromYtd(texhash, txdHash, out ytd);
@@ -525,27 +671,29 @@ namespace CodeWalker.World
             SelDrawableModelPropertyGrid.SelectedObject = e.Node?.Tag;
         }
 
-        private void SelDrawableTexturesTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void SelDrawableTexturesTreeView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            SelDrawableTexturePropertyGrid.SelectedObject = e.Node?.Tag;
+            foreach (ListViewItem selectedItem in SelDrawableTexturesListView.SelectedItems)
+            {
+                var textureBase = selectedItem.Tag as TextureBase;
+                SelDrawableTexturePropertyGrid.SelectedObject = textureBase;
+                SelTextureMipTrackBar.Value = 0;
+                SelTextureMipLabel.Text = "0";
 
-            var texbase = e.Node?.Tag as TextureBase;
-
-            SelTextureMipTrackBar.Value = 0;
-            SelTextureMipLabel.Text = "0";
-
-            SelectTexture(texbase, false);
+                SelectTexture(textureBase, false);
+                return;
+            }
         }
 
         private void SelTextureMipTrackBar_Scroll(object sender, EventArgs e)
         {
-            var node = SelDrawableTexturesTreeView.SelectedNode;
-
-            var texbase = node?.Tag as TextureBase;
-
-            SelTextureMipLabel.Text = SelTextureMipTrackBar.Value.ToString();
-
-            SelectTexture(texbase, true);
+            foreach (ListViewItem selectedItem in SelDrawableTexturesListView.SelectedItems)
+            {
+                var textureBase = selectedItem.Tag as TextureBase;
+                SelTextureMipLabel.Text = SelTextureMipTrackBar.Value.ToString();
+                SelectTexture(textureBase, true);
+                return;
+            }
         }
 
         private void HierarchyTreeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -561,29 +709,29 @@ namespace CodeWalker.World
             if (!folderpath.EndsWith("\\")) folderpath += "\\";
 
             var texs = new List<Texture>();
-            foreach (TreeNode modelnode in SelDrawableTexturesTreeView.Nodes)
-            {
-                foreach (TreeNode geomnode in modelnode.Nodes)
-                {
-                    foreach (TreeNode texnode in geomnode.Nodes)
-                    {
-                        var texbase = texnode.Tag as TextureBase;
-                        var tex = texbase as Texture;
-                        var errstr = "";
-                        if ((tex == null) && (texbase != null))
-                        {
-                            tex = TryGetTexture(texbase, out _, ref errstr);
-                        }
-                        if (tex != null)
-                        {
-                            if (!texs.Contains(tex))
-                            {
-                                texs.Add(tex);
-                            }
-                        }
-                    }
-                }
-            }
+            // foreach (TreeNode modelnode in SelDrawableTexturesTreeView.Nodes)
+            // {
+            //     foreach (TreeNode geomnode in modelnode.Nodes)
+            //     {
+            //         foreach (TreeNode texnode in geomnode.Nodes)
+            //         {
+            //             var texbase = texnode.Tag as TextureBase;
+            //             var tex = texbase as Texture;
+            //             var errstr = "";
+            //             if ((tex == null) && (texbase != null))
+            //             {
+            //                 tex = TryGetTexture(texbase, out _, ref errstr);
+            //             }
+            //             if (tex != null)
+            //             {
+            //                 if (!texs.Contains(tex))
+            //                 {
+            //                     texs.Add(tex);
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
 
             foreach (var tex in texs)
             {
@@ -623,16 +771,23 @@ namespace CodeWalker.World
             _zoom = 1f;
             _pan = default;
             _rect = new Rectangle();
+            if (displayingImage != null)
+            {
+                var maxSize = Math.Max(displayingImage.Width, displayingImage.Height);
+                var maxView = Math.Min(SelDrawableTexturePictureBox.Width, SelDrawableTexturePictureBox.Height);
+                if (maxSize > 0)
+                {
+                    _zoom = (maxView * 0.9f) / maxSize;
 
-            rectBoxX.Value = 0;
-            rectBoxY.Value = 0;
-            rectBoxW.Value = 0;
-            rectBoxH.Value = 0;
-        }
+                    var scaledWidth = displayingImage.Width * _zoom;
+                    var scaledHeight = displayingImage.Height * _zoom;
 
-        private void OnZoomUpdate()
-        {
-            SelDrawableTexturePictureBox.Invalidate();
+                    var offsetX = (SelDrawableTexturePictureBox.Width - scaledWidth) * 0.5f;
+                    var offsetY = (SelDrawableTexturePictureBox.Height - scaledHeight) * 0.5f;
+
+                    _pan = new PointF(offsetX, offsetY);
+                }
+            }
         }
 
         private void SelDrawableTexturePictureBox_MouseWheel(object sender, MouseEventArgs e)
@@ -688,17 +843,8 @@ namespace CodeWalker.World
             else if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
                 _drawing = false;
-                UpdateRectTexBox();
                 ApplyPaintDrawing();
             }
-        }
-
-        private void UpdateRectTexBox()
-        {
-            // rectBoxX.Value = _rect.X;
-            // rectBoxY.Value = _rect.Y;
-            // rectBoxW.Value = _rect.Width;
-            // rectBoxH.Value = _rect.Height;
         }
 
         private void ApplyPaintDrawing()
@@ -815,6 +961,24 @@ namespace CodeWalker.World
                 info.hasCameraInfo = true;
                 TexMod.TextureModDockForm.ShowAddModSource(WorldForm, info);
             }
+        }
+
+        private void UpdateViewModeButton()
+        {
+            toolStripGridButton.Visible = SelDrawableTexturesListView.View != View.LargeIcon;
+            toolStripListViewButton.Visible = SelDrawableTexturesListView.View == View.LargeIcon;
+        }
+
+        private void toolStripGridButton_Click(object sender, EventArgs e)
+        {
+            SelDrawableTexturesListView.View = View.LargeIcon;
+            UpdateViewModeButton();
+        }
+
+        private void toolStripListViewButton_Click(object sender, EventArgs e)
+        {
+            SelDrawableTexturesListView.View = View.Details;
+            UpdateViewModeButton();
         }
     }
 }

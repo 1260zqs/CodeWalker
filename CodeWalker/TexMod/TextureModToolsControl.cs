@@ -18,7 +18,6 @@ public partial class TextureModToolsControl : DockContent
     public TextureModToolsControl(TextureModDockForm mainForm)
     {
         InitializeComponent();
-        this.Text = "Tools";
         this.mainForm = mainForm;
 
         this.checkBox1.Checked = mainForm.isPainting;
@@ -28,6 +27,10 @@ public partial class TextureModToolsControl : DockContent
         this.checkBox1.CheckedChanged += checkBox1_CheckedChanged;
         this.checkBox2.CheckedChanged += checkBox2_CheckedChanged;
         this.checkBox3.CheckedChanged += checkBox3_CheckedChanged;
+
+        this.flipXToggle.CheckedChanged += flipXToggle_CheckedChanged;
+        this.flipYToggle.CheckedChanged += flipYToggle_CheckedChanged;
+        this.swapToggle.CheckedChanged += swapToggle_CheckedChanged;
     }
 
     protected override void OnHandleCreated(EventArgs e)
@@ -60,6 +63,14 @@ public partial class TextureModToolsControl : DockContent
         destRectangleControl.SetRect(rect);
     }
 
+    public void SelectTextureMapping(TextureMapping mapping)
+    {
+        SetDestRect(mapping.targetRect);
+        flipXToggle.Checked = mapping.flipX;
+        flipYToggle.Checked = mapping.flipY;
+        swapToggle.Checked = mapping.swap;
+    }
+
     private void srcRectangleControl_OnValueChanged(object sender, System.Drawing.RectangleF e)
     {
         mainForm.SetSrcImageRect(e);
@@ -69,6 +80,7 @@ public partial class TextureModToolsControl : DockContent
     {
         mainForm.SetDestTextureRect(e);
     }
+
     private void button1_Click(object sender, EventArgs e)
     {
         if (mainForm.GetSrcImageRect(out var srcRect) && mainForm.GetDestTextureRect(out var destRect))
@@ -89,57 +101,24 @@ public partial class TextureModToolsControl : DockContent
 
     private void button3_Click(object sender, EventArgs e)
     {
-        //if (!modTextureCanvas.HasImage()) return;
-        //var imageSize = modTextureCanvas.GetImageSize();
-
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (width <= 0) return;
-
-        //rectBoxX.Value = 0;
-        //rectBoxW.Value = imageSize.Width;
-        //rectBoxH.Value = height / width * imageSize.Width;
         mainForm.FitSrcRectByDestWidth();
     }
 
     private void button4_Click(object sender, EventArgs e)
     {
-        //if (!modTextureCanvas.HasImage()) return;
-        //var imageSize = modTextureCanvas.GetImageSize();
-
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (height <= 0) return;
-
-        //rectBoxY.Value = 0;
-        //rectBoxH.Value = imageSize.Height;
-        //rectBoxW.Value = width / height * imageSize.Width;
         mainForm.FitSrcRectByDestHeight();
     }
 
     private void button6_Click(object sender, EventArgs e)
     {
-        // clip by width
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (width <= 0) return;
-
-        //var w = rectBoxW.Value;
-        //rectBoxH.Value = height / width * w;
         mainForm.ClipSrcRectByDestWidth();
     }
 
     private void button5_Click(object sender, EventArgs e)
     {
-        // clip by height
-        //var width = numericUpDown1.Value;
-        //var height = numericUpDown2.Value;
-        //if (height <= 0) return;
-
-        //var h = rectBoxH.Value;
-        //rectBoxW.Value = width / height * h;
         mainForm.ClipSrcRectByDestHeight();
     }
+
     private void checkBox1_CheckedChanged(object sender, EventArgs e)
     {
         mainForm.isPainting = this.checkBox1.Checked;
@@ -158,5 +137,58 @@ public partial class TextureModToolsControl : DockContent
     private void button8_Click(object sender, EventArgs e)
     {
         mainForm.SetTextureLocation();
+    }
+
+    private void button10_Click(object sender, EventArgs e)
+    {
+        if (mainForm.GetDestTextureRect(out var destRect) && mainForm.GetDestImageSize(out var pixelSize))
+        {
+            destRect.X = 0;
+            destRect.Width = pixelSize.Width;
+            mainForm.SetDestTextureRect(destRect);
+        }
+    }
+
+    private void button11_Click(object sender, EventArgs e)
+    {
+        if (mainForm.GetDestTextureRect(out var destRect) && mainForm.GetDestImageSize(out var pixelSize))
+        {
+            destRect.Y = 0;
+            destRect.Height = pixelSize.Height;
+            mainForm.SetDestTextureRect(destRect);
+        }
+    }
+
+    private void button12_Click(object sender, EventArgs e)
+    {
+        if (mainForm.GetDestTextureRect(out var destRect) && mainForm.GetDestImageSize(out var pixelSize))
+        {
+            destRect.Width = pixelSize.Width / 2f;
+            mainForm.SetDestTextureRect(destRect);
+        }
+    }
+
+    private void button13_Click(object sender, EventArgs e)
+    {
+        if (mainForm.GetDestTextureRect(out var destRect) && mainForm.GetDestImageSize(out var pixelSize))
+        {
+            destRect.Height = pixelSize.Height / 2f;
+            mainForm.SetDestTextureRect(destRect);
+        }
+    }
+
+    private void flipXToggle_CheckedChanged(object sender, EventArgs e)
+    {
+        mainForm.SetTextureMappingFlipX(flipXToggle.Checked);
+    }
+
+    private void flipYToggle_CheckedChanged(object sender, EventArgs e)
+    {
+        mainForm.SetTextureMappingFlipY(flipYToggle.Checked);
+    }
+
+    private void swapToggle_CheckedChanged(object sender, EventArgs e)
+    {
+        mainForm.SetTextureMappingSwap(swapToggle.Checked);
     }
 }

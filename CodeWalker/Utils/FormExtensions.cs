@@ -11,7 +11,7 @@ namespace CodeWalker.Utils;
 
 public static class FormExtensions
 {
-    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this System.Drawing.RectangleF rectangle)
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(in this System.Drawing.RectangleF rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
             rectangle.Left,
@@ -21,7 +21,7 @@ public static class FormExtensions
         );
     }
 
-    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this System.Drawing.Rectangle rectangle)
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(in this System.Drawing.Rectangle rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
             rectangle.Left,
@@ -31,7 +31,7 @@ public static class FormExtensions
         );
     }
 
-    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(this SharpDX.Rectangle rectangle)
+    public static SharpDX.Mathematics.Interop.RawRectangleF Raw(in this SharpDX.Rectangle rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
             rectangle.Left,
@@ -41,12 +41,30 @@ public static class FormExtensions
         );
     }
 
-    public static SharpDX.Rectangle Convert(this System.Drawing.Rectangle rectangle)
+    public static SharpDX.Rectangle Convert(in this System.Drawing.Rectangle rectangle)
     {
         return new SharpDX.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
     }
 
-    public static System.Drawing.Rectangle Convert(this SharpDX.Rectangle rectangle)
+    public static SharpDX.Vector2 Pivot(in this System.Drawing.RectangleF rectangle, float x, float y)
+    {
+        return new SharpDX.Vector2(
+            rectangle.Left + (rectangle.Right - rectangle.Left) * x,
+            rectangle.Top + (rectangle.Bottom - rectangle.Top) * y
+        );
+    }
+
+    public static SharpDX.Mathematics.Interop.RawRectangleF ToRawRect(this SharpDX.Size2 size, int x = 0, int y = 0)
+    {
+        return new SharpDX.Mathematics.Interop.RawRectangleF(x, y, x + size.Width, y + size.Height);
+    }
+
+    public static System.Drawing.RectangleF ToRect(this SharpDX.Size2 size, int x = 0, int y = 0)
+    {
+        return new System.Drawing.RectangleF(x, y, size.Width, size.Height);
+    }
+
+    public static System.Drawing.Rectangle Convert(in this SharpDX.Rectangle rectangle)
     {
         return new System.Drawing.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
     }

@@ -67,7 +67,7 @@ namespace CodeWalker
             -2147483648});
             this.rectBoxX.Name = "rectBoxX";
             this.rectBoxX.Size = new System.Drawing.Size(80, 21);
-            this.rectBoxX.TabIndex = 57;
+            this.rectBoxX.TabIndex = 1;
             // 
             // rectBoxY
             // 
@@ -85,7 +85,7 @@ namespace CodeWalker
             -2147483648});
             this.rectBoxY.Name = "rectBoxY";
             this.rectBoxY.Size = new System.Drawing.Size(80, 21);
-            this.rectBoxY.TabIndex = 58;
+            this.rectBoxY.TabIndex = 2;
             // 
             // label5
             // 
@@ -112,7 +112,7 @@ namespace CodeWalker
             -2147483648});
             this.rectBoxH.Name = "rectBoxH";
             this.rectBoxH.Size = new System.Drawing.Size(80, 21);
-            this.rectBoxH.TabIndex = 63;
+            this.rectBoxH.TabIndex = 4;
             // 
             // label6
             // 
@@ -139,7 +139,7 @@ namespace CodeWalker
             -2147483648});
             this.rectBoxW.Name = "rectBoxW";
             this.rectBoxW.Size = new System.Drawing.Size(80, 21);
-            this.rectBoxW.TabIndex = 62;
+            this.rectBoxW.TabIndex = 3;
             // 
             // label7
             // 

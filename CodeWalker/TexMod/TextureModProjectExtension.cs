@@ -46,6 +46,7 @@ public static class TextureModProjectExtension
 
                 writer.WriteElementString("FlipX", $"{mapping.flipX}");
                 writer.WriteElementString("FlipY", $"{mapping.flipY}");
+                writer.WriteElementString("Swap", $"{mapping.swap}");
                 writer.WriteElementString("Rotation", $"{mapping.rotation}");
                 writer.WriteElementString("Comment", mapping.comment);
                 writer.WriteEndElement();
@@ -229,7 +230,7 @@ public static class TextureModProjectExtension
             rage__eLodType.LODTYPES_DEPTH_SLOD2 => TextureLod.SLOD2,
             rage__eLodType.LODTYPES_DEPTH_SLOD3 => TextureLod.SLOD3,
             rage__eLodType.LODTYPES_DEPTH_SLOD4 => TextureLod.SLOD4,
-            _=> TextureLod.Unknown
+            _ => TextureLod.Unknown
         };
     }
 

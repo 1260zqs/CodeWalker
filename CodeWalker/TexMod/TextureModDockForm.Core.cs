@@ -300,7 +300,7 @@ public partial class TextureModDockForm
             PictureBoxViewer.LoadState(gameTextureCanvas?.canvas, mapping.editorState);
             PictureBoxRectTool.SetSolid(gameTextureCanvas?.canvas, isSolidColor);
             PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, mapping.targetRect);
-            toolsControl?.SetDestRect(mapping.targetRect);
+            toolsControl?.SelectTextureMapping(mapping);
             propertyControl?.SelectObject(mapping);
             if (isSyncLod) SyncRenderLod();
         }
@@ -455,7 +455,7 @@ public partial class TextureModDockForm
                 working.mapping.targetRect,
                 working.mapping.flipX,
                 working.mapping.flipY,
-                working.mapping.rotation
+                working.mapping.swap
             );
             if (isDrawTestColor)
             {
@@ -495,48 +495,41 @@ public partial class TextureModDockForm
         System.Drawing.RectangleF destRect,
         bool flipX,
         bool flipY,
-        float rotation
+        bool swap
     )
     {
         if (baseImage != null)
         {
-            target.DrawBitmap(baseImage, 1f, SharpDX.Direct2D1.BitmapInterpolationMode.NearestNeighbor);
+            target.DrawBitmap(baseImage, 1f, BitmapInterpolationMode.NearestNeighbor);
         }
         if (overlay == null || overlay.IsDisposed) return;
 
-        var imgBounds = new System.Drawing.RectangleF(0, 0, baseImageSize.Width, baseImageSize.Height);
-        var clippedDest = System.Drawing.RectangleF.Intersect(destRect, imgBounds);
-
+        var imgBounds = overlay.PixelSize.ToRect();
+        var clippedDest = System.Drawing.RectangleF.Intersect(srcRect, imgBounds);
         if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
             return;
 
-        var scaleX = srcRect.Width / destRect.Width;
-        var scaleY = srcRect.Height / destRect.Height;
-
-        var dx = clippedDest.X - destRect.X;
-        var dy = clippedDest.Y - destRect.Y;
-
-        srcRect.X += dx * scaleX;
-        srcRect.Y += dy * scaleY;
-        srcRect.Width = clippedDest.Width * scaleX;
-        srcRect.Height = clippedDest.Height * scaleY;
-
         var matrix = target.Transform;
-        var center = new Vector2(
-            (clippedDest.Left + clippedDest.Right) * 0.5f,
-            (clippedDest.Top + clippedDest.Bottom) * 0.5f
-        );
-        target.Transform = Matrix3x2.Scaling(flipX ? -1 : 1, flipY ? -1 : 1, center) *
-                           Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
+        var rotation = swap ? 90f : 0f;
+        var sx = swap ? destRect.Width / destRect.Height : 1f;
+        var sy = swap ? destRect.Height / destRect.Width : 1f;
+        var center = destRect.Pivot(0.5f, 0.5f);
+
+        target.PushAxisAlignedClip(baseImageSize.ToRawRect(), AntialiasMode.PerPrimitive);
+        target.Transform = Matrix3x2.Scaling(sy, sx, center) *
+                           Matrix3x2.Scaling(flipX ? -1 : 1, flipY ? -1 : 1, center) *
+                           Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) *
+                           matrix;
 
         target.DrawBitmap(
             overlay,
-            clippedDest.Raw(),
+            destRect.Raw(),
             1f,
-            SharpDX.Direct2D1.BitmapInterpolationMode.Linear,
-            srcRect.Raw()
+            BitmapInterpolationMode.Linear,
+            clippedDest.Raw()
         );
         target.Transform = matrix;
+        target.PopAxisAlignedClip();
     }
 
     public void SaveProject()
@@ -591,13 +584,13 @@ public partial class TextureModDockForm
                     {
                         imageCache.ReturnToCache(key, working.modTextureBitmap);
                         working.modTextureBitmap = null;
-                        working.modTextureSource = new AsyncImageFileSource(fileName);
-                        working.modTextureSource.shared = true;
-                        working.modTextureSource.LoadAsync();
-                        modTextureCanvas?.SetImage(working.modTextureSource);
-                        gameTextureCanvas?.Repaint();
-                        RequestTexturePaintingUpdate();
                     }
+                    working.modTextureSource = new AsyncImageFileSource(fileName);
+                    working.modTextureSource.shared = true;
+                    working.modTextureSource.LoadAsync();
+                    modTextureCanvas?.SetImage(working.modTextureSource);
+                    gameTextureCanvas?.Repaint();
+                    RequestTexturePaintingUpdate();
                 }
                 // RefreshModListView();
             }
@@ -714,6 +707,28 @@ public partial class TextureModDockForm
         }
     }
 
+    internal bool GetSrcImageSize(out SharpDX.Size2 pixelSize)
+    {
+        if (working.modTextureBitmap != null)
+        {
+            pixelSize = working.modTextureBitmap.PixelSize;
+            return true;
+        }
+        pixelSize = default;
+        return false;
+    }
+
+    internal bool GetDestImageSize(out SharpDX.Size2 pixelSize)
+    {
+        if (working.gameTextureBitmap != null)
+        {
+            pixelSize = working.gameTextureBitmap.PixelSize;
+            return true;
+        }
+        pixelSize = default;
+        return false;
+    }
+
     internal void FitSrcRectByDestWidth()
     {
         if (GetSrcImageRect(out var srcRect) && GetDestTextureRect(out var descRect))
@@ -771,6 +786,60 @@ public partial class TextureModDockForm
             srcRect.Width = (descRect.Width / descRect.Height) * srcRect.Height;
             toolsControl?.SetSrcRectWithoutNotify(srcRect);
             SetSrcImageRect(srcRect);
+        }
+    }
+
+    public void SetTextureMappingFlipX(bool flip)
+    {
+        if (working.mapping is { } mapping)
+        {
+            if (mapping.flipX != flip)
+            {
+                mapping.flipX = flip;
+                gameTextureCanvas?.Repaint();
+                mappingControl?.RepaintListView();
+                RequestTexturePaintingUpdate();
+            }
+        }
+    }
+
+    public void SetTextureMappingFlipY(bool flip)
+    {
+        if (working.mapping is { } mapping)
+        {
+            if (mapping.flipY != flip)
+            {
+                mapping.flipY = flip;
+                gameTextureCanvas?.Repaint();
+                mappingControl?.RepaintListView();
+                RequestTexturePaintingUpdate();
+            }
+        }
+    }
+
+    public void SetTextureMappingSwap(bool swap)
+    {
+        if (working.mapping is { } mapping)
+        {
+            if (mapping.swap != swap)
+            {
+                mapping.swap = swap;
+                gameTextureCanvas?.Repaint();
+                mappingControl?.RepaintListView();
+                RequestTexturePaintingUpdate();
+            }
+        }
+    }
+
+    public void SetTextureMappingLod(TextureLod lod)
+    {
+        if (working.mapping is { } mapping)
+        {
+            if (mapping.lod != lod)
+            {
+                mapping.lod = lod;
+                mappingControl?.RepaintListView();
+            }
         }
     }
 

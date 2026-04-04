@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,12 +23,25 @@ public partial class TextureModMappingControl : DockContent
     public TextureModMappingControl(TextureModDockForm mainForm)
     {
         InitializeComponent();
-        this.Text = "Mapping";
         this.mainForm = mainForm;
 
         var theme = Settings.Default.GetProjectWindowTheme();
         var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
         vsExtender.SetStyle(toolStrip, version, theme);
+        vsExtender.SetStyle(contextMenuStrip1, version, theme);
+
+        foreach (var value in Enum.GetValues(typeof(TextureLod)))
+        {
+            if ((TextureLod)value == TextureLod.Unknown)
+            {
+                continue;
+            }
+            var menuItem = new System.Windows.Forms.ToolStripMenuItem();
+            menuItem.Text = Enum.GetName(typeof(TextureLod), value);
+            menuItem.Tag = value;
+            menuItem.Click += lodToolStripMenuItem_Click;
+            lodToolStripMenuItem.DropDownItems.Add(menuItem);
+        }
 
         toolStripButton7.SetEnumDrop<View>(x => textureMappingView.View = x);
         toolStripButton7.SelectEnum(textureMappingView.View);
@@ -55,6 +69,11 @@ public partial class TextureModMappingControl : DockContent
     protected override void OnHandleDestroyed(EventArgs e)
     {
         base.OnHandleDestroyed(e);
+    }
+
+    public void RepaintListView()
+    {
+        textureMappingView.Invalidate();
     }
 
     public void RefreshListView(ModTexture modTexture)
@@ -88,9 +107,26 @@ public partial class TextureModMappingControl : DockContent
 
     private void textureMappingView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
     {
-        var replacement = listOfMappings[e.ItemIndex];
-        e.Item = new ListViewItem(replacement.name);
-        e.Item.SubItems.Add(new ListViewItem.ListViewSubItem(e.Item, replacement.lod.ToString()));
+        var mapping = listOfMappings[e.ItemIndex];
+        e.Item = new ListViewItem(mapping.name);
+        e.Item.SubItems.Add(mapping.lod.ToString());
+        if (project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
+        {
+            var sourceFileName = string.Empty;
+            var indexOf = sourceTexture.sourceFile.IndexOf(':');
+            if (indexOf > 0)
+            {
+                var sourceFile = sourceTexture.sourceFile.Substring(0, indexOf);
+                sourceFileName = Path.GetFileName(sourceFile);
+            }
+            e.Item.SubItems.Add(sourceFileName);
+            e.Item.SubItems.Add(sourceTexture.sourceFile);
+        }
+        else
+        {
+            e.Item.SubItems.Add(string.Empty);
+            e.Item.SubItems.Add(string.Empty);
+        }
     }
 
     private void textureMappingView_SelectedIndexChanged(object sender, EventArgs e)
@@ -102,7 +138,38 @@ public partial class TextureModMappingControl : DockContent
         }
     }
 
-    private void toolStripButton4_Click(object sender, EventArgs e)
+    private void textureMappingView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+    {
+    }
+
+    private ListViewHitTestInfo lastHitTest;
+
+    private void textureMappingView_MouseDown(object sender, MouseEventArgs e)
+    {
+        lastHitTest = textureMappingView.HitTest(e.Location);
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e)
+    {
+        var isChecked = !toolStripButton1.Checked;
+        toolStripButton1.Checked = isChecked;
+        mainForm.isSyncLod = isChecked;
+    }
+
+    private void textureMappingView_DoubleClick(object sender, EventArgs e)
+    {
+    }
+
+    private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+    {
+        var showDelete = lastHitTest != null && lastHitTest.Item != null;
+        deleteToolStripMenuItem.Visible = showDelete;
+        toolStripSeparator1.Visible = showDelete;
+        copyValueToolStripMenuItem.ToolTipText = GetTextToCopy();
+        copyValueToolStripMenuItem.Visible = lastHitTest != null && (lastHitTest.Item != null || lastHitTest.SubItem != null);
+    }
+
+    private void addToolStripMenuItem_Click(object sender, EventArgs e)
     {
         var form = new AddTexModSourceForm();
         if (form.ShowDialog(this) == DialogResult.OK)
@@ -114,7 +181,42 @@ public partial class TextureModMappingControl : DockContent
         }
     }
 
-    private void toolStripButton5_Click(object sender, EventArgs e)
+    private void copyValueToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (sender is ToolStripMenuItem menuItem)
+        {
+            var text = menuItem.ToolTipText;
+            if (string.IsNullOrEmpty(text)) return;
+            Clipboard.SetText(text);
+        }
+    }
+
+    private string GetTextToCopy()
+    {
+        if (lastHitTest == null) return null;
+        if (lastHitTest.SubItem != null)
+        {
+            return lastHitTest.SubItem.Text;
+        }
+        if (lastHitTest.Item != null)
+        {
+            return lastHitTest.Item.Text;
+        }
+        return null;
+    }
+
+    private void lodToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        if (sender is System.Windows.Forms.ToolStripMenuItem menuItem)
+        {
+            if (menuItem.Tag is TextureLod lod)
+            {
+                mainForm.SetTextureMappingLod(lod);
+            }
+        }
+    }
+
+    private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
     {
         // delete mapping
         foreach (int selectedIndex in textureMappingView.SelectedIndices)
@@ -127,12 +229,5 @@ public partial class TextureModMappingControl : DockContent
             mainForm.DeleteTexMapping(textureMapping);
             return;
         }
-    }
-
-    private void toolStripButton1_Click(object sender, EventArgs e)
-    {
-        var isChecked = !toolStripButton1.Checked;
-        toolStripButton1.Checked = isChecked;
-        mainForm.isSyncLod = isChecked;
     }
 }

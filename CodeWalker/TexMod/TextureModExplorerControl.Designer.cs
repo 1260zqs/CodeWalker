@@ -147,6 +147,7 @@ namespace CodeWalker.TexMod
             // 
             this.treeView.AllowDrop = true;
             this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeView.ContextMenuStrip = this.m_ProjectTreeViewContextMenu;
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.FullRowSelect = true;
             this.treeView.HideSelection = false;
@@ -191,7 +192,7 @@ namespace CodeWalker.TexMod
             this.toolStripSeparator2,
             this.deleteMenuItem});
             this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
-            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 148);
+            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
             // 
             // newFolderMenuItem
             // 

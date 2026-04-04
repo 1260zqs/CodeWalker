@@ -73,24 +73,24 @@ public static class PictureBoxRectTool
             if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
             {
                 if (!stateObject.enable) return;
-                if (stateObject.editing)
-                {
-                    var current = new Vector2(e.X, e.Y);
-                    var start = new Vector2(stateObject.start.X, stateObject.start.Y);
-                    var center = GetCenter(stateObject.vertex);
-
-
-                    Vector2 v1 = start - center;
-                    Vector2 v2 = current - center;
-
-                    var a1 = Math.Atan2(v1.Y, v1.X);
-                    var a2 = Math.Atan2(v2.Y, v2.X);
-
-                    float angle = (float)(a2 - a1);
-                    stateObject.rotate = angle * Mathf.Rad2Deg;
-                    control.Invalidate();
-                }
-                else if (stateObject.drawing)
+                // if (stateObject.editing)
+                // {
+                //     var current = new Vector2(e.X, e.Y);
+                //     var start = new Vector2(stateObject.start.X, stateObject.start.Y);
+                //     var center = GetCenter(stateObject.vertex);
+                //
+                //
+                //     Vector2 v1 = start - center;
+                //     Vector2 v2 = current - center;
+                //
+                //     var a1 = Math.Atan2(v1.Y, v1.X);
+                //     var a2 = Math.Atan2(v2.Y, v2.X);
+                //
+                //     float angle = (float)(a2 - a1);
+                //     stateObject.rotate = angle * Mathf.Rad2Deg;
+                //     control.Invalidate();
+                // }
+                if (stateObject.drawing)
                 {
                     var cur = ScreenToImage(stateObject, e.Location);
                     var x = Math.Min(stateObject.start.X, cur.X);
@@ -102,12 +102,12 @@ public static class PictureBoxRectTool
                     stateObject.notify?.Invoke(stateObject.rect);
                     control.Invalidate();
                 }
-                else
-                {
-                    var point = new Vector2(e.X, e.Y);
-                    var inSide = PointInRect(point, stateObject.vertex);
-                    Console.WriteLine($"{inSide}, {point} {stateObject.vertex[0]}");
-                }
+                // else
+                // {
+                //     var point = new Vector2(e.X, e.Y);
+                //     var inSide = PointInRect(point, stateObject.vertex);
+                //     Console.WriteLine($"{inSide}, {point} {stateObject.vertex[0]}");
+                // }
             }
         }
     }
@@ -121,21 +121,20 @@ public static class PictureBoxRectTool
             stateObject.matrixInvert = false;
             stateObject.matrix3x2 = canvas.transform;
             stateObject.matrixNew = canvas.transform;
-            var clippedDest = stateObject.rect;
-            var center = new Vector2(
-                (clippedDest.Left + clippedDest.Right) * 0.5f,
-                (clippedDest.Top + clippedDest.Bottom) * 0.5f
-            );
-            var rotation = stateObject.rotate;
-            Matrix3x2 m = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * canvas.transform;
-            TransformRect(stateObject.vertex, stateObject.rect, ref m);
+            // var clippedDest = stateObject.rect;
+            // var center = new Vector2(
+            //     (clippedDest.Left + clippedDest.Right) * 0.5f,
+            //     (clippedDest.Top + clippedDest.Bottom) * 0.5f
+            // );
+            // var rotation = stateObject.rotate;
+            // Matrix3x2 m = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * canvas.transform;
+            // TransformRect(stateObject.vertex, stateObject.rect, ref m);
 
             var rect = stateObject.rect;
             if (rect.Width > 0 && rect.Height > 0)
             {
-                var matrix = canvas.transform;
-                canvas.transform = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
-
+                // var matrix = canvas.transform;
+                // canvas.transform = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
                 if (stateObject.solid)
                 {
                     canvas.FillRectangle(rect, new RawColor4(1f, 0, 0, 0.5f));
@@ -145,7 +144,7 @@ public static class PictureBoxRectTool
                     var scaleVector = stateObject.matrix3x2.ScaleVector;
                     canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f / scaleVector.X);
                 }
-                canvas.transform = matrix;
+                // canvas.transform = matrix;
             }
         }
     }
@@ -205,14 +204,14 @@ public static class PictureBoxRectTool
                 var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
                 if (stateObject.enable)
                 {
-                    var point = new Vector2(e.X, e.Y);
-                    if (PointInRect(point, stateObject.vertex))
-                    {
-                        stateObject.drawing = false;
-                        stateObject.editing = true;
-                        stateObject.start = e.Location;
-                        return;
-                    }
+                    // var point = new Vector2(e.X, e.Y);
+                    // if (PointInRect(point, stateObject.vertex))
+                    // {
+                    //     stateObject.drawing = false;
+                    //     stateObject.editing = true;
+                    //     stateObject.start = e.Location;
+                    //     return;
+                    // }
                     stateObject.drawing = true;
                     stateObject.solid = e.Button == MouseButtons.Right;
                     stateObject.start = ScreenToImage(stateObject, e.Location);

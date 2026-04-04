@@ -273,7 +273,7 @@ public partial class TextureModDockForm
                     mapping.targetRect,
                     mapping.flipX,
                     mapping.flipY,
-                    mapping.rotation
+                    mapping.swap
                 );
             }
             d2dRenderTarget.EndDraw();

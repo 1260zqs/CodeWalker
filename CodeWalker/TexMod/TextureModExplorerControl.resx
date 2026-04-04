@@ -172,6 +172,9 @@
         cRcrHS+bClsYzqllpl06WLNJF/UEA4sPNFZrqtZcZzCwf3mIfgHTrd0GXZUYYAAAAABJRU5ErkJggg==
 </value>
   </data>
+  <metadata name="m_ProjectTreeViewContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>346, 25</value>
+  </metadata>
   <metadata name="m_ProjectTreeViewIcons.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>112, 25</value>
   </metadata>
@@ -180,10 +183,10 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAACk
-        EAAAAk1TRnQBSQFMAgEBBAEAAXABAAFwAQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        EAAAAk1TRnQBSQFMAgEBBAEAAXgBAAF4AQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABIAMAAQEBAAEgBgABIP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8AagABSAHHAesB/wFI
         AcYB6gH/AUgBxgHqAf8BRwHFAeoB/wFHAcQB6QH/AUcBxAHpAf8BRgHDAegB/wFGAcIB6AH/AUYBwgHn
-        Af8BRgHBAecB/wFFAcEB5gH/AUYBwQHnAf8BWQF3AYIB7wQAAw4BEgMfASwDQQFyA0kBhwNJAYcDSQGH
+        Af8BRgHBAecB/wFFAcEB5gH/AUYBwQHnAf8BWQF1AX8B7wQAAw4BEgMfASwDQQFyA0kBhwNJAYcDSQGH
         A0kBhwNJAYcDSQGHA0kBhwNJAYcDSQGHA0kBhwNBAXIDHwEsAw4BEogAAUkByAHrAf8BjwHnAv8BjgHm
         Av8BjAHmAv8BiwHmAv8BiQHlAv8BiAHlAv8BhgHkAv8BhQHkAv8BgwHkAv8BRgHBAecB/wGDAeQC/wFG
         AcEB5wH/BAADBwEJAxEBFgNHAYIO/wH+Af8C/gH9Af8C/gH8Af8C/QH7Af8C/QH6Af8C/AH4Af8C/gH5
@@ -254,9 +257,6 @@
         AQ8C/ws=
 </value>
   </data>
-  <metadata name="m_ProjectTreeViewContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>346, 25</value>
-  </metadata>
   <metadata name="vsExtender.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>587, 25</value>
   </metadata>

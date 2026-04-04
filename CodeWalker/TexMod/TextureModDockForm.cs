@@ -253,6 +253,7 @@ public partial class TextureModDockForm : Form
         else if (persistString == kPersistMapping)
         {
             var dockContent = new TextureModMappingControl(this);
+            dockContent.Text = "Mapping";
             content = dockContent;
         }
         else if (persistString == kPersistProperty)
@@ -265,6 +266,7 @@ public partial class TextureModDockForm : Form
         else if (persistString == kPersistInspector)
         {
             var dockContent = new TextureModToolsControl(this);
+            dockContent.Text = "Tools";
             content = dockContent;
         }
         if (content != null)
@@ -346,7 +348,7 @@ public partial class TextureModDockForm : Form
                 working.mapping.targetRect,
                 working.mapping.flipX,
                 working.mapping.flipY,
-                working.mapping.rotation
+                working.mapping.swap
             );
         }
         if (drawBoxFrame && working.mapping != null)
@@ -388,7 +390,7 @@ public partial class TextureModDockForm : Form
         Settings.Default.texModFormLayout = Convert.ToBase64String(stream.ToArray());
 #if DEBUG
         // Console.WriteLine($"{Width}x{Height}");
-        // File.WriteAllBytes("c:\\layout.xml", stream.ToArray());
+        File.WriteAllBytes("c:\\layout.xml", stream.ToArray());
 #endif
     }
 

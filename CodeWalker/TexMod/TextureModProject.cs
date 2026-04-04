@@ -274,6 +274,7 @@ public class TextureMapping : EditorExtension
 
     public bool flipX;
     public bool flipY;
+    public bool swap;
     public float rotation;
 
     public TextureMapping Clone()
@@ -292,6 +293,7 @@ public class TextureMapping : EditorExtension
 
         clone.flipX = flipX;
         clone.flipY = flipY;
+        clone.swap = swap;
         clone.rotation = rotation;
         return clone;
     }

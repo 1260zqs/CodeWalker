@@ -229,14 +229,18 @@ public class D2DCanvas : Control
             }
             if (onPaint != null)
             {
+#if !DEBUG
                 try
                 {
-                    onPaint(this, target, bitmap);
+#endif
+                onPaint(this, target, bitmap);
+#if !DEBUG
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
+#endif
             }
             else
             {

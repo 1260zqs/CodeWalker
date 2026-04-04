@@ -38,16 +38,18 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(95, 55);
+            this.textBox2.Location = new System.Drawing.Point(95, 49);
             this.textBox2.MaxLength = 256;
+            this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(297, 21);
+            this.textBox2.Size = new System.Drawing.Size(297, 85);
             this.textBox2.TabIndex = 14;
+            this.textBox2.WordWrap = false;
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(12, 55);
+            this.label2.Location = new System.Drawing.Point(12, 49);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(77, 21);
             this.label2.TabIndex = 13;
@@ -56,7 +58,8 @@
             // 
             // okBtn
             // 
-            this.okBtn.Location = new System.Drawing.Point(210, 99);
+            this.okBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.okBtn.Location = new System.Drawing.Point(210, 146);
             this.okBtn.Name = "okBtn";
             this.okBtn.Size = new System.Drawing.Size(88, 30);
             this.okBtn.TabIndex = 11;
@@ -66,8 +69,9 @@
             // 
             // cancelBtn
             // 
+            this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(304, 99);
+            this.cancelBtn.Location = new System.Drawing.Point(304, 146);
             this.cancelBtn.Name = "cancelBtn";
             this.cancelBtn.Size = new System.Drawing.Size(88, 30);
             this.cancelBtn.TabIndex = 10;
@@ -95,10 +99,10 @@
             // AddTexModSourceForm
             // 
             this.AcceptButton = this.okBtn;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96f, 96f);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = this.cancelBtn;
-            this.ClientSize = new System.Drawing.Size(404, 141);
+            this.ClientSize = new System.Drawing.Size(404, 188);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.okBtn);

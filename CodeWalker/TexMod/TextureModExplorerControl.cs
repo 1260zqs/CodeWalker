@@ -197,12 +197,12 @@ public partial class TextureModExplorerControl : DockContent
         if (e.Button == MouseButtons.Right)
         {
             treeView.SelectedNode = e.Node;
-            importMenuItem.Visible = e.Node.Tag is ModTexture;
-            duplicateMenuItem.Visible = e.Node.Tag is ModTexture;
-            toolStripSeparator1.Visible = true;
-            toolStripSeparator2.Visible = true;
-            newFolderMenuItem.Visible = true;
-            m_ProjectTreeViewContextMenu.Show(treeView, e.Location);
+            //importMenuItem.Visible = e.Node.Tag is ModTexture;
+            //duplicateMenuItem.Visible = e.Node.Tag is ModTexture;
+            //toolStripSeparator1.Visible = true;
+            //toolStripSeparator2.Visible = true;
+            //newFolderMenuItem.Visible = true;
+            //m_ProjectTreeViewContextMenu.Show(treeView, e.Location);
         }
     }
 
