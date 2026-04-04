@@ -165,6 +165,7 @@ public partial class TextureModMappingControl : DockContent
         var showDelete = lastHitTest != null && lastHitTest.Item != null;
         deleteToolStripMenuItem.Visible = showDelete;
         toolStripSeparator1.Visible = showDelete;
+        lodToolStripMenuItem.Visible = showDelete;
         copyValueToolStripMenuItem.ToolTipText = GetTextToCopy();
         copyValueToolStripMenuItem.Visible = lastHitTest != null && (lastHitTest.Item != null || lastHitTest.SubItem != null);
     }

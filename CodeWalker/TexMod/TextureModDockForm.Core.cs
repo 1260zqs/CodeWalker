@@ -451,8 +451,9 @@ public partial class TextureModDockForm
         var drawing = false;
         try
         {
-            var baseImagePixelSize = baseImage.PixelSize;
-            d2dRenderTarget.SetTargetSize(working.mapping.id, baseImagePixelSize);
+            var upScale = 1;
+            var baseImageSize = baseImage.PixelSize.UpScale(upScale);
+            d2dRenderTarget.SetTargetSize(working.mapping.id, baseImageSize);
             d2dRenderTarget.BeginDraw();
             drawing = true;
 
@@ -462,30 +463,40 @@ public partial class TextureModDockForm
                 d2dRenderTarget.target,
                 baseImage,
                 overlay,
-                baseImagePixelSize,
+                baseImageSize,
                 working.modTexture.sourceRect,
-                working.mapping.targetRect,
+                working.mapping.targetRect.UpScale(upScale),
                 working.mapping.flipX,
                 working.mapping.flipY,
                 working.mapping.swap
             );
             if (isDrawTestColor)
             {
-                d2dRenderTarget.FillRectangle(targetRect.Raw());
+                d2dRenderTarget.FillRectangle(targetRect.UpScale(upScale).Raw());
             }
             d2dRenderTarget.EndDraw();
             drawing = false;
 
+            var find = false;
+            var pixelSize = baseImage.PixelSize;
             var nameHash = working.texNameHash;
             renderer.RenderableCache.FindRenderableTexture(x =>
             {
                 var tex = x.Key;
-                if (tex.NameHash == nameHash && tex.Width == baseImagePixelSize.Width && tex.Height == baseImagePixelSize.Height)
+                if (tex.NameHash == nameHash && tex.Width == pixelSize.Width && tex.Height == pixelSize.Height)
                 {
                     d2dRenderTarget.CopyTo(renderer.Device, x);
+                    find = true;
                 }
                 return false;
             });
+            // var bytes = d2dRenderTarget.EncodeTexture(NVTT.Format.Format_BC1, NVTT.Quality.Quality_Fastest);
+            // File.WriteAllBytes("C:\\image.dds", bytes);
+            if (!find)
+            {
+                // Console.WriteLine("not found");
+                // RequestTexturePaintingUpdate();
+            }
         }
         catch (Exception e)
         {
@@ -512,17 +523,17 @@ public partial class TextureModDockForm
     {
         if (baseImage != null)
         {
-            target.DrawBitmap(baseImage, 1f, BitmapInterpolationMode.NearestNeighbor);
+            target.DrawBitmap(baseImage, baseImageSize.ToRawRect(), 1f, BitmapInterpolationMode.NearestNeighbor);
         }
         if (overlay == null || overlay.IsDisposed) return;
+        if (destRect.Width <= 0 || destRect.Height <= 0) return;
 
         var imgBounds = overlay.PixelSize.ToRect();
         var clippedDest = System.Drawing.RectangleF.Intersect(srcRect, imgBounds);
-        if (clippedDest.Width <= 0 || clippedDest.Height <= 0)
-            return;
+        if (clippedDest.Width <= 0 || clippedDest.Height <= 0) return;
 
         var matrix = target.Transform;
-        var rotation = swap ? 90f : 0f;
+        var rotation = swap ? 90f * Mathf.Deg2Rad : 0f;
         var sx = swap ? destRect.Width / destRect.Height : 1f;
         var sy = swap ? destRect.Height / destRect.Width : 1f;
         var center = destRect.Pivot(0.5f, 0.5f);
@@ -530,7 +541,7 @@ public partial class TextureModDockForm
         target.PushAxisAlignedClip(baseImageSize.ToRawRect(), AntialiasMode.PerPrimitive);
         target.Transform = Matrix3x2.Scaling(sy, sx, center) *
                            Matrix3x2.Scaling(flipX ? -1 : 1, flipY ? -1 : 1, center) *
-                           Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) *
+                           Matrix3x2.Rotation(rotation, center) *
                            matrix;
 
         target.DrawBitmap(

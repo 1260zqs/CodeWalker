@@ -209,21 +209,6 @@
     <Compile Update="TexMod\TextureModExplorerControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="TexMod\TextureModForm.Caching.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.Core.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.Packing.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="TexMod\TextureModForm.TreeView.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="TexMod\TextureModImageControl.cs">
       <SubType>Form</SubType>
     </Compile>

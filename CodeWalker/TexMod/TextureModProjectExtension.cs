@@ -126,7 +126,7 @@ public static class TextureModProjectExtension
 
                 mapping.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
                 mapping.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
-                // mapping.swap = bool.Parse(xmlElement["Swap"].InnerText);
+                mapping.swap = bool.Parse(xmlElement["Swap"].InnerText);
                 project.textureMappings.Add(mapping);
             }
         }

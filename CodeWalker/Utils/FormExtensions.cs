@@ -31,6 +31,21 @@ public static class FormExtensions
         return new SharpDX.Vector2(rect.Right, rect.Bottom);
     }
 
+    public static SharpDX.Size2 UpScale(in this SharpDX.Size2 size2, int factor)
+    {
+        return new SharpDX.Size2(size2.Width * factor, size2.Height * factor);
+    }
+
+    public static System.Drawing.RectangleF UpScale(in this System.Drawing.RectangleF rectangle, float factor)
+    {
+        return new System.Drawing.RectangleF(
+            rectangle.X * factor,
+            rectangle.Y * factor,
+            rectangle.Width * factor,
+            rectangle.Height * factor
+        );
+    }
+
     public static SharpDX.Mathematics.Interop.RawRectangleF Raw(in this System.Drawing.RectangleF rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(
