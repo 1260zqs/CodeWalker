@@ -57,16 +57,6 @@ public partial class TextureModPropertyControl : DockContent
             }
         }
 
-        public string comment
-        {
-            get => sourceObject.comment;
-            set
-            {
-                sourceObject.comment = value;
-                onPropertyGridChanged?.Invoke();
-            }
-        }
-
         [ReadOnly(true)]
         public string modTexture { get; set; }
 
@@ -95,12 +85,12 @@ public partial class TextureModPropertyControl : DockContent
             }
         }
 
-        public float rotation
+        public bool swap
         {
-            get => sourceObject.rotation;
+            get => sourceObject.swap;
             set
             {
-                sourceObject.rotation = value;
+                sourceObject.swap = value;
                 onPropertyGridChanged?.Invoke();
             }
         }

@@ -25,7 +25,7 @@ public partial class TextureModExplorerControl : DockContent
         var theme = Settings.Default.GetProjectWindowTheme();
         var version = VisualStudioToolStripExtender.VsVersion.Vs2015;
         vsExtender.SetStyle(toolStrip, version, theme);
-        vsExtender.SetStyle(m_ProjectTreeViewContextMenu, version, theme);
+        vsExtender.SetStyle(contextMenuStrip, version, theme);
 
         // repViewModeBtn.SetEnumDrop<View>(x => treeView.View = x);
         // repViewModeBtn.SelectEnum(modListView.View);
@@ -55,6 +55,9 @@ public partial class TextureModExplorerControl : DockContent
 
     TextureModProject project => mainForm.project;
     public TextureModDockForm mainForm;
+
+    private bool suppressSelect;
+    private Point mouseDownLocation;
 
     protected override void OnHandleCreated(EventArgs e)
     {
@@ -165,6 +168,14 @@ public partial class TextureModExplorerControl : DockContent
         }
     }
 
+    private void SetSelectedNodeManually(TreeNode node)
+    {
+        var select = suppressSelect;
+        suppressSelect = true;
+        treeView.SelectedNode = node;
+        suppressSelect = select;
+    }
+
     private void treeView_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
     {
     }
@@ -183,7 +194,7 @@ public partial class TextureModExplorerControl : DockContent
 
     private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
     {
-        if (e.Action is TreeViewAction.ByMouse or TreeViewAction.ByKeyboard)
+        if (e.Action is TreeViewAction.ByMouse or TreeViewAction.ByKeyboard || suppressSelect)
         {
             if (e.Node.Tag is ModTexture modTexture)
             {
@@ -196,14 +207,25 @@ public partial class TextureModExplorerControl : DockContent
     {
         if (e.Button == MouseButtons.Right)
         {
-            treeView.SelectedNode = e.Node;
-            //importMenuItem.Visible = e.Node.Tag is ModTexture;
-            //duplicateMenuItem.Visible = e.Node.Tag is ModTexture;
-            //toolStripSeparator1.Visible = true;
-            //toolStripSeparator2.Visible = true;
-            //newFolderMenuItem.Visible = true;
-            //m_ProjectTreeViewContextMenu.Show(treeView, e.Location);
+            SetSelectedNodeManually(e.Node);
         }
+    }
+
+    private void contextMenuStrip_Opening(object sender, CancelEventArgs e)
+    {
+        var treeViewHitTestInfo = treeView.HitTest(mouseDownLocation);
+        var hasSelect = treeViewHitTestInfo?.Node != null;
+        var isFile = hasSelect && treeViewHitTestInfo.Node.Tag is ModTexture;
+
+        importMenuItem.Enabled = isFile;
+        renameMenuItem.Enabled = hasSelect;
+        duplicateMenuItem.Enabled = hasSelect;
+        deleteMenuItem.Enabled = hasSelect;
+    }
+
+    private void treeView_MouseDown(object sender, MouseEventArgs e)
+    {
+        mouseDownLocation = e.Location;
     }
 
     private void treeView_MouseUp(object sender, MouseEventArgs e)
@@ -494,7 +516,7 @@ public partial class TextureModExplorerControl : DockContent
                 modTexture = mainForm.DuplicateModTexture(modTexture);
                 var treeNode = CreateNodeAtParent(node, modTexture.name);
                 treeNode.Tag = modTexture;
-                treeView.SelectedNode = treeNode;
+                SetSelectedNodeManually(treeNode);
             }
             else
             {

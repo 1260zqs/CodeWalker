@@ -34,7 +34,7 @@ public class D2DCanvas : Control
     public SharpDX.Direct3D11.Device d3dDevice;
     public SharpDX.DXGI.Factory d3dFactory;
 
-    public RawMatrix3x2 transform
+    public Matrix3x2 transform
     {
         get => target.Transform;
         set => target.Transform = value;
@@ -73,6 +73,7 @@ public class D2DCanvas : Control
         CreateRenderTarget(d3dDevice);
 
         solidBrush = new SolidColorBrush(target, new RawColor4(1f, 0, 0, 1f));
+        // strokeStyle = new StrokeStyle(DXGraphic.d2dFactory, new StrokeStyleProperties());
         var transparent = DXGraphic.LoadEmbeddedBitmap(target, "transparent.bmp");
         if (transparent != null)
         {
@@ -273,6 +274,19 @@ public class D2DCanvas : Control
             Invalidate();
         }
     }
+
+    public void DrawLine(SharpDX.Vector2 point1, SharpDX.Vector2 point2, in RawColor4 color, float thickness)
+    {
+        solidBrush.Color = color;
+        target.DrawLine(point1, point2, solidBrush, thickness);
+    }
+
+    // public void DrawLine(SharpDX.Vector2 point1, SharpDX.Vector2 point2, in RawColor4 color, float thickness)
+    // {
+    //     solidBrush.Color = color;
+    //     strokeStyle.DashStyle = DashStyle.Dash;
+    //     target.DrawLine(point1, point2, solidBrush, thickness, strokeStyle);
+    // }
 
     public void FillRectangle(in System.Drawing.RectangleF rectangle, in RawColor4 color)
     {

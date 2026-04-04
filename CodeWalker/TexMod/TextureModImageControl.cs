@@ -36,6 +36,7 @@ public partial class TextureModImageControl : DockContent
     }
 
     public Action<D2DCanvas, System.Drawing.RectangleF> onRectDrawingChange;
+    public bool isEditing;
 
     private void OnRectDrawingChange(System.Drawing.RectangleF rectangle)
     {
@@ -92,5 +93,19 @@ public partial class TextureModImageControl : DockContent
         var x = (canvas.Right - canvas.Left) / 2f;
         var y = (canvas.Bottom - canvas.Top) / 2f;
         PictureBoxViewer.SetZoom(canvas, zoom, x, y);
+    }
+
+    private void toolStripButton5_Click(object sender, EventArgs e)
+    {
+        ActiveControl = null;
+        isEditing = !isEditing;
+        toolStripButton5.Checked = isEditing;
+        PictureBoxRectTool.SetEditMode(canvas, isEditing);
+        canvas.Invalidate();
+    }
+
+    public void UpdateEditState()
+    {
+        PictureBoxRectTool.SetEditMode(canvas, isEditing);
     }
 }

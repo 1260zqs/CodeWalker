@@ -71,7 +71,7 @@ namespace CodeWalker
             try
             {
 #endif
-            AllocConsole();
+            //AllocConsole();
             //explorermode = true;
             if (menumode)
             {

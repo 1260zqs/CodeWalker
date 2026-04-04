@@ -45,10 +45,10 @@ namespace CodeWalker.TexMod
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyValueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeImageList = new System.Windows.Forms.ImageList(this.components);
             this.smallImageList = new System.Windows.Forms.ImageList(this.components);
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Lod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             File = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -100,7 +100,7 @@ namespace CodeWalker.TexMod
             // toolStripButton5
             // 
             this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton5.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton5.Image = global::CodeWalker.Properties.Resources._101;
             this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton5.Name = "toolStripButton5";
             this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
@@ -172,14 +172,14 @@ namespace CodeWalker.TexMod
             this.toolStripSeparator1,
             this.deleteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 120);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(143, 98);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Image = global::CodeWalker.Properties.Resources._103;
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.addToolStripMenuItem.Text = "Add";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.addToolStripMenuItem_Click);
             // 
@@ -187,7 +187,7 @@ namespace CodeWalker.TexMod
             // 
             this.copyValueToolStripMenuItem.Image = global::CodeWalker.Properties.Resources._079;
             this.copyValueToolStripMenuItem.Name = "copyValueToolStripMenuItem";
-            this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyValueToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.copyValueToolStripMenuItem.Text = "Copy Value";
             this.copyValueToolStripMenuItem.Click += new System.EventHandler(this.copyValueToolStripMenuItem_Click);
             // 
@@ -195,14 +195,19 @@ namespace CodeWalker.TexMod
             // 
             this.lodToolStripMenuItem.Image = global::CodeWalker.Properties.Resources._020;
             this.lodToolStripMenuItem.Name = "lodToolStripMenuItem";
-            this.lodToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.lodToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.lodToolStripMenuItem.Text = "LOD";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(139, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Image = global::CodeWalker.Properties.Resources._101;
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem1_Click);
             // 
@@ -217,11 +222,6 @@ namespace CodeWalker.TexMod
             this.smallImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
             this.smallImageList.ImageSize = new System.Drawing.Size(1, 20);
             this.smallImageList.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // TextureModMappingControl
             // 

@@ -37,7 +37,6 @@ public static class TextureModProjectExtension
                 writer.WriteStartElement("TextureMapping");
                 writer.WriteAttributeString("Id", $"{mapping.id:N}");
                 writer.WriteElementString("Name", mapping.name);
-                writer.WriteElementString("Tag", mapping.tag);
                 writer.WriteElementString("Lod", $"{mapping.lod}");
 
                 writer.WriteElementString("ModTexture", $"{mapping.modTexture:N}");
@@ -47,8 +46,6 @@ public static class TextureModProjectExtension
                 writer.WriteElementString("FlipX", $"{mapping.flipX}");
                 writer.WriteElementString("FlipY", $"{mapping.flipY}");
                 writer.WriteElementString("Swap", $"{mapping.swap}");
-                writer.WriteElementString("Rotation", $"{mapping.rotation}");
-                writer.WriteElementString("Comment", mapping.comment);
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -120,9 +117,7 @@ public static class TextureModProjectExtension
             {
                 var mapping = new TextureMapping();
                 mapping.id = Guid.Parse(xmlElement.Attributes["Id"].InnerText);
-                //mapping.tag = xmlElement["Tag"].InnerText;
                 mapping.name = xmlElement["Name"].InnerText;
-                mapping.comment = xmlElement["Comment"].InnerText;
                 mapping.lod = (TextureLod)Enum.Parse(typeof(TextureLod), xmlElement["Lod"].InnerText);
 
                 mapping.modTexture = Guid.Parse(xmlElement["ModTexture"].InnerText);
@@ -131,7 +126,7 @@ public static class TextureModProjectExtension
 
                 mapping.flipX = bool.Parse(xmlElement["FlipX"].InnerText);
                 mapping.flipY = bool.Parse(xmlElement["FlipY"].InnerText);
-                mapping.rotation = int.Parse(xmlElement["Rotation"].InnerText);
+                // mapping.swap = bool.Parse(xmlElement["Swap"].InnerText);
                 project.textureMappings.Add(mapping);
             }
         }

@@ -39,19 +39,19 @@ namespace CodeWalker.TexMod
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton8 = new System.Windows.Forms.ToolStripButton();
             this.treeView = new CodeWalker.Forms.AeroTreeView();
-            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
-            this.m_ProjectTreeViewContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.newFolderMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.renameMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip.SuspendLayout();
-            this.m_ProjectTreeViewContextMenu.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip
@@ -86,7 +86,7 @@ namespace CodeWalker.TexMod
             // toolStripButton3
             // 
             this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton3.Image = global::CodeWalker.Properties.Resources._104;
+            this.toolStripButton3.Image = global::CodeWalker.Properties.Resources._101;
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
             this.toolStripButton3.Size = new System.Drawing.Size(23, 22);
@@ -136,7 +136,7 @@ namespace CodeWalker.TexMod
             // toolStripButton8
             // 
             this.toolStripButton8.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton8.Image = global::CodeWalker.Properties.Resources.box_zipper;
+            this.toolStripButton8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton8.Image")));
             this.toolStripButton8.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton8.Name = "toolStripButton8";
             this.toolStripButton8.Size = new System.Drawing.Size(23, 22);
@@ -147,7 +147,7 @@ namespace CodeWalker.TexMod
             // 
             this.treeView.AllowDrop = true;
             this.treeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.treeView.ContextMenuStrip = this.m_ProjectTreeViewContextMenu;
+            this.treeView.ContextMenuStrip = this.contextMenuStrip;
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.FullRowSelect = true;
             this.treeView.HideSelection = false;
@@ -170,37 +170,45 @@ namespace CodeWalker.TexMod
             this.treeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.treeView_DragDrop);
             this.treeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.treeView_DragEnter);
             this.treeView.DragOver += new System.Windows.Forms.DragEventHandler(this.treeView_DragOver);
+            this.treeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseDown);
             this.treeView.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView_MouseUp);
             // 
-            // m_ProjectTreeViewIcons
+            // contextMenuStrip
             // 
-            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
-            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "jpeg");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "document");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "png");
-            // 
-            // m_ProjectTreeViewContextMenu
-            // 
-            this.m_ProjectTreeViewContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFolderMenuItem,
+            this.importMenuItem,
+            this.toolStripSeparator1,
             this.renameMenuItem,
             this.duplicateMenuItem,
-            this.toolStripSeparator1,
-            this.importMenuItem,
             this.toolStripSeparator2,
             this.deleteMenuItem});
-            this.m_ProjectTreeViewContextMenu.Name = "m_ProjectTreeViewContextMenu";
-            this.m_ProjectTreeViewContextMenu.Size = new System.Drawing.Size(191, 126);
+            this.contextMenuStrip.Name = "m_ProjectTreeViewContextMenu";
+            this.contextMenuStrip.Size = new System.Drawing.Size(191, 126);
+            this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
             // 
             // newFolderMenuItem
             // 
+            this.newFolderMenuItem.Image = global::CodeWalker.Properties.Resources.folder1;
             this.newFolderMenuItem.Name = "newFolderMenuItem";
             this.newFolderMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newFolderMenuItem.Size = new System.Drawing.Size(190, 22);
             this.newFolderMenuItem.Text = "New Folder";
             this.newFolderMenuItem.Click += new System.EventHandler(this.newFolderMenuItem_Click);
+            // 
+            // importMenuItem
+            // 
+            this.importMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("importMenuItem.Image")));
+            this.importMenuItem.Name = "importMenuItem";
+            this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
+            this.importMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.importMenuItem.Text = "Import";
+            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
             // 
             // renameMenuItem
             // 
@@ -218,19 +226,6 @@ namespace CodeWalker.TexMod
             this.duplicateMenuItem.Text = "Duplicate";
             this.duplicateMenuItem.Click += new System.EventHandler(this.duplicateMenuItem_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
-            // 
-            // importMenuItem
-            // 
-            this.importMenuItem.Name = "importMenuItem";
-            this.importMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.importMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.importMenuItem.Text = "Import";
-            this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
-            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -238,19 +233,30 @@ namespace CodeWalker.TexMod
             // 
             // deleteMenuItem
             // 
+            this.deleteMenuItem.Image = global::CodeWalker.Properties.Resources._101;
             this.deleteMenuItem.Name = "deleteMenuItem";
             this.deleteMenuItem.Size = new System.Drawing.Size(190, 22);
             this.deleteMenuItem.Text = "Delete";
             this.deleteMenuItem.Click += new System.EventHandler(this.deleteMenuItem_Click);
             // 
+            // m_ProjectTreeViewIcons
+            // 
+            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
+            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "jpeg");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "document");
+            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "png");
+            // 
             // vsExtender
             // 
             this.vsExtender.DefaultRenderer = null;
             // 
-            // openFileDialog1
+            // openFileDialog
             // 
-            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            this.openFileDialog1.RestoreDirectory = true;
+            this.openFileDialog.Filter = resources.GetString("openFileDialog.Filter");
+            this.openFileDialog.FilterIndex = 2;
+            this.openFileDialog.RestoreDirectory = true;
             // 
             // TextureModExplorerControl
             // 
@@ -262,7 +268,7 @@ namespace CodeWalker.TexMod
             this.Name = "TextureModExplorerControl";
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
-            this.m_ProjectTreeViewContextMenu.ResumeLayout(false);
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -272,7 +278,7 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStrip toolStrip;
         private CodeWalker.Forms.AeroTreeView treeView;
         private System.Windows.Forms.ImageList m_ProjectTreeViewIcons;
-        private System.Windows.Forms.ContextMenuStrip m_ProjectTreeViewContextMenu;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem newFolderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameMenuItem;
         private System.Windows.Forms.ToolStripMenuItem duplicateMenuItem;
@@ -288,6 +294,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripButton saveProjectBtn;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton8;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
     }
 }

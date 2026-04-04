@@ -11,6 +11,26 @@ namespace CodeWalker.Utils;
 
 public static class FormExtensions
 {
+    public static SharpDX.Vector2 TL(in this System.Drawing.RectangleF rect)
+    {
+        return new SharpDX.Vector2(rect.Left, rect.Top);
+    }
+
+    public static SharpDX.Vector2 TR(in this System.Drawing.RectangleF rect)
+    {
+        return new SharpDX.Vector2(rect.Right, rect.Top);
+    }
+
+    public static SharpDX.Vector2 BL(in this System.Drawing.RectangleF rect)
+    {
+        return new SharpDX.Vector2(rect.Left, rect.Bottom);
+    }
+
+    public static SharpDX.Vector2 BR(in this System.Drawing.RectangleF rect)
+    {
+        return new SharpDX.Vector2(rect.Right, rect.Bottom);
+    }
+
     public static SharpDX.Mathematics.Interop.RawRectangleF Raw(in this System.Drawing.RectangleF rectangle)
     {
         return new SharpDX.Mathematics.Interop.RawRectangleF(

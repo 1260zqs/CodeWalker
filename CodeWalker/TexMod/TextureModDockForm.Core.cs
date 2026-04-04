@@ -265,6 +265,7 @@ public partial class TextureModDockForm
             PictureBoxRectTool.SetSolid(modTextureCanvas?.canvas, isSolidColor);
             PictureBoxRectTool.SetRect(modTextureCanvas?.canvas, modTexture.sourceRect);
             PictureBoxViewer.LoadState(modTextureCanvas?.canvas, modTexture.editorState);
+            modTextureCanvas?.UpdateEditState();
             toolsControl?.SetSrcRect(modTexture.sourceRect);
         }
         mappingControl?.RefreshListView(modTexture);
@@ -300,6 +301,7 @@ public partial class TextureModDockForm
             PictureBoxViewer.LoadState(gameTextureCanvas?.canvas, mapping.editorState);
             PictureBoxRectTool.SetSolid(gameTextureCanvas?.canvas, isSolidColor);
             PictureBoxRectTool.SetRect(gameTextureCanvas?.canvas, mapping.targetRect);
+            modTextureCanvas?.UpdateEditState();
             toolsControl?.SelectTextureMapping(mapping);
             propertyControl?.SelectObject(mapping);
             if (isSyncLod) SyncRenderLod();

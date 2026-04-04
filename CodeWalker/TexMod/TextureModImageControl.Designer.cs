@@ -30,27 +30,17 @@ namespace CodeWalker.TexMod
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TextureModImageControl));
-            this.canvas = new CodeWalker.D2DCanvas();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton5 = new System.Windows.Forms.ToolStripButton();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.canvas = new CodeWalker.D2DCanvas();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // canvas
-            // 
-            this.canvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.canvas.Location = new System.Drawing.Point(0, 25);
-            this.canvas.Name = "canvas";
-            this.canvas.Size = new System.Drawing.Size(284, 235);
-            this.canvas.TabIndex = 0;
-            this.canvas.Text = "d2DCanvas1";
             // 
             // toolStrip1
             // 
@@ -58,6 +48,7 @@ namespace CodeWalker.TexMod
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton1,
             this.toolStripButton2,
+            this.toolStripButton5,
             this.toolStripButton3,
             this.toolStripComboBox1,
             this.toolStripButton4});
@@ -114,9 +105,31 @@ namespace CodeWalker.TexMod
             this.toolStripButton4.Text = "Zoom in";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
+            // toolStripButton5
+            // 
+            this.toolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton5.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton5.Image")));
+            this.toolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton5.Name = "toolStripButton5";
+            this.toolStripButton5.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton5.Text = "toolStripButton5";
+            this.toolStripButton5.ToolTipText = "Edit Area";
+            this.toolStripButton5.Click += new System.EventHandler(this.toolStripButton5_Click);
+            // 
             // vsExtender
             // 
             this.vsExtender.DefaultRenderer = null;
+            // 
+            // canvas
+            // 
+            this.canvas.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.canvas.Location = new System.Drawing.Point(0, 25);
+            this.canvas.Name = "canvas";
+            this.canvas.Size = new System.Drawing.Size(284, 235);
+            this.canvas.TabIndex = 0;
+            this.canvas.Text = "d2DCanvas1";
             // 
             // TextureModImageControl
             // 
@@ -143,5 +156,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsExtender;
+        private System.Windows.Forms.ToolStripButton toolStripButton5;
     }
 }

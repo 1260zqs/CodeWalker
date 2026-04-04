@@ -4,13 +4,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
+using CodeWalker.Utils;
 using Color = System.Drawing.Color;
-using Matrix = System.Drawing.Drawing2D.Matrix;
 using Point = System.Drawing.Point;
-using Rectangle = System.Drawing.Rectangle;
 
 namespace CodeWalker;
 
@@ -22,37 +20,47 @@ public static class PictureBoxRectTool
         public bool editing;
         public bool solid;
         public bool enable;
-        public Point start;
+        public Vector2 mouseDownPoint;
+        public Vector2 scaleVector;
         public System.Drawing.RectangleF rect;
-        public Color color;
+        public System.Drawing.RectangleF tempRect;
+        public SharpDX.Mathematics.Interop.RawColor4 color;
 
         public bool gdi;
         public bool d2d;
-        public Matrix matrix;
         public bool matrixInvert;
+        public ViewTool activeTool;
+        public ViewTool viewTool;
+
+        public System.Drawing.Drawing2D.Matrix matrix;
         public Matrix3x2 matrix3x2;
 
-        public Matrix3x2 matrixNew;
-        public float rotate;
-
-        // tool
-        public Vector2[] vertex = new Vector2[4];
-
         public Action<System.Drawing.RectangleF> notify;
+    }
+
+    enum ViewTool : byte
+    {
+        None,
+        Move,
+        ResizeLT,
+        ResizeRT,
+        ResizeLB,
+        ResizeRB,
+
+        ResizeL,
+        ResizeR,
+        ResizeT,
+        ResizeB,
     }
 
     static PictureBoxRectTool()
     {
         valueFactory = ValueFactory;
-        pen = new Pen(defaultColor, 1);
-        solidBrush = new SolidBrush(defaultColor);
     }
 
-    private static Pen pen;
-    private static SolidBrush solidBrush;
     private static Func<int, StateObject> valueFactory;
     private static ConcurrentDictionary<int, StateObject> stateObjects = new();
-    private static Color defaultColor = Color.FromArgb(127, 255, 0, 0);
+    private static RawColor4 defaultColor = new RawColor4(1, 0, 0, 0.7f);
 
     public static void AddFeature(Control pictureBox, Action<System.Drawing.RectangleF> notify)
     {
@@ -66,50 +74,35 @@ public static class PictureBoxRectTool
         }
     }
 
-    private static void OnMouseMove(object sender, MouseEventArgs e)
+    public static void Paint(PictureBox pictureBox, Graphics graphics)
     {
-        if (sender is Control control)
-        {
-            if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
-            {
-                if (!stateObject.enable) return;
-                // if (stateObject.editing)
-                // {
-                //     var current = new Vector2(e.X, e.Y);
-                //     var start = new Vector2(stateObject.start.X, stateObject.start.Y);
-                //     var center = GetCenter(stateObject.vertex);
-                //
-                //
-                //     Vector2 v1 = start - center;
-                //     Vector2 v2 = current - center;
-                //
-                //     var a1 = Math.Atan2(v1.Y, v1.X);
-                //     var a2 = Math.Atan2(v2.Y, v2.X);
-                //
-                //     float angle = (float)(a2 - a1);
-                //     stateObject.rotate = angle * Mathf.Rad2Deg;
-                //     control.Invalidate();
-                // }
-                if (stateObject.drawing)
-                {
-                    var cur = ScreenToImage(stateObject, e.Location);
-                    var x = Math.Min(stateObject.start.X, cur.X);
-                    var y = Math.Min(stateObject.start.Y, cur.Y);
-                    var w = Math.Abs(stateObject.start.X - cur.X);
-                    var h = Math.Abs(stateObject.start.Y - cur.Y);
-
-                    stateObject.rect = new Rectangle(x, y, w, h);
-                    stateObject.notify?.Invoke(stateObject.rect);
-                    control.Invalidate();
-                }
-                // else
-                // {
-                //     var point = new Vector2(e.X, e.Y);
-                //     var inSide = PointInRect(point, stateObject.vertex);
-                //     Console.WriteLine($"{inSide}, {point} {stateObject.vertex[0]}");
-                // }
-            }
-        }
+        // if (stateObjects.TryGetValue(GetHandle(pictureBox), out var stateObject))
+        // {
+        //     stateObject.gdi = true;
+        //     stateObject.d2d = false;
+        //     stateObject.matrixInvert = false;
+        //     stateObject.matrix = graphics.Transform;
+        //
+        //     var rect = stateObject.rect;
+        //     if (rect.Width > 0 && rect.Height > 0)
+        //     {
+        //         if (stateObject.solid)
+        //         {
+        //             solidBrush.Color = stateObject.color;
+        //             graphics.FillRectangle(solidBrush, rect);
+        //         }
+        //         else
+        //         {
+        //             pen.Color = stateObject.color;
+        //             var r = new System.Drawing.Rectangle();
+        //             r.X = (int)rect.X;
+        //             r.Y = (int)rect.Y;
+        //             r.Width = (int)rect.Width;
+        //             r.Height = (int)rect.Height;
+        //             graphics.DrawRectangle(pen, r);
+        //         }
+        //     }
+        // }
     }
 
     public static void Paint(CodeWalker.D2DCanvas canvas)
@@ -120,63 +113,293 @@ public static class PictureBoxRectTool
             stateObject.gdi = false;
             stateObject.matrixInvert = false;
             stateObject.matrix3x2 = canvas.transform;
-            stateObject.matrixNew = canvas.transform;
-            // var clippedDest = stateObject.rect;
-            // var center = new Vector2(
-            //     (clippedDest.Left + clippedDest.Right) * 0.5f,
-            //     (clippedDest.Top + clippedDest.Bottom) * 0.5f
-            // );
-            // var rotation = stateObject.rotate;
-            // Matrix3x2 m = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * canvas.transform;
-            // TransformRect(stateObject.vertex, stateObject.rect, ref m);
+            stateObject.scaleVector = stateObject.matrix3x2.ScaleVector;
 
             var rect = stateObject.rect;
             if (rect.Width > 0 && rect.Height > 0)
             {
-                // var matrix = canvas.transform;
-                // canvas.transform = Matrix3x2.Rotation(rotation * Mathf.Deg2Rad, center) * matrix;
-                if (stateObject.solid)
+                if (!stateObject.editing)
                 {
-                    canvas.FillRectangle(rect, new RawColor4(1f, 0, 0, 0.5f));
+                    if (stateObject.solid)
+                    {
+                        canvas.FillRectangle(rect, stateObject.color);
+                    }
+                    else
+                    {
+                        var scaleVector = stateObject.scaleVector;
+                        canvas.DrawRectangle(rect, stateObject.color, 1f / scaleVector.X);
+                    }
                 }
                 else
                 {
-                    var scaleVector = stateObject.matrix3x2.ScaleVector;
-                    canvas.DrawRectangle(rect, new RawColor4(1f, 0, 0, 0.5f), 1f / scaleVector.X);
+                    var scaleVector = stateObject.scaleVector;
+                    var thickness = 1 / scaleVector.X;
+
+                    var size = 10f / scaleVector.X;
+                    var halfSize = size / 2f;
+                    var color = new RawColor4(1, 0, 1, 1);
+
+                    var topLeft = rect.TL();
+                    var topRight = rect.TR();
+                    var bottomLeft = rect.BL();
+                    var bottomRight = rect.BR();
+
+                    canvas.DrawRectangle(rect, color, thickness);
+                    DrawHandle(canvas, stateObject.viewTool == ViewTool.ResizeLT, new(topLeft.X - halfSize, topLeft.Y - halfSize, size, size), color, thickness);
+                    DrawHandle(canvas, stateObject.viewTool == ViewTool.ResizeRT, new(topRight.X - halfSize, topRight.Y - halfSize, size, size), color, thickness);
+                    DrawHandle(canvas, stateObject.viewTool == ViewTool.ResizeLB, new(bottomLeft.X - halfSize, bottomLeft.Y - halfSize, size, size), color, thickness);
+                    DrawHandle(canvas, stateObject.viewTool == ViewTool.ResizeRB, new(bottomRight.X - halfSize, bottomRight.Y - halfSize, size, size), color, thickness);
+                    if (stateObject.viewTool == ViewTool.ResizeT)
+                    {
+                        canvas.DrawLine(topLeft, topRight, color, thickness * 2);
+                    }
+                    else if (stateObject.viewTool == ViewTool.ResizeB)
+                    {
+                        canvas.DrawLine(bottomLeft, bottomRight, color, thickness * 2);
+                    }
+                    else if (stateObject.viewTool == ViewTool.ResizeL)
+                    {
+                        canvas.DrawLine(topLeft, bottomLeft, color, thickness * 2);
+                    }
+                    else if (stateObject.viewTool == ViewTool.ResizeR)
+                    {
+                        canvas.DrawLine(topRight, bottomRight, color, thickness * 2);
+                    }
                 }
-                // canvas.transform = matrix;
             }
         }
     }
 
-    public static void Paint(PictureBox pictureBox, Graphics graphics)
+    static void DrawHandle(D2DCanvas canvas, bool active, in System.Drawing.RectangleF rectangle, in RawColor4 color, float thickness)
     {
-        if (stateObjects.TryGetValue(GetHandle(pictureBox), out var stateObject))
+        if (active)
         {
-            var rect = stateObject.rect;
-            stateObject.matrix = graphics.Transform;
-            stateObject.matrixInvert = false;
-            stateObject.gdi = true;
-            stateObject.d2d = true;
-            if (rect.Width > 0 && rect.Height > 0)
+            canvas.FillRectangle(rectangle, color);
+            return;
+        }
+        canvas.DrawRectangle(rectangle, color, thickness);
+    }
+
+    private static void OnMouseDown(object sender, MouseEventArgs e)
+    {
+        if (sender is Control control)
+        {
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
             {
-                if (stateObject.solid)
+                var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
+                if (stateObject.editing)
                 {
-                    solidBrush.Color = stateObject.color;
-                    graphics.FillRectangle(solidBrush, rect);
+                    var current = ScreenToImage(stateObject, e.Location);
+                    stateObject.activeTool = GetViewTool(stateObject, current);
+                    SetViewToolCursor(stateObject.activeTool);
+
+                    stateObject.tempRect = stateObject.rect;
+                    stateObject.mouseDownPoint = current;
+                    return;
                 }
-                else
+                if (stateObject.enable)
                 {
-                    pen.Color = stateObject.color;
-                    var r = new System.Drawing.Rectangle();
-                    r.X = (int)rect.X;
-                    r.Y = (int)rect.Y;
-                    r.Width = (int)rect.Width;
-                    r.Height = (int)rect.Height;
-                    graphics.DrawRectangle(pen, r);
+                    stateObject.drawing = true;
+                    stateObject.solid = e.Button == MouseButtons.Right;
+                    stateObject.mouseDownPoint = ScreenToImage(stateObject, e.Location);
+                    stateObject.rect = new(
+                        stateObject.mouseDownPoint.X,
+                        stateObject.mouseDownPoint.Y,
+                        0, 0
+                    );
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
                 }
             }
         }
+    }
+
+    private static void OnMouseMove(object sender, MouseEventArgs e)
+    {
+        if (sender is Control control)
+        {
+            if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
+            {
+                if (!stateObject.enable) return;
+
+                if (stateObject.activeTool == ViewTool.ResizeRT)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.Y = stateObject.tempRect.Y + delta.Y;
+                    stateObject.rect.Width = stateObject.tempRect.Width + delta.X;
+                    stateObject.rect.Height = stateObject.tempRect.Height - delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeLT)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.X = stateObject.tempRect.X + delta.X;
+                    stateObject.rect.Y = stateObject.tempRect.Y + delta.Y;
+                    stateObject.rect.Width = stateObject.tempRect.Width - delta.X;
+                    stateObject.rect.Height = stateObject.tempRect.Height - delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeLB)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.X = stateObject.tempRect.X + delta.X;
+                    stateObject.rect.Width = stateObject.tempRect.Width - delta.X;
+                    stateObject.rect.Height = stateObject.tempRect.Height + delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeRB)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.Width = stateObject.tempRect.Width + delta.X;
+                    stateObject.rect.Height = stateObject.tempRect.Height + delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeL)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.X = stateObject.tempRect.X + delta.X;
+                    stateObject.rect.Width = stateObject.tempRect.Width - delta.X;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeR)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.Width = stateObject.tempRect.Width + delta.X;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeT)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.Y = stateObject.tempRect.Y + delta.Y;
+                    stateObject.rect.Height = stateObject.tempRect.Height - delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.ResizeB)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.Height = stateObject.tempRect.Height + delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.activeTool == ViewTool.Move)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    var delta = current - stateObject.mouseDownPoint;
+                    stateObject.rect.X = stateObject.tempRect.X + delta.X;
+                    stateObject.rect.Y = stateObject.tempRect.Y + delta.Y;
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+                else if (stateObject.editing)
+                {
+                    var current = ScreenToImage(stateObject, e.Location);
+                    stateObject.viewTool = GetViewTool(stateObject, current);
+                    SetViewToolCursor(stateObject.viewTool, false);
+                    control.Invalidate();
+                }
+                else if (stateObject.drawing)
+                {
+                    var cur = ScreenToImage(stateObject, e.Location);
+                    var x = Math.Min(stateObject.mouseDownPoint.X, cur.X);
+                    var y = Math.Min(stateObject.mouseDownPoint.Y, cur.Y);
+                    var w = Math.Abs(stateObject.mouseDownPoint.X - cur.X);
+                    var h = Math.Abs(stateObject.mouseDownPoint.Y - cur.Y);
+
+                    stateObject.rect = new(x, y, w, h);
+                    stateObject.notify?.Invoke(stateObject.rect);
+                    control.Invalidate();
+                }
+            }
+        }
+    }
+
+    private static void SetViewToolCursor(ViewTool viewTool, bool move = true)
+    {
+        switch (viewTool)
+        {
+            case ViewTool.Move:
+                if (move) Cursor.Current = Cursors.SizeAll;
+                break;
+            case ViewTool.ResizeLT:
+            case ViewTool.ResizeRB:
+                Cursor.Current = Cursors.SizeNWSE;
+                break;
+            case ViewTool.ResizeRT:
+            case ViewTool.ResizeLB:
+                Cursor.Current = Cursors.SizeNESW;
+                break;
+            case ViewTool.ResizeL:
+            case ViewTool.ResizeR:
+                Cursor.Current = Cursors.SizeWE;
+                break;
+            case ViewTool.ResizeT:
+            case ViewTool.ResizeB:
+                Cursor.Current = Cursors.SizeNS;
+                break;
+        }
+    }
+
+    private static ViewTool GetViewTool(StateObject stateObject, Vector2 mousePoint)
+    {
+        var radius = 10f / stateObject.scaleVector.X;
+
+        var topLeft = stateObject.rect.TL();
+        var topRight = stateObject.rect.TR();
+        var bottomLeft = stateObject.rect.BL();
+        var bottomRight = stateObject.rect.BR();
+
+        if (Vector2.Distance(mousePoint, topLeft) <= radius)
+        {
+            return ViewTool.ResizeLT;
+        }
+        else if (Vector2.Distance(mousePoint, topRight) <= radius)
+        {
+            return ViewTool.ResizeRT;
+        }
+        else if (Vector2.Distance(mousePoint, bottomLeft) <= radius)
+        {
+            return ViewTool.ResizeLB;
+        }
+        else if (Vector2.Distance(mousePoint, bottomRight) <= radius)
+        {
+            return ViewTool.ResizeRB;
+        }
+        else if (Mathf.Abs(mousePoint.X - topLeft.X) <= radius)
+        {
+            return ViewTool.ResizeL;
+        }
+        else if (Mathf.Abs(mousePoint.X - topRight.X) <= radius)
+        {
+            return ViewTool.ResizeR;
+        }
+        else if (Mathf.Abs(mousePoint.Y - topLeft.Y) <= radius)
+        {
+            return ViewTool.ResizeT;
+        }
+        else if (Mathf.Abs(mousePoint.Y - bottomLeft.Y) <= radius)
+        {
+            return ViewTool.ResizeB;
+        }
+        else if (stateObject.rect.Contains(mousePoint.X, mousePoint.Y))
+        {
+            return ViewTool.Move;
+        }
+        return ViewTool.None;
     }
 
     private static void OnMouseUp(object sender, MouseEventArgs e)
@@ -187,7 +410,7 @@ public static class PictureBoxRectTool
             {
                 if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
                 {
-                    stateObject.editing = false;
+                    stateObject.activeTool = ViewTool.None;
                     stateObject.drawing = false;
                     control.Invalidate();
                 }
@@ -195,35 +418,7 @@ public static class PictureBoxRectTool
         }
     }
 
-    private static void OnMouseDown(object sender, MouseEventArgs e)
-    {
-        if (sender is Control control)
-        {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
-            {
-                var stateObject = stateObjects.GetOrAdd(GetHandle(control), valueFactory);
-                if (stateObject.enable)
-                {
-                    // var point = new Vector2(e.X, e.Y);
-                    // if (PointInRect(point, stateObject.vertex))
-                    // {
-                    //     stateObject.drawing = false;
-                    //     stateObject.editing = true;
-                    //     stateObject.start = e.Location;
-                    //     return;
-                    // }
-                    stateObject.drawing = true;
-                    stateObject.solid = e.Button == MouseButtons.Right;
-                    stateObject.start = ScreenToImage(stateObject, e.Location);
-                    stateObject.rect = new System.Drawing.RectangleF(stateObject.start, Size.Empty);
-                    stateObject.notify?.Invoke(stateObject.rect);
-                    control.Invalidate();
-                }
-            }
-        }
-    }
-
-    static Point ScreenToImage(StateObject stateObject, Point p)
+    static Vector2 ScreenToImage(StateObject stateObject, Point p)
     {
         if (stateObject.gdi)
         {
@@ -237,9 +432,9 @@ public static class PictureBoxRectTool
                 }
                 stateObject.matrix.TransformPoints(pts);
             }
-            return pts[0];
+            return new Vector2(pts[0].X, pts[0].Y);
         }
-        else if (stateObject.d2d)
+        if (stateObject.d2d)
         {
             if (!stateObject.matrixInvert)
             {
@@ -248,10 +443,9 @@ public static class PictureBoxRectTool
             }
             var point = new Vector2(p.X, p.Y);
             Matrix3x2.TransformPoint(ref stateObject.matrix3x2, ref point, out var result);
-            p.X = (int)result.X;
-            p.Y = (int)result.Y;
+            return result;
         }
-        return p;
+        return new Vector2(p.X, p.Y);
     }
 
     private static void OnDisposed(object sender, EventArgs args)
@@ -341,6 +535,25 @@ public static class PictureBoxRectTool
         if (TryGetStageObject(control, out var stateObject))
         {
             return stateObject.enable;
+        }
+        return false;
+    }
+
+    public static void SetEditMode(Control control, bool edit)
+    {
+        if (control == null) return;
+        if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
+        {
+            stateObject.editing = edit;
+        }
+    }
+
+    public static bool IsEditMode(Control control)
+    {
+        if (control == null) return false;
+        if (stateObjects.TryGetValue(GetHandle(control), out var stateObject))
+        {
+            return stateObject.editing;
         }
         return false;
     }

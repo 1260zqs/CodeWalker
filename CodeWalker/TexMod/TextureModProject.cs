@@ -158,19 +158,6 @@ public class TextureModProject
         return list;
     }
 
-    public List<string> GetTags()
-    {
-        var list = new List<string>();
-        foreach (var replacement in textureMappings)
-        {
-            if (!string.IsNullOrWhiteSpace(replacement.tag))
-            {
-                list.Add(replacement.tag);
-            }
-        }
-        return list;
-    }
-
     public void DeleteTextureMapping(TextureMapping mapping)
     {
         for (var i = textureMappings.Count - 1; i >= 0; i--)
@@ -263,9 +250,7 @@ public class TextureMapping : EditorExtension
 {
     public Guid id;
 
-    public string tag;
     public string name;
-    public string comment;
     public TextureLod lod;
 
     public Guid modTexture;
@@ -275,17 +260,14 @@ public class TextureMapping : EditorExtension
     public bool flipX;
     public bool flipY;
     public bool swap;
-    public float rotation;
 
     public TextureMapping Clone()
     {
         var clone = new TextureMapping();
         clone.id = id;
 
-        clone.tag = tag;
         clone.lod = lod;
         clone.name = name;
-        clone.comment = comment;
         clone.modTexture = modTexture;
 
         clone.sourceTexture = sourceTexture;
@@ -294,7 +276,6 @@ public class TextureMapping : EditorExtension
         clone.flipX = flipX;
         clone.flipY = flipY;
         clone.swap = swap;
-        clone.rotation = rotation;
         return clone;
     }
 }

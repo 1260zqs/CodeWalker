@@ -163,29 +163,9 @@ namespace CodeWalker.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap document {
+        internal static System.Drawing.Bitmap folder1 {
             get {
-                object obj = ResourceManager.GetObject("document", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap folder {
-            get {
-                object obj = ResourceManager.GetObject("folder", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap folder_open {
-            get {
-                object obj = ResourceManager.GetObject("folder-open", resourceCulture);
+                object obj = ResourceManager.GetObject("folder1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
