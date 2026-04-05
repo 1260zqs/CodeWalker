@@ -416,6 +416,8 @@ public partial class TextureModDockForm
         RequestTexturePaintingUpdate();
     }
 
+    private List<RenderableTexture> paintingTextureList = new();
+    private bool requestNextTexturePaintingUpdate;
     private volatile int texturePaintingUpdatePending;
     private Action<rage__eLodType> setRenderLod;
     private Action<bool> setRenderHdTex;
@@ -436,39 +438,83 @@ public partial class TextureModDockForm
 
     private void UpdateTexturePaintingNow()
     {
-        if (working.modTexture == null || working.mapping == null) return;
+        var mapping = working.mapping;
+        var modTexture = working.modTexture;
+        if (modTexture == null || mapping == null) return;
 
-        var targetRect = working.mapping.targetRect;
+        var targetRect = mapping.targetRect;
+        var sourceRect = modTexture.sourceRect;
         var baseImage = working.gameTextureBitmap;
         if (baseImage == null || baseImage.IsDisposed) return;
+        if (targetRect.Width <= 0 || targetRect.Height <= 0) return;
+        if (sourceRect.Width <= 0 || sourceRect.Height <= 0) return;
 
+        var drawing = false;
         var syncRoot = renderer.DXMan.syncroot;
         if (!Monitor.TryEnter(syncRoot, 50))
         {
             return;
         }
-
-        var drawing = false;
         try
         {
+            paintingTextureList.Clear();
+            var pixelSize = baseImage.PixelSize;
+            var nameHash = working.texNameHash;
+            renderer.RenderableCache.FindRenderableTexture(x =>
+            {
+                var tex = x.Key;
+                if (tex.NameHash == nameHash && tex.Width == pixelSize.Width && tex.Height == pixelSize.Height && x.IsLoaded)
+                {
+                    paintingTextureList.Add(x);
+                }
+                return false;
+            });
+            if (paintingTextureList.Count == 0)
+            {
+                Console.WriteLine($"requestNextTexturePaintingUpdate {DateTime.Now}");
+                requestNextTexturePaintingUpdate = true;
+                return;
+            }
+
             var upScale = 1;
-            var baseImageSize = baseImage.PixelSize.UpScale(upScale);
-            d2dRenderTarget.SetTargetSize(working.mapping.id, baseImageSize);
+            var baseImageSize = pixelSize.UpScale(upScale);
+            d2dRenderTarget.SetTargetSize(mapping.id, baseImageSize);
             d2dRenderTarget.BeginDraw();
             drawing = true;
 
             var overlay = working.modTextureBitmap;
             if (!isPainting || isDrawTestColor) overlay = null;
+            if (overlay != null && mapping.mipTexture != null)
+            {
+                if (mapping.mipRect != mapping.targetRect)
+                {
+                    mapping.mipTexture.Dispose();
+                    mapping.mipTexture = null;
+                }
+            }
+            if (overlay != null && mapping.mipTexture == null)
+            {
+                if (targetRect.Width < 256 || targetRect.Height < 256)
+                {
+                    mapping.mipTexture = CreateMipTexture(overlay, sourceRect, targetRect);
+                    mapping.mipRect = mapping.targetRect;
+                }
+            }
+            if (overlay != null && mapping.mipTexture != null)
+            {
+                overlay = mapping.mipTexture;
+                sourceRect = overlay.PixelSize.ToRect();
+            }
             DrawPreviewOverlay(
                 d2dRenderTarget.target,
                 baseImage,
                 overlay,
                 baseImageSize,
-                working.modTexture.sourceRect,
-                working.mapping.targetRect.UpScale(upScale),
-                working.mapping.flipX,
-                working.mapping.flipY,
-                working.mapping.swap
+                sourceRect,
+                mapping.targetRect.UpScale(upScale),
+                mapping.flipX,
+                mapping.flipY,
+                mapping.swap
             );
             if (isDrawTestColor)
             {
@@ -477,26 +523,11 @@ public partial class TextureModDockForm
             d2dRenderTarget.EndDraw();
             drawing = false;
 
-            var find = false;
-            var pixelSize = baseImage.PixelSize;
-            var nameHash = working.texNameHash;
-            renderer.RenderableCache.FindRenderableTexture(x =>
+            foreach (var texture in paintingTextureList)
             {
-                var tex = x.Key;
-                if (tex.NameHash == nameHash && tex.Width == pixelSize.Width && tex.Height == pixelSize.Height)
-                {
-                    d2dRenderTarget.CopyTo(renderer.Device, x);
-                    find = true;
-                }
-                return false;
-            });
-            // var bytes = d2dRenderTarget.EncodeTexture(NVTT.Format.Format_BC1, NVTT.Quality.Quality_Fastest);
-            // File.WriteAllBytes("C:\\image.dds", bytes);
-            if (!find)
-            {
-                // Console.WriteLine("not found");
-                // RequestTexturePaintingUpdate();
+                d2dRenderTarget.CopyTo(renderer.Device, texture);
             }
+            paintingTextureList.Clear();
         }
         catch (Exception e)
         {
@@ -514,8 +545,8 @@ public partial class TextureModDockForm
         SharpDX.Direct2D1.Bitmap baseImage,
         SharpDX.Direct2D1.Bitmap overlay,
         SharpDX.Size2 baseImageSize,
-        System.Drawing.RectangleF srcRect,
-        System.Drawing.RectangleF destRect,
+        in System.Drawing.RectangleF srcRect,
+        in System.Drawing.RectangleF destRect,
         bool flipX,
         bool flipY,
         bool swap
@@ -553,6 +584,56 @@ public partial class TextureModDockForm
         );
         target.Transform = matrix;
         target.PopAxisAlignedClip();
+    }
+
+    private SharpDX.Direct2D1.Bitmap CreateMipTexture(
+        SharpDX.Direct2D1.Bitmap overlay,
+        System.Drawing.RectangleF sourceRect,
+        System.Drawing.RectangleF targetRect
+    )
+    {
+        var imageSize = overlay.PixelSize;
+        using var deviceContext = d2dRenderTarget.target.QueryInterface<SharpDX.Direct2D1.DeviceContext>();
+        var bitmapProperties = new SharpDX.Direct2D1.BitmapProperties1();
+        bitmapProperties.BitmapOptions = BitmapOptions.CannotDraw | BitmapOptions.CpuRead;
+        bitmapProperties.PixelFormat = overlay.PixelFormat;
+        using var bitmap1 = new SharpDX.Direct2D1.Bitmap1(
+            deviceContext,
+            new SharpDX.Size2(imageSize.Width, imageSize.Height),
+            bitmapProperties
+        );
+        bitmap1.CopyFromBitmap(overlay);
+        using var rtTexture = TextureTool.GetRtTexture(
+            d2dRenderTarget.d3dDevice,
+            imageSize.Width,
+            imageSize.Height,
+            bitmapProperties.PixelFormat.Format
+        );
+        var map = bitmap1.Map(MapOptions.Read);
+        d2dRenderTarget.d3dDevice.ImmediateContext.UpdateSubresource(
+            new SharpDX.DataBox(map.DataPointer, map.Pitch, 0),
+            rtTexture
+        );
+        bitmap1.Unmap();
+        using var texture = TextureTool.Crop(rtTexture, sourceRect.DxRect());
+        var w = Mathf.CeilToInt(targetRect.Width);
+        var h = Mathf.CeilToInt(targetRect.Height);
+        var scale = Math.Max(128f / w, 128f / h);
+        var mipTexture = TextureTool.Resize(
+            texture,
+            Mathf.CeilToInt(w * scale),
+            Mathf.CeilToInt(h * scale),
+            d2dRenderTarget.format
+        );
+        using var surface = mipTexture.QueryInterface<SharpDX.DXGI.Surface>();
+        var pixelFormat = new SharpDX.Direct2D1.PixelFormat(
+            d2dRenderTarget.format,
+            SharpDX.Direct2D1.AlphaMode.Premultiplied
+        );
+        return new SharpDX.Direct2D1.Bitmap(
+            d2dRenderTarget.target, surface,
+            new SharpDX.Direct2D1.BitmapProperties(pixelFormat)
+        );
     }
 
     public void SaveProject()

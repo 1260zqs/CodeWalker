@@ -36,6 +36,16 @@ public static class FormExtensions
         return new SharpDX.Size2(size2.Width * factor, size2.Height * factor);
     }
 
+    public static SharpDX.Rectangle DxRect(in this System.Drawing.RectangleF rectangle)
+    {
+        return new SharpDX.Rectangle(
+            (int)rectangle.X,
+            (int)rectangle.Y,
+            (int)rectangle.Width,
+            (int)rectangle.Height
+        );
+    }
+
     public static System.Drawing.RectangleF UpScale(in this System.Drawing.RectangleF rectangle, float factor)
     {
         return new System.Drawing.RectangleF(

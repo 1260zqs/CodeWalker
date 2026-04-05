@@ -20,9 +20,9 @@ public class D2DRenderTarget : IDisposable
 
     private Guid texId;
     private SharpDX.Size2 pixelSize;
-    private SharpDX.DXGI.Format format;
+    public SharpDX.DXGI.Format format;
 
-    private SharpDX.Direct3D11.Device d3dDevice;
+    public SharpDX.Direct3D11.Device d3dDevice;
     private SharpDX.Direct2D1.Factory1 d2dFactory;
     private IntPtr sharedHandle;
     private KeyedMutex mutexA;

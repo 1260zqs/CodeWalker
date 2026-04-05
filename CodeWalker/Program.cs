@@ -71,8 +71,6 @@ namespace CodeWalker
             try
             {
 #endif
-            AllocConsole();
-            //explorermode = true;
             if (menumode)
             {
                 Application.Run(new MenuForm());
@@ -95,8 +93,11 @@ namespace CodeWalker
             }
             else
             {
+#if DEBUG
+                AllocConsole();
+#endif
+                // CodeWalker.Graphic.TextureDownScaleTool.Test();
                 Application.Run(new WorldForm());
-                //Application.Run(new TestForm());
             }
 #if !DEBUG
             }
@@ -169,8 +170,10 @@ namespace CodeWalker
             {
             }
         }
+#if DEBUG
 
         [DllImport("kernel32.dll")]
         public static extern bool AllocConsole();
+#endif
     }
 }

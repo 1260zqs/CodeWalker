@@ -76,8 +76,16 @@ public partial class TextureModDockForm : Form
 
     protected override void OnHandleDestroyed(EventArgs e)
     {
-        Utilities.Dispose(ref d2dRenderTarget);
         Utilities.Dispose(ref imageCache);
+        Utilities.Dispose(ref d2dRenderTarget);
+        foreach (var mapping in project.textureMappings)
+        {
+            if (mapping.mipTexture != null)
+            {
+                mapping.mipTexture.Dispose();
+                mapping.mipTexture = null;
+            }
+        }
         base.OnHandleDestroyed(e);
     }
 
@@ -402,6 +410,11 @@ public partial class TextureModDockForm : Form
     {
         ImageCache_Update();
         CheckImageUnload();
+        if (requestNextTexturePaintingUpdate)
+        {
+            requestNextTexturePaintingUpdate = false;
+            RequestTexturePaintingUpdate();
+        }
     }
 
     private void CheckImageUnload()
@@ -542,5 +555,22 @@ public partial class TextureModDockForm : Form
             gameTextureCanvas.Show(dockPanel, DockState.Float);
         }
         gameTextureCanvas.Focus();
+    }
+
+    private void clearImageCacheToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        imageCache.Clear();
+    }
+
+    private void clearMipCacheToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        foreach (var mapping in project.textureMappings)
+        {
+            if (mapping.mipTexture != null)
+            {
+                mapping.mipTexture.Dispose();
+                mapping.mipTexture = null;
+            }
+        }
     }
 }

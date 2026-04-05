@@ -283,6 +283,21 @@
     <FxCompile Include="ImageVS.hlsl">
       <Filter>Custom</Filter>
     </FxCompile>
+    <FxCompile Include="BlitVS.hlsl">
+      <Filter>Basic</Filter>
+    </FxCompile>
+    <FxCompile Include="BlitPS.hlsl">
+      <Filter>Basic</Filter>
+    </FxCompile>
+    <FxCompile Include="LanczosVS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
+    <FxCompile Include="LanczosHorizontalPS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
+    <FxCompile Include="LanczosVerticalPS.hlsl">
+      <Filter>Custom</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicPS.hlsli">

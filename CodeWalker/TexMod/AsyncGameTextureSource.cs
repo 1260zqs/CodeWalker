@@ -6,8 +6,6 @@ using SharpDX.Direct2D1;
 using SharpDX.DXGI;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Markup;
-using AlphaMode = SharpDX.Direct2D1.AlphaMode;
 
 namespace CodeWalker;
 
@@ -28,15 +26,15 @@ public class AsyncTextureSource : AsyncBitmapSource
         {
             try
             {
-                var ptr = new DataPointer(dataStream.DataPointer, dataSize);
-                var pixelFormat = new PixelFormat(format, AlphaMode.Ignore);
-                var bmpProps = new BitmapProperties(pixelFormat);
+                var pixelFormat = new PixelFormat(format,
+                    SharpDX.Direct2D1.AlphaMode.Premultiplied
+                );
                 return new Bitmap(
                     target,
                     new Size2(width, height),
-                    ptr,
+                    new DataPointer(dataStream.DataPointer, dataSize),
                     ddsRowPitch,
-                    bmpProps
+                    new BitmapProperties(pixelFormat)
                 );
             }
             catch (Exception ex)

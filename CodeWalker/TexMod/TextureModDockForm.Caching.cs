@@ -40,6 +40,23 @@ public partial class TextureModDockForm
             }
         }
 
+        public void Clear()
+        {
+            keys.Clear();
+            foreach (var pair in cache)
+            {
+                var item = pair.Value;
+                if (item.refCount <= 0)
+                {
+                    keys.Add(pair.Key);
+                }
+            }
+            for (var i = keys.Count - 1; i >= 0; i--)
+            {
+                cache.Remove(keys[i]);
+            }
+        }
+
         public SharpDX.Direct2D1.Bitmap GetFromPool(string key)
         {
             if (cache.TryGetValue(key, out var cacheItem))

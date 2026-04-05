@@ -28,17 +28,17 @@ public class AsyncImageFileSource : AsyncBitmapSource
         {
             try
             {
-                var pixelFormat = new SharpDX.Direct2D1.
-                    PixelFormat(Format.R8G8B8A8_UNorm, SharpDX.Direct2D1.AlphaMode.Premultiplied);
-                var bmpProps = new BitmapProperties(pixelFormat);
-
                 var stride = width * 4;
+                var pixelFormat = new SharpDX.Direct2D1.PixelFormat(
+                    Format.R8G8B8A8_UNorm,
+                    SharpDX.Direct2D1.AlphaMode.Premultiplied
+                );
                 return new Bitmap(
                     target,
                     new Size2(width, height),
                     new DataPointer(dataStream.DataPointer, stride * height),
                     stride,
-                    bmpProps
+                    new BitmapProperties(pixelFormat)
                 );
             }
             catch (Exception ex)

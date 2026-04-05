@@ -45,6 +45,9 @@ namespace CodeWalker.TexMod
             this.buildToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buildOIVPackageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearImageCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearMipCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,6 +85,7 @@ namespace CodeWalker.TexMod
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
             this.buildToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.windowToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -185,6 +189,29 @@ namespace CodeWalker.TexMod
             this.buildOIVPackageToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.buildOIVPackageToolStripMenuItem.Text = "Build OIV Package";
             this.buildOIVPackageToolStripMenuItem.Click += new System.EventHandler(this.buildOIVPackageToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearImageCacheToolStripMenuItem,
+            this.clearMipCacheToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(52, 21);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // clearImageCacheToolStripMenuItem
+            // 
+            this.clearImageCacheToolStripMenuItem.Name = "clearImageCacheToolStripMenuItem";
+            this.clearImageCacheToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.clearImageCacheToolStripMenuItem.Text = "Clear Image Cache";
+            this.clearImageCacheToolStripMenuItem.Click += new System.EventHandler(this.clearImageCacheToolStripMenuItem_Click);
+            // 
+            // clearMipCacheToolStripMenuItem
+            // 
+            this.clearMipCacheToolStripMenuItem.Name = "clearMipCacheToolStripMenuItem";
+            this.clearMipCacheToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.clearMipCacheToolStripMenuItem.Text = "Clear Mip Cache";
+            this.clearMipCacheToolStripMenuItem.Click += new System.EventHandler(this.clearMipCacheToolStripMenuItem_Click);
             // 
             // windowToolStripMenuItem
             // 
@@ -338,5 +365,8 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripMenuItem mappingWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem textureWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem previewWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearImageCacheToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearMipCacheToolStripMenuItem;
     }
 }

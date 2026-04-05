@@ -10,7 +10,7 @@ public static class DXGraphic
 {
     public static readonly SharpDX.Direct2D1.Factory1 d2dFactory;
     public static readonly SharpDX.WIC.ImagingFactory wicFactory;
-    public static readonly SharpDX.DirectWrite.Factory dwriteFactory;
+    public static readonly SharpDX.DirectWrite.Factory1 dwriteFactory;
 
     public static readonly TextFormat fontSegoeUI_16;
     public static readonly TextFormat fontSegoeUI_12;
@@ -25,7 +25,7 @@ public static class DXGraphic
     {
         wicFactory = new SharpDX.WIC.ImagingFactory();
         d2dFactory = new SharpDX.Direct2D1.Factory1(SharpDX.Direct2D1.FactoryType.MultiThreaded);
-        dwriteFactory = new SharpDX.DirectWrite.Factory(SharpDX.DirectWrite.FactoryType.Shared);
+        dwriteFactory = new SharpDX.DirectWrite.Factory1(SharpDX.DirectWrite.FactoryType.Shared);
 
         fontSegoeUI_16 = new TextFormat(dwriteFactory, "Segoe UI", 16f);
         fontSegoeUI_12 = new TextFormat(dwriteFactory, "Segoe UI", 12f);
