@@ -49,6 +49,7 @@ namespace CodeWalker.TexMod
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeImageList = new System.Windows.Forms.ImageList(this.components);
             this.smallImageList = new System.Windows.Forms.ImageList(this.components);
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             Lod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             File = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -79,6 +80,7 @@ namespace CodeWalker.TexMod
             this.toolStripButton4,
             this.toolStripButton5,
             this.toolStripButton1,
+            this.toolStripButton2,
             this.toolStripButton7});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
@@ -223,6 +225,17 @@ namespace CodeWalker.TexMod
             this.smallImageList.ImageSize = new System.Drawing.Size(1, 20);
             this.smallImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Text = "FindHIDR";
+            this.toolStripButton2.ToolTipText = "Find HiDR Texture";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
             // TextureModMappingControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -256,5 +269,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lodToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

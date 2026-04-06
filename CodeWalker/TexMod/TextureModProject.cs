@@ -262,7 +262,8 @@ public class TextureMapping : EditorExtension
     public bool swap;
 
     public SharpDX.Direct2D1.Bitmap mipTexture { get; set; }
-    public System.Drawing.RectangleF mipRect { get; set; }
+    public System.Drawing.RectangleF mipRect1 { get; set; }
+    public System.Drawing.RectangleF mipRect2 { get; set; }
 
     public TextureMapping Clone()
     {

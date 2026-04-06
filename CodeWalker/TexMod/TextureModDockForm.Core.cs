@@ -21,6 +21,7 @@ public struct AddModSourceInfo
     public Vector3 position;
     public Vector3 rotation;
     public bool hasCameraInfo;
+    public bool hidr;
 }
 
 public partial class TextureModDockForm
@@ -99,7 +100,7 @@ public partial class TextureModDockForm
         var form = new TextureModDockForm(
             workingProject,
             worldForm.Renderer,
-            worldForm.GameFileCache.RpfMan,
+            worldForm.GameFileCache,
             new GTAVTextureModAdapter(workingProject, worldForm.GameFileCache)
         );
         form.setRenderLod = worldForm.SetRenderLod;
@@ -157,7 +158,7 @@ public partial class TextureModDockForm
             var mapping = project.CreateMapping();
             mapping.sourceTexture = sourceTexture.id;
             mapping.modTexture = modTexture.id;
-            mapping.lod = info.lod.Conv();
+            mapping.lod = info.hidr ? TextureLod.HiDR : info.lod.Conv();
             mapping.name = texName;
 
             if (info.hasCameraInfo)
@@ -170,16 +171,18 @@ public partial class TextureModDockForm
         }
     }
 
-    private TextureModDockForm(TextureModProject workingProject, Renderer renderer, RpfManager rpfMan, TextureModAdapter adapter) : this()
+    private TextureModDockForm(TextureModProject workingProject, Renderer renderer, GameFileCache gameFileCache, TextureModAdapter adapter) : this()
     {
         this.project = workingProject;
-        this.rpfManager = rpfMan;
+        this.gameFileCache = gameFileCache;
+        this.rpfManager = gameFileCache.RpfMan;
         this.renderer = renderer;
         this.adapter = adapter;
     }
 
     public TextureModProject project;
     private TextureModAdapter adapter;
+    private GameFileCache gameFileCache;
     private RpfManager rpfManager;
     private Renderer renderer;
 
@@ -486,7 +489,7 @@ public partial class TextureModDockForm
             if (!isPainting || isDrawTestColor) overlay = null;
             if (overlay != null && mapping.mipTexture != null)
             {
-                if (mapping.mipRect != mapping.targetRect)
+                if (mapping.mipRect1 != targetRect || mapping.mipRect2 != sourceRect)
                 {
                     mapping.mipTexture.Dispose();
                     mapping.mipTexture = null;
@@ -497,7 +500,8 @@ public partial class TextureModDockForm
                 if (targetRect.Width < 256 || targetRect.Height < 256)
                 {
                     mapping.mipTexture = CreateMipTexture(overlay, sourceRect, targetRect);
-                    mapping.mipRect = mapping.targetRect;
+                    mapping.mipRect1 = mapping.targetRect;
+                    mapping.mipRect2 = modTexture.sourceRect;
                 }
             }
             if (overlay != null && mapping.mipTexture != null)
@@ -684,6 +688,14 @@ public partial class TextureModDockForm
                 modTexture.name = Path.GetFileName(fileName);
                 if (working.modTexture != null && working.modTexture.id == modTexture.id)
                 {
+                    foreach (var mapping in project.FindTextureMapping(working.modTexture.id))
+                    {
+                        if (mapping.mipTexture != null)
+                        {
+                            mapping.mipTexture.Dispose();
+                            mapping.mipTexture = null;
+                        }
+                    }
                     if (working.modTextureBitmap != null)
                     {
                         imageCache.ReturnToCache(key, working.modTextureBitmap);
@@ -713,6 +725,23 @@ public partial class TextureModDockForm
             {
                 var fileName = openFileDialog1.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
+                foreach (var modTex in project.modTextures.Values)
+                {
+                    if (modTex.filename.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var name = Path.GetFileName(fileName);
+                        var dialogResult = MessageBox.Show(
+                            $"{name} already exists!\ncontinue?",
+                            "Duplicate",
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Information
+                        );
+                        if (dialogResult != DialogResult.Yes)
+                        {
+                            return;
+                        }
+                    }
+                }
 
                 using var decoder = new SharpDX.WIC.BitmapDecoder(
                     DXGraphic.wicFactory,

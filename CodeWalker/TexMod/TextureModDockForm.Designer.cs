@@ -196,8 +196,8 @@ namespace CodeWalker.TexMod
             this.clearImageCacheToolStripMenuItem,
             this.clearMipCacheToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(52, 21);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(42, 21);
+            this.toolsToolStripMenuItem.Text = "Dev";
             // 
             // clearImageCacheToolStripMenuItem
             // 

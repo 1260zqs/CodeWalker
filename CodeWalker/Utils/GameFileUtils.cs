@@ -132,6 +132,10 @@ internal static class GameFileUtils
 
     public static void ReplaceTexture(TextureDictionary dictionary, Texture texture)
     {
+        if (dictionary == null)
+        {
+            return;
+        }
         var textures = new List<Texture>(dictionary.Textures.data_items);
         for (var i = 0; i < textures.Count; i++)
         {

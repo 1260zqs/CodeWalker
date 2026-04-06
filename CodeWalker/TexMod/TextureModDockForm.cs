@@ -573,4 +573,45 @@ public partial class TextureModDockForm : Form
             }
         }
     }
+
+    public void FindHiDRTexture(TextureMapping mapping)
+    {
+        if (project.sourceTextures.TryGetValue(mapping.sourceTexture, out var sourceTexture))
+        {
+            var sourceFileName = adapter.GetSourceFileName(sourceTexture.sourceFile);
+            var textureName = adapter.GetSourceTextureName(sourceTexture.sourceFile);
+            var nameHash = JenkHash.GenHash(textureName.ToLowerInvariant());
+
+            var file = adapter.GetSourceFile(sourceFileName);
+            if (file != null && file.RpfFileEntry.Parent != null)
+            {
+                var packFile = file.RpfFileEntry.Parent;
+                var listOfMatch = new List<string>();
+                var filename = file.RpfFileEntry.Name;
+                filename = Path.GetFileNameWithoutExtension(filename);
+                listOfMatch.Add($"{filename}+hi.ytd");
+                listOfMatch.Add($"{filename}+hidr.ytd");
+                foreach (var name in listOfMatch)
+                {
+                    var path = $"{packFile.Path}\\{name}";
+                    var entry = rpfManager.GetEntry(path);
+                    if (entry == null) continue;
+                    var ytdFile = rpfManager.GetFile<YtdFile>(entry);
+                    if (ytdFile != null && ytdFile.TextureDict != null)
+                    {
+                        var texture = ytdFile.TextureDict.Lookup(nameHash);
+                        if (texture != null)
+                        {
+                            AddModSource(new AddModSourceInfo()
+                            {
+                                hidr = true,
+                                gameFile = ytdFile,
+                                texName = textureName
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

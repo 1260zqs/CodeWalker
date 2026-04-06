@@ -231,4 +231,16 @@ public partial class TextureModMappingControl : DockContent
             return;
         }
     }
+
+    private void toolStripButton2_Click(object sender, EventArgs e)
+    {
+        var list = new List<TextureMapping>(listOfMappings);
+        foreach (var mapping in list)
+        {
+            if (mapping.lod == TextureLod.HD)
+            {
+                mainForm.FindHiDRTexture(mapping);
+            }
+        }
+    }
 }

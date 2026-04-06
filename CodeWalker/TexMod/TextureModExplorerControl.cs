@@ -569,7 +569,7 @@ public partial class TextureModExplorerControl : DockContent
             {
                 node.Nodes.Add(treeNode);
             }
-            treeView.SelectedNode = treeNode;
+            SetSelectedNodeManually(treeNode);
         }
     }
 }

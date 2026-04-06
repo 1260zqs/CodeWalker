@@ -201,7 +201,10 @@ public static class PictureBoxRectTool
                 {
                     stateObject.drawing = true;
                     stateObject.solid = e.Button == MouseButtons.Right;
-                    stateObject.mouseDownPoint = ScreenToImage(stateObject, e.Location);
+                    var mouseDownPoint = ScreenToImage(stateObject, e.Location);
+                    mouseDownPoint.X = Mathf.FloorToInt(mouseDownPoint.X);
+                    mouseDownPoint.Y = Mathf.FloorToInt(mouseDownPoint.Y);
+                    stateObject.mouseDownPoint = mouseDownPoint;
                     stateObject.rect = new(
                         stateObject.mouseDownPoint.X,
                         stateObject.mouseDownPoint.Y,
@@ -315,6 +318,8 @@ public static class PictureBoxRectTool
                 else if (stateObject.drawing)
                 {
                     var cur = ScreenToImage(stateObject, e.Location);
+                    cur.X = Mathf.FloorToInt(cur.X);
+                    cur.Y = Mathf.FloorToInt(cur.Y);
                     var x = Math.Min(stateObject.mouseDownPoint.X, cur.X);
                     var y = Math.Min(stateObject.mouseDownPoint.Y, cur.Y);
                     var w = Math.Abs(stateObject.mouseDownPoint.X - cur.X);
