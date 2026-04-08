@@ -175,15 +175,14 @@
   <data name="toolStripButton8.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAG5SURBVDhPY8AAnUf8GDsO30PHIHGoCvyAsXn/HtNNzz6H
-        nP73H4ZBfJA4VAl+wFi3847jjtf/jVfdhWMQHyQOVYIfMJZuuG275fl/g+W34BjEB4lDleAHjHkrb1qs
-        e/hfZ/E1OAbxQeJQJfgBY8rC60Yr7/xXn3cRjkF8kDhUCSrYz8DgsY+B4QwMR+r7PwNp0F1yHY7BBkRO
-        uwrVggp2MTCse+bt8/Zfadl/EF6cVPk/NKAajNVdI95LxECwdrH90+AVDGdgOGQlgwfYgC1AWz+Zuv1/
-        yaCAgZuCGM50nHH5v/JtKgruuOTwNmAJwzqwAWuBBrzRtfv/mEEGA1f7MpxpO+X0f+rNwP8gGoZBfM85
-        DGfABiwDGvBE1ez/bQZJDFzqyXCm6Zjd/4lXff+DaBgG8Z0nQw2YCzTgnozu/6sMohg4x43hTP1h6/89
-        5z3+g2gYBvFtuqAGTAEacEdO//8NYVUMnOrIcKZ6vznY2SAahkF8kwaoAXFAR1QBDcGGg6wYzlTuNf3f
-        ftoZxQsgvlYp1AAg4AJicSCWQsPqvE4MywRCGc5gw3xOIN8TBuiGwjDIQqDFDAwAsGNipPCn3McAAAAA
-        SUVORK5CYII=
+        YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAGwSURBVDhPhY9LKERRGMe/u5WkJJFkoykMwnjklfHolkdj
+        IkpZkJWykFFmiqIMZSPZoUQ00ijNAmEWZMEpWYznUPJKTIr9fM53nXtr5ur616+v/7/v/M85oNPUUbPk
+        PryPhnKxYSxp3L9n2Xr+bj0Nowp5ysWKsaSRnWD19jsWrN9pkKdcrBhLGty8rfC9Yt7ajQZ5ysWKsaR+
+        z3WJ9wGzly80yFMuVowl9Sxd5nuCaFo81yBPuViJlB9APgBgKh05zS90wLxyqaEUdMwFxJFI7QJ4Xxoa
+        Q2HHEBLL3cPYZnMpmOraP5M6f8kaqHq2rwFTafWArBT4+K1flnp8g3QdY3Zgk6wWPaHeCNznVSHbCniV
+        gg1e8GGuxEdI1eFsAjZxYsW56xakqUJengemFKzygqeMIryFZB0OGdjYcSXOBJqQpgr5mllRsMAL7lPN
+        GIBEHX31wEYPy3D6TEaaKuTLp0TBLC8IpuXiVUKGjt5qYC5/sfJsmirkC0dFQRd/hJOX/IW9FNjwvgXd
+        pzURXyCf6RAFXDGcJE5KFKZYK6zGtwH7izgr/f5/RZeq0IX8YoAfSHRid5k5ei8AAAAASUVORK5CYII=
 </value>
   </data>
   <metadata name="contextMenuStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -204,18 +203,18 @@
         iMe2iVSaAAAAAElFTkSuQmCC
 </value>
   </data>
-  <metadata name="m_ProjectTreeViewIcons.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+  <metadata name="imageList.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>112, 25</value>
   </metadata>
-  <data name="m_ProjectTreeViewIcons.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
+  <data name="imageList.ImageStream" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAACk
-        EAAAAk1TRnQBSQFMAgEBBAEAAZgBAAGYAQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
+        EAAAAk1TRnQBSQFMAgEBBAEAAaABAAGgAQABEAEAARABAAT/ASEBAAj/AUIBTQE2BwABNgMAASgDAAFA
         AwABIAMAAQEBAAEgBgABIP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8A/wD/AP8AagABSAHHAesB/wFI
         AcYB6gH/AUgBxgHqAf8BRwHFAeoB/wFHAcQB6QH/AUcBxAHpAf8BRgHDAegB/wFGAcIB6AH/AUYBwgHn
-        Af8BRgHBAecB/wFFAcEB5gH/AUYBwQHnAf8BWQFvAXMB7wQAAw4BEgMfASwDQQFyA0kBhwNJAYcDSQGH
+        Af8BRgHBAecB/wFFAcEB5gH/AUYBwQHnAf8BWQFtAXEB7wQAAw4BEgMfASwDQQFyA0kBhwNJAYcDSQGH
         A0kBhwNJAYcDSQGHA0kBhwNJAYcDSQGHA0kBhwNBAXIDHwEsAw4BEogAAUkByAHrAf8BjwHnAv8BjgHm
         Av8BjAHmAv8BiwHmAv8BiQHlAv8BiAHlAv8BhgHkAv8BhQHkAv8BgwHkAv8BRgHBAecB/wGDAeQC/wFG
         AcEB5wH/BAADBwEJAxEBFgNHAYIO/wH+Af8C/gH9Af8C/gH8Af8C/QH7Af8C/QH6Af8C/AH4Af8C/gH5
@@ -287,12 +286,6 @@
 </value>
   </data>
   <metadata name="vsExtender.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>587, 25</value>
+    <value>501, 28</value>
   </metadata>
-  <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>705, 25</value>
-  </metadata>
-  <data name="openFileDialog.Filter" xml:space="preserve">
-    <value>Image Files (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff|PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|Bitmap (*.bmp)|*.bmp|GIF (*.gif)|*.gif|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>
-  </data>
 </root>

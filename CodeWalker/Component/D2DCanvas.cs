@@ -61,7 +61,12 @@ public class D2DCanvas : Control
         var desc = new SwapChainDescription()
         {
             BufferCount = 1,
-            ModeDescription = new ModeDescription(Width, Height, new Rational(60, 1), Format.R8G8B8A8_UNorm),
+            ModeDescription = new ModeDescription(
+                Width,
+                Height,
+                new Rational(60, 1),
+                Format.B8G8R8A8_UNorm
+            ),
             IsWindowed = true,
             OutputHandle = Handle,
             SampleDescription = new SampleDescription(1, 0),
@@ -94,8 +99,8 @@ public class D2DCanvas : Control
         backBufferView = new RenderTargetView(device, backBuffer);
         using var surface = backBuffer.QueryInterface<Surface>();
         var format = new SharpDX.Direct2D1.PixelFormat(
-            Format.R8G8B8A8_UNorm,
-            SharpDX.Direct2D1.AlphaMode.Ignore
+            Format.B8G8R8A8_UNorm,
+            SharpDX.Direct2D1.AlphaMode.Premultiplied
         );
         target = new RenderTarget(DXGraphic.d2dFactory, surface, new(
             RenderTargetType.Hardware,
@@ -308,7 +313,7 @@ public class D2DCanvas : Control
 
     public void DrawBitmap(Bitmap bitmap, int x, int y)
     {
-        DrawBitmap(bitmap, new RawRectangleF(0, 0, bitmap.Size.Width, bitmap.Size.Height));
+        DrawBitmap(bitmap, bitmap.PixelSize.ToRawRect(x, y));
     }
 
     public void DrawBitmap(Bitmap bitmap, in RawRectangleF rectangle)

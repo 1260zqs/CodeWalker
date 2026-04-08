@@ -15,7 +15,7 @@ public static class DXGraphic
     public static readonly TextFormat fontSegoeUI_16;
     public static readonly TextFormat fontSegoeUI_12;
 
-    public static TextFormat fontPfArmaFive_6;
+    public static TextFormat fontPfArmaFive_12;
 
     public static SharpDX.DXGI.Factory d3dFactory;
     private static SharpDX.Direct3D11.Device s_d3dDevice;
@@ -38,14 +38,14 @@ public static class DXGraphic
         dwriteFactory.RegisterFontCollectionLoader(fontLoader);
 
         var fontCollection = new FontCollection(dwriteFactory, fontLoader, fontLoader.Key);
-        fontPfArmaFive_6 = new TextFormat(
+        fontPfArmaFive_12 = new TextFormat(
             dwriteFactory,
             "PF Arma Five",
             fontCollection,
             FontWeight.Normal,
             FontStyle.Normal,
             FontStretch.Normal,
-            6
+            12
         );
     }
 

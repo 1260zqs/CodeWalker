@@ -13,31 +13,24 @@ public class AsyncImageFileSource : AsyncBitmapSource
 {
     class ImageFactory : Factory
     {
-        public int width;
-        public int height;
-        public DataStream dataStream;
+        FormatConverter converter;
 
-        public ImageFactory(DataStream data, int width, int height)
+        public ImageFactory(FormatConverter converter)
         {
-            this.width = width;
-            this.height = height;
-            this.dataStream = data;
+            this.converter = converter;
         }
 
         public override Bitmap CreateBitmap(RenderTarget target)
         {
             try
             {
-                var stride = width * 4;
                 var pixelFormat = new SharpDX.Direct2D1.PixelFormat(
-                    Format.R8G8B8A8_UNorm,
+                    Format.B8G8R8A8_UNorm,
                     SharpDX.Direct2D1.AlphaMode.Premultiplied
                 );
-                return new Bitmap(
+                return Bitmap.FromWicBitmap(
                     target,
-                    new Size2(width, height),
-                    new DataPointer(dataStream.DataPointer, stride * height),
-                    stride,
+                    converter,
                     new BitmapProperties(pixelFormat)
                 );
             }
@@ -50,7 +43,7 @@ public class AsyncImageFileSource : AsyncBitmapSource
 
         public override void Dispose()
         {
-            Utilities.Dispose(ref dataStream);
+            Utilities.Dispose(ref converter);
         }
     }
 
@@ -82,41 +75,25 @@ public class AsyncImageFileSource : AsyncBitmapSource
     {
         try
         {
-            int width;
-            int height;
-            byte[] pixels;
-            using (var decoder = new BitmapDecoder(DXGraphic.wicFactory, filename, DecodeOptions.CacheOnLoad))
-            {
-                using var converter = new FormatConverter(DXGraphic.wicFactory);
-                using var frame = decoder.GetFrame(0);
+            using var decoder = new BitmapDecoder(DXGraphic.wicFactory, filename, DecodeOptions.CacheOnLoad);
+            using var frame = decoder.GetFrame(0);
+            var converter = new FormatConverter(DXGraphic.wicFactory);
 
-                converter.Initialize(
-                    frame,
-                    SharpDX.WIC.PixelFormat.Format32bppRGBA,
-                    BitmapDitherType.None,
-                    null,
-                    0,
-                    BitmapPaletteType.Custom
-                );
-
-                width = converter.Size.Width;
-                height = converter.Size.Height;
-
-                var stride = width * 4;
-                pixels = new byte[stride * height];
-                converter.CopyPixels(pixels, stride);
-            }
-
-            var data = new DataStream(pixels.Length, true, true);
-            data.Write(pixels, 0, pixels.Length);
-            data.Position = 0;
+            converter.Initialize(
+                frame,
+                SharpDX.WIC.PixelFormat.Format32bppBGRA,
+                BitmapDitherType.None,
+                null,
+                0,
+                BitmapPaletteType.Custom
+            );
 
             if (disposed)
             {
-                data.Dispose();
+                converter.Dispose();
                 return;
             }
-            factory = new ImageFactory(data, width, height);
+            factory = new ImageFactory(converter);
             state = AsyncImageState.Ready;
         }
         catch (Exception ex)
