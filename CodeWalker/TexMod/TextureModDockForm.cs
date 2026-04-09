@@ -1,19 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
+using SharpDX;
 using CodeWalker.GameFiles;
 using CodeWalker.Graphic;
 using CodeWalker.Properties;
-using CodeWalker.Rendering;
-using SharpDX;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
 
@@ -120,7 +114,6 @@ public partial class TextureModDockForm : Form
         else if (content is TextureModPropertyControl property)
         {
             propertyControl = property;
-            propertyControl.onPropertyGridChanged = OnPropertyGridChanged;
         }
         else if (content is TextureModToolsControl tools)
         {
@@ -241,6 +234,9 @@ public partial class TextureModDockForm : Form
             dockContent.canvas.onPaint = PaintPreviewPicture;
             dockContent.canvas.onBitmapLoaded = OnBitmapLoaded;
             dockContent.onRectDrawingChange = OnDestRectDrawingChange;
+            dockContent.KeyPreview = true;
+            dockContent.KeyDown += HandelPreviewCanvasKeyEvent;
+            dockContent.KeyUp += HandelPreviewCanvasKeyEvent;
             dockContent.SetImage(working.gameTextureBitmap);
             PictureBoxRectTool.AddFeature(dockContent.canvas, OnDrawPreviewRect);
             content = dockContent;
@@ -269,6 +265,8 @@ public partial class TextureModDockForm : Form
             var dockContent = new TextureModPropertyControl();
             dockContent.Text = "Property";
             dockContent.mainForm = this;
+            dockContent.SelectObject(working.mapping);
+            dockContent.onPropertyGridChanged = OnPropertyGridChanged;
             content = dockContent;
         }
         else if (persistString == kPersistInspector)
@@ -282,6 +280,21 @@ public partial class TextureModDockForm : Form
             content.Closed += OnDockContentClosed;
         }
         return content;
+    }
+
+    private void HandelPreviewCanvasKeyEvent(object sender, KeyEventArgs args)
+    {
+        args.Handled = true;
+        var modifiers = args.Modifiers;
+        BeginInvoke(() =>
+        {
+            var draw = modifiers == Keys.Alt;
+            if (draw != drawBoxFrame)
+            {
+                drawBoxFrame = draw;
+                gameTextureCanvas?.Repaint();
+            }
+        });
     }
 
     private void OnDrawTextureRect(System.Drawing.RectangleF rectangle)
@@ -361,7 +374,7 @@ public partial class TextureModDockForm : Form
         }
         if (drawBoxFrame && working.mapping != null)
         {
-            PictureBoxViewer.GetState(canvas, out var zoom, out _);
+            PictureBoxViewer.GetState(canvas, out var scaling, out _);
             foreach (var mapping in project.textureMappings)
             {
                 if (mapping.sourceTexture == working.mapping.sourceTexture)
@@ -370,10 +383,12 @@ public partial class TextureModDockForm : Form
                     if (rect.Width > 0 && rect.Height > 0)
                     {
                         var color = new SharpDX.Mathematics.Interop.RawColor4(1f, 0f, 1f, 1f);
-                        canvas.DrawRectangle(rect, color, 1f / zoom);
+                        canvas.DrawRectangle(rect, color, 1f / scaling);
+                        // var matrix3X2 = canvas.transform;
+                        // canvas.transform = SharpDX.Matrix3x2.Scaling(1f / scaling, 1f / scaling) * matrix3X2;
 
                         var text = $"{mapping.name} Left={mapping.targetRect.Left} Top={mapping.targetRect.Top} Right={mapping.targetRect.Right} Bottom={mapping.targetRect.Bottom}";
-                        var textLayout = DXGraphic.CreateTextLayout(text, DXGraphic.fontPfArmaFive_6);
+                        using var textLayout = DXGraphic.CreateTextLayout(text, DXGraphic.fontPfArmaFive_12);
 
                         var metrics = textLayout.Metrics;
                         var textRect = new SharpDX.Mathematics.Interop.RawRectangleF();
@@ -383,11 +398,15 @@ public partial class TextureModDockForm : Form
                         textRect.Bottom = rect.Top;
                         canvas.FillRectangle(textRect, color);
                         canvas.DrawTextLayout(textRect.Left, textRect.Top, textLayout, SharpDX.Color.White);
+                        // canvas.transform = matrix3X2;
                     }
                 }
             }
         }
-        PictureBoxRectTool.Paint(canvas);
+        if (!drawBoxFrame)
+        {
+            PictureBoxRectTool.Paint(canvas);
+        }
     }
 
     private void saveLayoutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -398,7 +417,7 @@ public partial class TextureModDockForm : Form
         Settings.Default.texModFormLayout = Convert.ToBase64String(stream.ToArray());
 #if DEBUG
         // Console.WriteLine($"{Width}x{Height}");
-        File.WriteAllBytes("c:\\layout.xml", stream.ToArray());
+        // File.WriteAllBytes("c:\\layout.xml", stream.ToArray());
 #endif
     }
 

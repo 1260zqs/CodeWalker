@@ -62,7 +62,7 @@ namespace CodeWalker.TexMod
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -310,10 +310,10 @@ namespace CodeWalker.TexMod
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // openFileDialog1
+            // openFileDialog
             // 
-            this.openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            this.openFileDialog1.RestoreDirectory = true;
+            this.openFileDialog.Filter = resources.GetString("openFileDialog.Filter");
+            this.openFileDialog.RestoreDirectory = true;
             // 
             // TextureModDockForm
             // 
@@ -356,7 +356,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem buildOIVPackageToolStripMenuItem;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.ToolStripMenuItem exporerToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem loadLayoutToolStripMenuItem;
@@ -368,5 +367,6 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearImageCacheToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearMipCacheToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
     }
 }

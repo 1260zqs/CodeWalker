@@ -474,7 +474,7 @@ public partial class TextureModDockForm
             });
             if (paintingTextureList.Count == 0)
             {
-                Console.WriteLine($"requestNextTexturePaintingUpdate {DateTime.Now}");
+                // Console.WriteLine($"requestNextTexturePaintingUpdate {DateTime.Now}");
                 requestNextTexturePaintingUpdate = true;
                 return;
             }
@@ -697,11 +697,11 @@ public partial class TextureModDockForm
     internal void ReimportTex(ModTexture modTexture)
     {
         if (modTexture == null) return;
-        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
             try
             {
-                var fileName = openFileDialog1.FileName;
+                var fileName = openFileDialog.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
                 var key = modTexture.filename;
                 modTexture.filename = fileName;
@@ -739,11 +739,11 @@ public partial class TextureModDockForm
 
     internal void NewTexMod()
     {
-        if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+        if (openFileDialog.ShowDialog(this) == DialogResult.OK)
         {
             try
             {
-                var fileName = openFileDialog1.FileName;
+                var fileName = openFileDialog.FileName;
                 if (string.IsNullOrEmpty(fileName)) return;
                 foreach (var modTex in project.modTextures.Values)
                 {

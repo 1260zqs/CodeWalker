@@ -173,7 +173,7 @@ public static class FormExtensions
         comboBox.Items.Clear();
         foreach (var name in names)
         {
-            comboBox.Items.Add(new { Name = name });
+            comboBox.Items.Add(name);
         }
         comboBox.SelectedIndex = Array.IndexOf(values, defaultValue);
         comboBox.SelectedIndexChanged += (sender, e) =>

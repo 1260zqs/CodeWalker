@@ -47,9 +47,8 @@ namespace CodeWalker.TexMod
             this.duplicateMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.m_ProjectTreeViewIcons = new System.Windows.Forms.ImageList(this.components);
+            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.vsExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -151,12 +150,15 @@ namespace CodeWalker.TexMod
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView.FullRowSelect = true;
             this.treeView.HideSelection = false;
+            this.treeView.ImageIndex = 0;
+            this.treeView.ImageList = this.imageList;
             this.treeView.Indent = 16;
             this.treeView.ItemHeight = 20;
             this.treeView.LabelEdit = true;
             this.treeView.Location = new System.Drawing.Point(0, 25);
             this.treeView.Name = "treeView";
             this.treeView.PathSeparator = "/";
+            this.treeView.SelectedImageIndex = 0;
             this.treeView.ShowLines = false;
             this.treeView.Size = new System.Drawing.Size(284, 236);
             this.treeView.TabIndex = 3;
@@ -239,24 +241,18 @@ namespace CodeWalker.TexMod
             this.deleteMenuItem.Text = "Delete";
             this.deleteMenuItem.Click += new System.EventHandler(this.deleteMenuItem_Click);
             // 
-            // m_ProjectTreeViewIcons
+            // imageList
             // 
-            this.m_ProjectTreeViewIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("m_ProjectTreeViewIcons.ImageStream")));
-            this.m_ProjectTreeViewIcons.TransparentColor = System.Drawing.Color.Transparent;
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(0, "jpeg");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(1, "folder");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(2, "document");
-            this.m_ProjectTreeViewIcons.Images.SetKeyName(3, "png");
+            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
+            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList.Images.SetKeyName(0, "jpeg");
+            this.imageList.Images.SetKeyName(1, "folder");
+            this.imageList.Images.SetKeyName(2, "document");
+            this.imageList.Images.SetKeyName(3, "png");
             // 
             // vsExtender
             // 
             this.vsExtender.DefaultRenderer = null;
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.Filter = resources.GetString("openFileDialog.Filter");
-            this.openFileDialog.FilterIndex = 2;
-            this.openFileDialog.RestoreDirectory = true;
             // 
             // TextureModExplorerControl
             // 
@@ -277,7 +273,7 @@ namespace CodeWalker.TexMod
 
         private System.Windows.Forms.ToolStrip toolStrip;
         private CodeWalker.Forms.AeroTreeView treeView;
-        private System.Windows.Forms.ImageList m_ProjectTreeViewIcons;
+        private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem newFolderMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renameMenuItem;
@@ -294,6 +290,5 @@ namespace CodeWalker.TexMod
         private System.Windows.Forms.ToolStripButton saveProjectBtn;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.ToolStripButton toolStripButton8;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
     }
 }

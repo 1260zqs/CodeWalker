@@ -1,17 +1,9 @@
-using CodeWalker.Graphic;
 using CodeWalker.Properties;
-using CodeWalker.Utils;
-using SharpDX.WIC;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace CodeWalker.TexMod;
@@ -125,7 +117,6 @@ public partial class TextureModExplorerControl : DockContent
                 nodes.Add(node);
             }
         }
-        treeView.ImageList = m_ProjectTreeViewIcons;
         treeView.TreeViewNodeSorter = new NodeSorter();
         treeView.Refresh();
     }
@@ -359,19 +350,25 @@ public partial class TextureModExplorerControl : DockContent
 
     private void newFolderMenuItem_Click(object sender, EventArgs e)
     {
-        var treeNode = treeView.SelectedNode;
-        if (treeNode == null) return;
         var node = new TreeNode("New Folder");
         node.ImageIndex = TreeViewIcon.folder;
         node.SelectedImageIndex = TreeViewIcon.folder;
-        if (treeNode.Tag is ModTexture)
+        var treeNode = treeView.HitTest(mouseDownLocation).Node;
+        if (treeNode == null)
         {
-            AddNodeAfter(treeNode, node);
+            treeView.Nodes.Add(node);
         }
         else
         {
-            treeNode.Nodes.Insert(0, node);
-            treeNode.Expand();
+            if (treeNode.Tag is ModTexture)
+            {
+                AddNodeAfter(treeNode, node);
+            }
+            else
+            {
+                treeNode.Nodes.Insert(0, node);
+                treeNode.Expand();
+            }
         }
         node.BeginEdit();
         SetTreeViewDirty();
