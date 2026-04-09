@@ -25,9 +25,9 @@ public class TextureModProject
         {
             project.Load(projectFile);
         }
-        MakesureFolder(Path.Combine(workingDir, "backup"));
-        MakesureFolder(Path.Combine(workingDir, "cache"));
-        MakesureFolder(Path.Combine(workingDir, "assets"));
+        //MakesureFolder(Path.Combine(workingDir, "backup"));
+        //MakesureFolder(Path.Combine(workingDir, "cache"));
+        //MakesureFolder(Path.Combine(workingDir, "assets"));
         MakesureFolder(Path.Combine(workingDir, "working"));
         return project;
     }

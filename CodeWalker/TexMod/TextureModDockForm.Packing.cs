@@ -240,6 +240,10 @@ public partial class TextureModDockForm
             foreach (var mapping in modPack.mappings)
             {
                 var modTexture = project.modTextures[mapping.modTexture];
+                if (modTexture.sourceRect.Width <= 0 || modTexture.sourceRect.Height <= 0)
+                {
+                    continue;
+                }
                 if (!imageCache.TryGetValue(modTexture.filename, out var bitmap))
                 {
                     // progress.UpdateStatusTex($"load image {modTexture.filename}");
@@ -250,14 +254,20 @@ public partial class TextureModDockForm
                 }
                 if (bitmap == null)
                 {
-                    throw new Exception("unable to load image bitmap");
+                    throw new Exception($"unable to load image {modTexture.filename}");
+                }
+                if (UseMipTexture(modTexture.sourceRect, mapping.targetRect))
+                {
+                    var mip = CreateMipTexture(bitmap, modTexture.sourceRect, mapping.targetRect);
+                    bitmap.Dispose();
+                    bitmap = mip;
                 }
                 drawList.Add((mapping, bitmap));
             }
             if (drawList.Count == 0) continue;
 
             // progress.UpdateStatusTex($"draw texture {modPack.sourceTexName}");
-            d2dRenderTarget.SetTargetSize(modPack.id, modPack.sourceBitmap.PixelSize);
+            d2dRenderTarget.SetTargetSize(Guid.Empty, modPack.sourceBitmap.PixelSize);
             d2dRenderTarget.BeginDraw();
             d2dRenderTarget.target.DrawBitmap(modPack.sourceBitmap, 1, BitmapInterpolationMode.NearestNeighbor);
             foreach (var (mapping, bitmap) in drawList)

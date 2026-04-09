@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using CodeWalker.Rendering;
@@ -207,8 +207,8 @@ public static class TextureTool
             var w = Math.Max(targetWidth, currentWidth / 2);
             var h = Math.Max(targetHeight, currentHeight / 2);
             //var nextRT = Lanczos(currentRT, w, h, format);
-             var nextRT = GetRtTexture(device, w, h, format);
-             Blit(currentRT, nextRT);
+            var nextRT = GetRtTexture(device, w, h, format);
+            Blit(currentRT, nextRT);
             currentRT.Dispose();
             currentRT = nextRT;
             currentWidth = w;

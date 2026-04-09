@@ -497,7 +497,7 @@ public partial class TextureModDockForm
             }
             if (overlay != null && mapping.mipTexture == null)
             {
-                if (targetRect.Width < 256 || targetRect.Height < 256)
+                if (UseMipTexture(sourceRect, targetRect))
                 {
                     mapping.mipTexture = CreateMipTexture(overlay, sourceRect, targetRect);
                     mapping.mipRect1 = mapping.targetRect;
@@ -590,10 +590,30 @@ public partial class TextureModDockForm
         target.PopAxisAlignedClip();
     }
 
+    private bool UseMipTexture(
+        in System.Drawing.RectangleF sourceRect,
+        in System.Drawing.RectangleF targetRect
+    )
+    {
+        var srcW = sourceRect.Width;
+        var srcH = sourceRect.Height;
+
+        var dstW = targetRect.Width;
+        var dstH = targetRect.Height;
+
+        var scaleX = dstW / srcW;
+        var scaleY = dstH / srcH;
+
+        var minScale = Math.Min(scaleX, scaleY);
+
+        // If we're shrinking a lot, use a mip texture
+        return minScale < 0.25f;
+    }
+
     private SharpDX.Direct2D1.Bitmap CreateMipTexture(
         SharpDX.Direct2D1.Bitmap overlay,
-        System.Drawing.RectangleF sourceRect,
-        System.Drawing.RectangleF targetRect
+        in System.Drawing.RectangleF sourceRect,
+        in System.Drawing.RectangleF targetRect
     )
     {
         var imageSize = overlay.PixelSize;
